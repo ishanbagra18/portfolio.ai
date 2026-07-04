@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+/* ── Print Overrides for 1-Page A4 Resume PDF ── */
+@media print {
+  /* Hide interactive, floating, and print-excluded widgets */
+  .fixed,
+  button,
+  iframe,
+  nav,
+  footer,
+  .print-hidden,
+  [title*="AI Agent"],
+  [title*="Chatbot"] {
+    display: none !important;
+  }
+
+  /* Force white background and black text on all sections */
+  html, body, div, section, main, h1, h2, h3, h4, h5, p, span, li, a {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Setup clean page sizes and margins */
+  @page {
+    size: A4 portrait;
+    margin: 1.2cm 1.5cm;
+  }
+
+  body {
+    font-size: 10pt !important;
+    line-height: 1.35 !important;
+    font-family: 'Inter', sans-serif !important;
+  }
+
+  /* Make sections flow tightly */
+  section {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+    margin-bottom: 10px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Title and subheader styles */
+  h1 {
+    font-size: 20pt !important;
+    font-weight: bold !important;
+    margin-bottom: 2px !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+  }
+
+  /* Section Headings */
+  h3 {
+    font-size: 12pt !important;
+    font-weight: 800 !important;
+    border-bottom: 1.5px solid #1a1a1a !important;
+    margin-bottom: 8px !important;
+    padding-bottom: 2px !important;
+    text-transform: uppercase !important;
+  }
+
+  /* Grid Layouts to blocks */
+  .grid {
+    display: block !important;
+  }
+
+  .grid-cols-1,
+  .grid-cols-2,
+  .grid-cols-3,
+  .md\:grid-cols-2,
+  .lg\:grid-cols-12 {
+    display: block !important;
+  }
+
+  /* Spacers and margins resets */
+  .py-20, .py-24, .py-16 {
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .mb-16, .mb-14, .mb-12, .mb-10 {
+    margin-bottom: 6px !important;
+  }
+
+  .gap-12, .gap-10, .gap-8 {
+    gap: 4px !important;
+  }
+
+  .space-y-16, .space-y-12 {
+    margin-top: 4px !important;
+  }
+
+  /* Bullet points for custom items */
+  ul {
+    padding-left: 12px !important;
+  }
+
+  li {
+    margin-bottom: 2px !important;
+  }
+}

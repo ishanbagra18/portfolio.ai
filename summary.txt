@@ -1,0 +1,421 @@
+================================================================================
+                     PORTFOLIO.IO — PROJECT SUMMARY
+================================================================================
+Generated: 2026-07-04
+Project Root: c:\Users\ishan\Desktop\portfolio\
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  WHAT THIS PROJECT DOES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Portfolio.io is a full-stack web application that lets users create, manage,
+and share professional portfolio websites in minutes. A user signs up, picks
+a visual template, fills in their personal/project/experience details (or
+uploads a resume and lets AI auto-fill the form), and gets a live, shareable
+portfolio page instantly. They can manage all their portfolios from a personal
+dashboard and delete any one they no longer need.
+
+Core features:
+  ✔  User authentication (signup / login / logout) via JWT + Supabase Auth
+  ✔  Profile view and update (name, password)
+  ✔  6 distinct portfolio templates (Neon Dark, Bold Minimal, White Elegance,
+     Blueprint Technical, Neo Brutalist, Editorial Gallery)
+  ✔  AI-powered resume auto-fill using Google Gemini 2.5 Flash (PDF & DOCX)
+  ✔  AI text polishers for profile bios and project summaries ("Polish with AI")
+  ✔  Recruiter Chatbot Assistant widget integrated into live portfolios
+  ✔  Smart Job Matcher comparisons with detailed audit scorecards
+  ✔  Job Description Form Auto-Tailoring & Optimizing
+  ✔  One-Click PDF Resume print export layout configurations
+  ✔  Create, read, and delete portfolios stored in Supabase (PostgreSQL)
+  ✔  Personal dashboard (My Portfolios) showing all user portfolios
+  ✔  Template preview with sample data before committing
+  ✔  Protected routes — all dashboard/portfolio pages require login
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TECH STACK
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Frontend  : React (Vite), React Router v6, Tailwind CSS
+  Backend   : Node.js, Express.js (ES Modules)
+  Database  : Supabase (PostgreSQL) — used for portfolio data storage
+  Auth      : Supabase Auth (admin SDK) + custom JWT (jsonwebtoken)
+  AI        : Google Gemini 2.5 Flash via @google/genai
+  File Parse: multer (upload), pdf-parse (PDF), mammoth (DOCX)
+
+  Frontend runs on : http://localhost:5173
+  Backend runs on  : http://localhost:5000
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PROJECT FOLDER STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  portfolio/
+  ├── backend/
+  │   ├── .env                        ← Environment variables (secrets)
+  │   ├── .env.example                ← Template for required env vars
+  │   └── src/
+  │       ├── server.js               ← Express app entry point
+  │       ├── config/
+  │       │   └── supabase.js         ← Supabase client initialization
+  │       ├── middleware/
+  │       │   └── auth.js             ← JWT verification middleware (requireAuth)
+  │       ├── routes/
+  │       │   ├── authRoutes.js       ← /api/auth/* routes
+  │       │   ├── portfolioRoutes.js  ← /api/portfolio/* routes
+  │       │   └── resumeRoutes.js     ← /api/resume/* routes
+  │       └── controllers/
+  │           ├── authController.js       ← Auth business logic
+  │           ├── portfolioController.js  ← Portfolio CRUD logic
+  │           └── resumeController.js     ← AI resume parsing logic
+  │
+  └── frontend/
+      └── vite-project/
+          └── src/
+              ├── main.jsx            ← React entry point
+              ├── App.jsx             ← Route definitions
+              ├── index.css           ← Global styles
+              ├── lib/
+              │   ├── auth.js         ← Token helpers (getToken, isAuthenticated)
+              │   └── api.js          ← Fetch wrapper functions
+              ├── pages/
+              │   ├── Home.jsx        ← Landing page (hero + features)
+              │   ├── Login.jsx       ← Login form page
+              │   ├── Register.jsx    ← Register/signup form page
+              │   ├── ViewTemplates.jsx   ← Template selection gallery
+              │   └── ProvideData.jsx ← Multi-section portfolio data form + AI upload
+              ├── components/
+              │   ├── Navbar.jsx          ← Top navigation bar
+              │   ├── Profile.jsx         ← User profile view page
+              │   ├── UpdateProfile.jsx   ← Edit name/password form
+              │   ├── MyPortfolios.jsx    ← Dashboard: list + delete portfolios
+              │   ├── CallToAction.jsx    ← Landing page CTA section
+              │   ├── FeatureGrid.jsx     ← Landing page features grid
+              │   ├── HowItWorks.jsx      ← Landing page steps section
+              │   └── form/               ← Sub-form components for ProvideData
+              │       ├── PersonalInfoForm.jsx
+              │       ├── AboutForm.jsx
+              │       ├── ProjectsForm.jsx
+              │       ├── TechStacksForm.jsx
+              │       ├── ExperienceForm.jsx
+              │       └── CertificationsForm.jsx
+              └── Templates/
+                  ├── Template1/   ← Neon Dark theme
+                  ├── Template2/   ← Bold Minimal theme
+                  ├── Template3/   ← White Elegance theme
+                  ├── Template4/   ← Blueprint Technical theme
+                  ├── Template5/   ← Neo Brutalist theme
+                  └── Template6/   ← Editorial Gallery theme
+                  (Each template has a root .jsx + components/ subfolder)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  FRONTEND ROUTES  (React Router — src/App.jsx)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  PATH                                    COMPONENT          ACCESS
+  ──────────────────────────────────────  ─────────────────  ─────────────────
+  /                                       Redirect           Auto (login/home)
+  /login                                  Login.jsx          Public only
+  /register                               Register.jsx       Public only
+  /home                                   Home.jsx           Protected
+  /profile                                Profile.jsx        Protected
+  /profile/edit                           UpdateProfile.jsx  Protected
+  /viewtemplates                          ViewTemplates.jsx  Protected
+  /my-portfolios                          MyPortfolios.jsx   Protected
+  /provide-data/:templateId               ProvideData.jsx    Protected
+  /edit-portfolio/:portfolioId            EditPortfolio.jsx  Protected
+  /ats-checker                            AtsChecker.jsx     Protected
+  /job-matcher/:id                        JobMatcher.jsx     Protected
+  /portfolio/template1/:portfolioId?      Template1.jsx      Protected
+  /portfolio/template2/:portfolioId?      Template2.jsx      Protected
+  /portfolio/template3/:portfolioId?      Template3.jsx      Protected
+  /portfolio/template4/:portfolioId?      Template4.jsx      Protected
+  /portfolio/template5/:portfolioId?      Template5.jsx      Protected
+  /portfolio/template6/:portfolioId?      Template6.jsx      Protected
+  * (unknown)                             Redirect           Auto (login/home)
+
+  Notes:
+  - "Public only" = logged-in users are redirected to /home automatically.
+  - "Protected" = non-logged-in users are redirected to /login automatically.
+  - :portfolioId? is OPTIONAL. When omitted (preview mode), templates render
+    with built-in sample/default data. When provided, they fetch real data
+    from the backend.
+  - Auth token is stored as "auth_token" in localStorage.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BACKEND API REFERENCE  (Base URL: http://localhost:5000)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ─── HEALTH ──────────────────────────────────────────────────────────────────
+
+  GET  /api/health
+    Purpose  : Simple server health check
+    Auth     : None
+    Response : { ok: true }
+
+  ─── AUTH  (/api/auth) ───────────────────────────────────────────────────────
+
+  POST /api/auth/signup
+    Purpose  : Register a new user account
+    Auth     : None
+    Body     : { name, email, password, confirmPassword }
+    Response : { message, token, user: { id, email, name, created_at } }
+    Errors   : 400 (missing fields / password mismatch / too short)
+               409 (email already exists)
+
+  POST /api/auth/login
+    Purpose  : Authenticate existing user, returns JWT
+    Auth     : None
+    Body     : { email, password }
+    Response : { message, token, user: { id, email, name, created_at } }
+    Errors   : 400 (missing fields), 401 (wrong credentials)
+
+  POST /api/auth/logout
+    Purpose  : Stateless logout (client clears the token itself)
+    Auth     : None
+    Response : { message: "Logout successful" }
+
+  GET  /api/auth/profile
+    Purpose  : Get the logged-in user's profile info
+    Auth     : Required (Bearer JWT)
+    Response : { user: { id, email, name, created_at } }
+    Errors   : 401 (no/bad token), 404 (user not found)
+
+  PUT  /api/auth/profile
+    Purpose  : Update name and/or password for logged-in user
+    Auth     : Required (Bearer JWT)
+    Body     : { name?, password?, portfolio? }   (all optional)
+    Response : { message, user: { id, email, name, created_at, portfolio } }
+    Errors   : 400 (no fields / password too short), 401, 404
+
+  GET  /api/auth/portfolio/:userId
+    Purpose  : Public endpoint to get user profile by their user ID
+               (originally intended for public portfolio sharing)
+    Auth     : None (public)
+    Response : { user: { id, email, name, created_at, portfolio } }
+    Errors   : 404 (user not found)
+
+  ─── PORTFOLIO  (/api/portfolio) ─────────────────────────────────────────────
+
+  POST /api/portfolio/create
+    Purpose  : Save a new portfolio to the database
+    Auth     : Required (Bearer JWT)
+    Body     : {
+                 personalInfo: { full_name, email_id, age, address,
+                                 main_title, college_name, course_name,
+                                 specialization_course_name, about_paragraph,
+                                 github_username, leetcode_username,
+                                 template_id },
+                 techStacks:      [ { name, category }, ... ],
+                 projects:        [ { project_name, project_desc,
+                                      project_tech_stack[], project_github_link },
+                                    ... ]   (minimum 2 required),
+                 experiences:     [ { role, company_name, date_of_joining,
+                                      work_description }, ... ],
+                 certifications:  [ { certification_name, issuing_organization,
+                                      credential_url }, ... ],
+                 templateId:      "template1" | "template2" | ... | "template6"
+               }
+    Response : { success: true, message, portfolioId, templateId }
+    Errors   : 400 (fewer than 2 projects), 401 (not authenticated)
+    DB       : Inserts into tables: portfolios, tech_stacks, projects,
+               experiences, certifications  (all linked by portfolio_id)
+
+  GET  /api/portfolio/my-portfolios
+    Purpose  : Fetch all portfolios created by the logged-in user
+    Auth     : Required (Bearer JWT)
+    Response : { success: true, count: N, data: [ ...portfolios ] }
+    Errors   : 401 (not authenticated)
+    DB       : SELECT from portfolios WHERE user_id = <current user>
+
+  GET  /api/portfolio/:id
+    Purpose  : Fetch full data of a single portfolio by its ID
+               (personal info + all related tech, projects, experience, certs)
+    Auth     : Required (Bearer JWT)
+    Params   : id — portfolio UUID
+    Response : { success: true, data: { personalInfo, techStacks, projects,
+                                        experiences, certifications, templateId } }
+    Errors   : 400 (no ID), 401, 404 (not found)
+
+  DELETE /api/portfolio/:id
+    Purpose  : Delete a portfolio and ALL its related records permanently
+    Auth     : Required (Bearer JWT)
+    Params   : id — portfolio UUID
+    Security : Ownership check — only the owner can delete their portfolio
+               (returns 403 if another user tries)
+    Response : { success: true, message: "Portfolio successfully delete ho gaya." }
+    Errors   : 400 (no ID), 401, 403 (not owner), 404 (not found), 500
+    DB       : Deletes from tech_stacks, projects, experiences, certifications
+               (all in parallel), then deletes from portfolios
+
+  ─── RESUME  (/api/resume) ───────────────────────────────────────────────────
+
+  POST /api/resume/autofill
+    Purpose  : Upload a PDF or DOCX resume → AI (Google Gemini 2.5 Flash)
+               extracts and returns structured portfolio data as JSON
+    Auth     : Optional (token forwarded but not strictly enforced on route)
+    Body     : multipart/form-data with field "resume" (PDF or DOCX file)
+    Response : {
+                 success: true,
+                 data: {
+                   personalInfo: { full_name, email_id, age, address,
+                                   main_title },
+                   about:        { about_paragraph, college_name, course_name,
+                                   specialization_course_name,
+                                   github_username, leetcode_username },
+                   projects:     [ { project_name, project_tech_stack,
+                                     project_desc }, ... ],
+                   experience:   [ { role, company_name, date_of_joining,
+                                     work_description }, ... ],
+                   certifications: [ { certification_name,
+                                       issuing_organization,
+                                       credential_url }, ... ]
+                 }
+               }
+    Errors   : 400 (no file / unsupported format), 500 (AI/parse failure)
+    Notes    : File is saved temporarily to uploads/ folder, then deleted
+               after text extraction. Only PDF and DOCX are supported.
+
+  ─── GEMINI AI FEATURES  (/api/ai) ───────────────────────────────────────────
+
+  POST /api/ai/polish
+    Purpose  : Professional re-writing and STAR description polishing via Gemini
+    Auth     : Required (Bearer JWT)
+    Body     : { text, type: "about" | "project" | "experience" }
+    Response : { success: true, polishedText: "..." }
+
+  POST /api/ai/chat/:portfolioId
+    Purpose  : Interactive chatbot for recruiters visiting live portfolios
+    Auth     : None (publicly accessible on live shareable link)
+    Body     : { message, history: [ { role, parts: [...] }, ... ] }
+    Response : { success: true, responseText: "..." }
+
+  GET  /api/ai/chat/history/:portfolioId
+    Purpose  : Fetches default start chips and conversation configs
+    Auth     : None
+    Response : { success: true, initialMessage: "...", suggestionChips: [...] }
+
+  POST /api/ai/match-job/:portfolioId
+    Purpose  : Compare portfolio experience/skills against a target Job Description
+    Auth     : Required (Bearer JWT)
+    Body     : { jobDescription }
+    Response : { success: true, analysis: { matchScore, strengths[], missingKeywords[], recommendationSteps[] } }
+
+  POST /api/ai/tailor-form
+    Purpose  : Optimizes or auto-fills form data matching a target Job Description
+    Auth     : Required (Bearer JWT)
+    Body     : { jobDescription, currentData?, mode: "generate" | "optimize" }
+    Response : { success: true, data: { personalInfo, techStacks[], projects[], experiences[], certifications[] } }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SUPABASE DATABASE TABLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  portfolios
+    id (uuid, PK), user_id (uuid, FK → auth.users), full_name, email_id,
+    age, address, main_title, college_name, course_name,
+    specialization_course_name, about_paragraph, github_username,
+    leetcode_username, template_id, created_at
+
+  tech_stacks
+    id (uuid, PK), portfolio_id (uuid, FK → portfolios.id),
+    name, category
+
+  projects
+    id (uuid, PK), portfolio_id (uuid, FK → portfolios.id),
+    project_name, project_desc, project_tech_stack (array),
+    project_github_link
+
+  experiences
+    id (uuid, PK), portfolio_id (uuid, FK → portfolios.id),
+    role, company_name, date_of_joining, work_description
+
+  certifications
+    id (uuid, PK), portfolio_id (uuid, FK → portfolios.id),
+    certification_name, issuing_organization, credential_url
+
+  (User accounts are managed entirely by Supabase Auth — no separate
+   users table in the public schema is needed)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  AUTHENTICATION FLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. User signs up  → backend creates user in Supabase Auth (admin SDK)
+                    → backend signs a custom JWT (payload: { sub, email })
+                    → JWT stored in browser localStorage as "auth_token"
+
+  2. User logs in   → backend verifies credentials via supabase.auth.signInWithPassword
+                    → backend signs a fresh JWT
+                    → JWT stored in localStorage
+
+  3. Protected API  → frontend sends JWT as "Authorization: Bearer <token>"
+                    → requireAuth middleware (backend) verifies JWT signature
+                    → req.user is populated with { sub (userId), email }
+
+  4. User logs out  → frontend clears localStorage token
+                    → backend /logout is stateless (no token blacklist)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  KEY USER FLOWS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. CREATE PORTFOLIO
+     /home → "Explore Templates" → /viewtemplates
+          → "Provide Data" → /provide-data/:templateId
+          → [Optional] Upload resume → AI autofills form
+          → Fill/edit form sections (Personal Info, About, Projects,
+            Tech Stacks, Experience, Certifications)
+          → "Generate Portfolio →" → POST /api/portfolio/create
+          → Redirects to /portfolio/:templateId/:portfolioId (live portfolio)
+
+  2. PREVIEW TEMPLATE (before committing)
+     /viewtemplates → "Preview" → /portfolio/template1  (no portfolioId)
+          → Template renders with built-in sample/default data
+          → Banner shown: "You are currently viewing the live sample preview"
+
+  3. VIEW MY PORTFOLIOS
+     /my-portfolios → GET /api/portfolio/my-portfolios
+          → Grid of portfolio cards (name, title, template, date)
+          → Click card → GET /api/portfolio/:id → live portfolio page
+
+  4. DELETE PORTFOLIO
+     /my-portfolios → hover card → trash icon → confirmation modal
+          → "Yes, Delete" → DELETE /api/portfolio/:id
+          → Card removed from UI instantly (optimistic update)
+
+  5. UPDATE PROFILE
+     /profile → /profile/edit → PUT /api/auth/profile
+          → Can update display name and/or password
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ENVIRONMENT VARIABLES REQUIRED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Backend (.env):
+    PORT                    = 5000
+    SUPABASE_URL            = https://<your-project>.supabase.co
+    SUPABASE_SERVICE_ROLE_KEY = <supabase service role key>
+    JWT_SECRET              = <your secret key>
+    JWT_EXPIRES_IN          = 7d
+    GEMINI_API_KEY          = <google gemini api key>
+
+  Frontend (.env):
+    VITE_API_URL            = http://localhost:5000
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  HOW TO RUN LOCALLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Backend:
+    cd portfolio/backend
+    npm install
+    node src/server.js          (or: nodemon src/server.js)
+
+  Frontend:
+    cd portfolio/frontend/vite-project
+    npm install
+    npm run dev
+
+  Both must be running simultaneously for the app to work.
+
+================================================================================

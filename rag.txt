@@ -1,0 +1,468 @@
+Bhai ye RAG ka sabse important part hai. Isko agar tu samajh gaya na, to LangChain aur vector DB sab easy lagne lagega.
+
+Main tere Portfolio Project ka hi example lekar samjhata hu.
+
+Maan lo tera portfolio me ye data hai
+About:
+I am a Full Stack Developer skilled in React, Node.js and MongoDB.
+
+Project 1:
+Zero Waste Platform
+A platform connecting NGOs, vendors and volunteers.
+
+Tech Used:
+React
+Node
+Express
+MongoDB
+JWT
+
+Project 2:
+Geethub
+Music Streaming Platform
+
+Features:
+Authentication
+Playlist
+Realtime Chat
+Go Backend
+
+Experience:
+Backend Intern at udChalo
+Worked on REST APIs and Database optimization.
+
+Skills:
+React
+Node
+MongoDB
+Express
+Docker
+JWT
+
+Ye tera complete portfolio hai.
+
+Step 1 : Split into Chunks
+
+LLM ko itna bada document ek saath nahi dete.
+
+Usko tod dete hain.
+
+Example
+
+Chunk 1
+
+About
+I am a Full Stack Developer skilled in React, Node.js and MongoDB.
+Chunk 2
+
+Project
+Zero Waste Platform
+
+A platform connecting NGOs, vendors and volunteers.
+
+Tech:
+React
+Node
+Express
+MongoDB
+JWT
+Chunk 3
+
+Project
+Geethub
+
+Music Streaming Platform
+
+Go Backend
+
+Realtime Chat
+
+Authentication
+Chunk 4
+
+Experience
+
+Backend Intern
+
+Worked on REST APIs
+
+Database Optimization
+Chunk 5
+
+Skills
+
+React
+
+Node
+
+Express
+
+MongoDB
+
+Docker
+
+JWT
+
+Ab bada portfolio
+
+👇
+
+5 alag-alag pieces ban gaya.
+
+Isi ko
+
+Chunking
+
+kehte hain.
+
+Step 2 : Embedding
+
+Ab computer English nahi samajhta.
+
+Usko numbers samajh aate hain.
+
+To har chunk ko
+
+Gemini Embedding Model
+
+ya OpenAI Embedding Model
+
+numbers me convert kar deta hai.
+
+Example
+
+Chunk 1
+
+I am Full Stack Developer...
+
+ban gaya
+
+[0.12,0.81,0.44,0.91,0.55,....]
+
+Chunk 2
+
+Zero Waste
+
+ban gaya
+
+[0.77,0.32,0.19,0.52,....]
+
+Chunk 3
+
+Geethub
+
+ban gaya
+
+[0.24,0.68,0.95,0.11....]
+
+Ye jo numbers hain
+
+yehi
+
+Embedding
+
+kehlate hain.
+
+Har sentence ka ek vector hota hai.
+
+Step 3 : Store in Vector Database
+
+Ab ye vectors store honge.
+
+Example
+
+Chunk	Embedding
+About	[0.11,0.22...]
+Zero Waste	[0.77,0.32...]
+Geethub	[0.24,0.68...]
+Experience	[0.93,0.71...]
+Skills	[0.55,0.29...]
+
+Ye normal SQL database nahi hai.
+
+Ye
+
+Vector Database
+
+hai.
+
+Example
+
+Pinecone
+
+Qdrant
+
+ChromaDB
+
+Milvus
+
+Ye sirf vectors store karti hain.
+
+Step 4 : Recruiter asks Question
+
+Recruiter likhta hai
+
+Tell me about your backend experience.
+
+Ab kya hoga?
+
+Step 5 : Question ki bhi Embedding banegi
+
+Question
+
+Tell me about backend experience.
+
+Embedding
+
+[0.81,0.62,0.45....]
+
+Ab
+
+Question bhi vector ban gaya.
+
+Step 6 : Similarity Search
+
+Ab Vector DB compare karega
+
+Question
+
+vs
+
+Saare chunks.
+
+Question
+
+↓
+
+Compare Chunk 1
+
+Compare Chunk 2
+
+Compare Chunk 3
+
+Compare Chunk 4
+
+Compare Chunk 5
+
+Suppose score aaya
+
+Chunk	Similarity
+About	35%
+Zero Waste	84%
+Geethub	81%
+Experience	98%
+Skills	60%
+
+Ab DB bolega
+
+Sabse relevant
+
+Chunk 4
+
+Chunk 2
+
+Chunk 3
+
+Ye process
+
+Similarity Search
+
+kehlata hai.
+
+Ye similarity hoti kaise hai?
+
+Computer vectors ke beech distance calculate karta hai.
+
+Agar vectors paas hain
+
+😀 😀 😀
+
+to meaning same hai.
+
+Agar door hain
+
+😀               😀
+
+to meaning alag hai.
+
+Isliye
+
+"Backend"
+
+aur
+
+"REST API"
+
+ko related samajh leta hai.
+
+Chahe exact word na ho.
+
+Step 7 : Top Chunks niklenge
+
+Ab sirf ye jayega
+
+Chunk 4
+
+Backend Intern
+
+REST APIs
+
+Database Optimization
+
+------------
+
+Chunk 2
+
+Zero Waste
+
+Node
+
+MongoDB
+
+JWT
+
+------------
+
+Chunk 3
+
+Go Backend
+
+Realtime Chat
+
+Notice
+
+Pura portfolio nahi gaya.
+
+Sirf relevant part gaya.
+
+Step 8 : Gemini
+
+Ab Gemini ko prompt milega
+
+Question
+
+Tell me about backend experience.
+
+Context
+
+Chunk 4
+
+Chunk 2
+
+Chunk 3
+
+Gemini sochega
+
+Aur answer dega
+
+The candidate has backend experience through an internship at udChalo where they worked on REST APIs and database optimization. They also developed backend systems for the Zero Waste Platform using Node.js, Express, MongoDB, and JWT authentication. Additionally, they built the Geethub backend in Go with authentication and real-time chat features.
+
+Ab answer bahut accurate hai.
+
+Agar RAG na hota
+
+Gemini ko ye bhejna padta
+
+About
+
+Projects
+
+Experience
+
+Skills
+
+Certificates
+
+Everything
+
+Pura 40 pages.
+
+Fir Gemini khud dhundhta.
+
+Slow
+
+Expensive
+
+Aur kabhi-kabhi galat cheez bhi utha leta.
+
+Real Life Example 📚
+
+Soch tu library gaya.
+
+Library me 10 lakh books hain.
+
+Tu librarian se bolta hai
+
+"Mujhe Machine Learning wali book chahiye."
+
+Without RAG
+
+Librarian bolta
+
+Ye lo
+
+10 lakh books
+
+Khud dhundo.
+
+😂
+
+With RAG
+
+Librarian pehle search karta hai
+
+Machine Learning
+
+↓
+
+Shelf 8
+
+↓
+
+Book Number 23
+
+Fir sirf wahi book tere haath me deta hai.
+
+Bas.
+
+Tu us book ko padhkar answer de deta hai.
+
+Yahan:
+
+Library = Vector Database
+Librarian = Retriever (Similarity Search)
+Book = Relevant Chunks
+Student = Gemini
+Answer = Final Response
+Tere Project me Actual Flow
+Portfolio Data
+      │
+      ▼
+Split into Small Chunks
+      │
+      ▼
+Generate Embeddings
+      │
+      ▼
+Store in ChromaDB / Pinecone
+      │
+      ▼
+Recruiter asks:
+"Explain your backend experience."
+      │
+      ▼
+Question Embedding
+      │
+      ▼
+Similarity Search
+      │
+      ▼
+Top 3–5 Relevant Chunks
+      │
+      ▼
+Gemini + Retrieved Context
+      │
+      ▼
+Accurate, Context-Aware Answer
+
+Yehi Retrieval-Augmented Generation (RAG) ka complete workflow hai. Dhyan dene wali baat ye hai ki LLM (Gemini) search nahi karta—search ka kaam retriever aur vector database karte hain. Gemini ko bas relevant context diya jata hai, aur us context ke basis par final answer generate karne ka kaam Gemini karta hai. Yahi wajah hai ki RAG systems large documents aur enterprise applications me itne effective hote hain.
