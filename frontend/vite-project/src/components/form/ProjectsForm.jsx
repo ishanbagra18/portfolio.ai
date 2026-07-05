@@ -12,12 +12,47 @@ const Spinner = () => (
   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
 );
 
+import { API_BASE } from '../../lib/api';
+
 const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername }) => {
   const [importing, setImporting]   = useState(false);
   const [ghError, setGhError]       = useState('');
   const [username, setUsername]     = useState(githubUsername || '');
   const [showInput, setShowInput]   = useState(false);
   const [polishingIndex, setPolishingIndex] = useState(null);
+  const [uploadingIndex, setUploadingIndex] = useState(null);
+
+  const handleMediaUpload = async (index, event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    setUploadingIndex(index);
+    const fd = new FormData();
+    fd.append('media', file);
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      const res = await fetch(`${API_BASE}/api/portfolio/upload-media`, {
+        method: 'POST',
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        body: fd
+      });
+
+      const result = await res.json();
+      if (res.ok && result.success && result.url) {
+        onChange(index, { target: { name: 'project_image', value: result.url } });
+      } else {
+        alert(result.message || 'Media upload failed.');
+      }
+    } catch (error) {
+      console.error('Media upload error:', error);
+      alert('Failed to upload media. Please try again.');
+    } finally {
+      setUploadingIndex(null);
+    }
+  };
 
   const handlePolishProject = async (index, currentText) => {
     if (!currentText || !currentText.trim()) {
@@ -28,7 +63,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
     setPolishingIndex(index);
     try {
       const token = localStorage.getItem("auth_token");
-      const res = await fetch("http://localhost:5000/api/ai/polish", {
+      const res = await fetch(`${API_BASE}/api/ai/polish`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -278,8 +313,52 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                   onChange={(e) => onChange(index, e)}
                   placeholder="What does this project do?"
                   rows="2"
-                  className="bg-transparent border-b border-gray-800 text-lg text-white py-2 focus:outline-none focus:border-white transition-colors resize-none"
+                  className="bg-transparent border-b border-gray-800 text-lg text-white py-2 focus:outline-none focus:border-white transition-colors resize-none mb-6"
                 />
+              </div>
+
+              {/* Project Media Upload field */}
+              <div className="flex flex-col md:col-span-2">
+                <label className="text-xs font-bold text-gray-600 uppercase tracking-widest mb-2">
+                  Project Image / Media (Screenshot/Demo video)
+                </label>
+                <div className="flex items-center gap-4">
+                  <label className="cursor-pointer px-5 py-2.5 border border-gray-700 bg-gray-900 text-gray-300 font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-black hover:border-white transition-all rounded">
+                    {uploadingIndex === index ? '⏳ Uploading...' : '+ Choose Media File'}
+                    <input
+                      type="file"
+                      accept="image/*,video/*"
+                      onChange={(e) => handleMediaUpload(index, e)}
+                      disabled={uploadingIndex !== null}
+                      className="hidden"
+                    />
+                  </label>
+                  {project.project_image ? (
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs text-emerald-400 truncate max-w-[200px] font-mono">
+                        {project.project_image.split('/').pop()}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => onChange(index, { target: { name: 'project_image', value: '' } })}
+                        className="text-xs text-red-500 hover:text-red-400 font-bold uppercase tracking-wider hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-xs text-gray-600 font-medium">No media file uploaded</span>
+                  )}
+                </div>
+                {project.project_image && (
+                  <div className="mt-4 max-w-[320px] border border-gray-800 rounded-xl overflow-hidden bg-slate-900/60 shadow-lg">
+                    {project.project_image.match(/\.(mp4|webm|ogg)$/i) || project.project_image.includes('video-') ? (
+                      <video src={project.project_image} controls className="w-full h-auto object-cover max-h-48" />
+                    ) : (
+                      <img src={project.project_image} alt="Preview" className="w-full h-auto object-cover max-h-48" />
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

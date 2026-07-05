@@ -45,6 +45,16 @@ const Projects = ({ data }) => {
                       </p>
                     )}
 
+                    {project.project_image && (
+                      <div className="mt-4 overflow-hidden rounded border border-[#7EC8E3]/10 bg-[#081526] max-w-md flex justify-center items-center shadow-inner">
+                        {project.project_image.match(/\.(mp4|webm|ogg)$/i) || project.project_image.includes('video-') ? (
+                          <video src={project.project_image} controls className="w-full h-auto object-cover max-h-48" />
+                        ) : (
+                          <img src={project.project_image} alt={project.project_name} className="w-full h-auto object-cover max-h-48 opacity-90 transition-opacity duration-300 hover:opacity-100" />
+                        )}
+                      </div>
+                    )}
+
                     {techStack.length > 0 && (
                       <div className="mt-4 flex flex-wrap gap-2">
                         {techStack.map((tech, idx) => (

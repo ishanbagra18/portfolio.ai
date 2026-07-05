@@ -1,6 +1,7 @@
 import { supabase } from '../config/supabase.js';
 import { indexPortfolio } from '../services/ragService.js';
 import { deleteVectors } from '../ai/vector/qdrantClient.js';
+import crypto from 'crypto';
 
 // Helper to safely parse dates for PostgreSQL strict DATE columns
 const safeDate = (val) => {
@@ -17,6 +18,19 @@ const safeDate = (val) => {
         return today; // Fallback to today's date to satisfy NOT NULL constraint
     }
     return new Date(parsed).toISOString().split('T')[0];
+};
+
+// Helper to generate a URL-safe slug from a full name
+const generateSlug = (fullName) => {
+    const base = (fullName || 'portfolio')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')  // remove special chars
+        .replace(/\s+/g, '-')           // spaces to hyphens
+        .replace(/-+/g, '-')            // collapse multiple hyphens
+        .replace(/^-|-$/g, '')          // trim leading/trailing hyphens
+        .substring(0, 40);              // limit length
+    const suffix = crypto.randomBytes(4).toString('hex'); // 8 random hex chars
+    return `${base}-${suffix}`;
 };
 
 /* ---------------- CREATE PORTFOLIO ---------------- */
@@ -63,10 +77,16 @@ export const createPortfolio = async (req, res) => {
             ...restPersonalInfo 
         } = personalInfo || {};
 
+        // Generate a public slug from the full name
+        const publicSlug = generateSlug(restPersonalInfo.full_name);
+
         const cleanedPersonalInfo = { 
             ...restPersonalInfo,
             user_id: userId,
-            template_id: finalTemplateId
+            template_id: finalTemplateId,
+            public_slug: publicSlug,
+            is_public: false,
+            view_count: 0
         };
 
         // Agar age empty string "" hai toh use null banao
@@ -573,9 +593,156 @@ export const deletePortfolio = async (req, res) => {
     }
 };
 
+/* ---------------- GET PUBLIC PORTFOLIO BY SLUG (No Auth) ---------------- */
+export const getPublicPortfolio = async (req, res) => {
+    try {
+        const { slug } = req.params;
 
+        if (!slug) {
+            return res.status(400).json({
+                success: false,
+                message: "Portfolio slug is required."
+            });
+        }
 
+        // 1. Find portfolio by slug AND check it's public
+        const { data: personalInfo, error: portfolioError } = await supabase
+            .from('portfolios')
+            .select('*')
+            .eq('public_slug', slug)
+            .eq('is_public', true)
+            .single();
 
+        if (portfolioError || !personalInfo) {
+            return res.status(404).json({
+                success: false,
+                message: "Portfolio not found or is not public."
+            });
+        }
 
+        const portfolioId = personalInfo.id;
 
+        // 2. Increment view count (fire-and-forget, don't block response)
+        supabase
+            .from('portfolios')
+            .update({ view_count: (personalInfo.view_count || 0) + 1 })
+            .eq('id', portfolioId)
+            .then(({ error }) => {
+                if (error) console.error('[View Count] Increment failed:', error.message);
+            });
 
+        // 3. Fetch all related data in parallel
+        const [
+            { data: techStacks },
+            { data: projects },
+            { data: experiences },
+            { data: certifications }
+        ] = await Promise.all([
+            supabase.from('tech_stacks').select('*').eq('portfolio_id', portfolioId),
+            supabase.from('projects').select('*').eq('portfolio_id', portfolioId),
+            supabase.from('experiences').select('*').eq('portfolio_id', portfolioId),
+            supabase.from('certifications').select('*').eq('portfolio_id', portfolioId)
+        ]);
+
+        const resolvedTemplate = personalInfo.template_id || 'template1';
+
+        // 4. Return full portfolio data
+        res.status(200).json({
+            success: true,
+            data: {
+                personalInfo: {
+                    ...personalInfo,
+                    templateId: resolvedTemplate,
+                    template_id: resolvedTemplate
+                },
+                techStacks: techStacks || [],
+                projects: projects || [],
+                experiences: experiences || [],
+                certifications: certifications || [],
+                templateId: resolvedTemplate,
+                template_id: resolvedTemplate
+            }
+        });
+
+    } catch (error) {
+        console.error("Error fetching public portfolio:", error);
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong while fetching the public portfolio.",
+            error: error.message
+        });
+    }
+};
+
+/* ---------------- TOGGLE PUBLIC STATUS ---------------- */
+export const togglePublicStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user?.sub || req.user?.id || req.user?._id || req.user?.userId;
+
+        if (!id) {
+            return res.status(400).json({ success: false, message: "Portfolio ID is required." });
+        }
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "User not authenticated." });
+        }
+
+        // 1. Verify ownership
+        const { data: existing, error: fetchError } = await supabase
+            .from('portfolios')
+            .select('id, user_id, is_public, public_slug, full_name')
+            .eq('id', id)
+            .single();
+
+        if (fetchError || !existing) {
+            return res.status(404).json({ success: false, message: "Portfolio not found." });
+        }
+        if (existing.user_id !== userId) {
+            return res.status(403).json({ success: false, message: "You are not authorized to modify this portfolio." });
+        }
+
+        // 2. Toggle is_public
+        const newPublicStatus = !existing.is_public;
+        const updateData = { is_public: newPublicStatus };
+
+        // If making public for the first time and no slug exists, generate one
+        if (newPublicStatus && !existing.public_slug) {
+            updateData.public_slug = generateSlug(existing.full_name);
+        }
+
+        const { data: updated, error: updateError } = await supabase
+            .from('portfolios')
+            .update(updateData)
+            .eq('id', id)
+            .select('is_public, public_slug, view_count')
+            .single();
+
+        if (updateError) {
+            console.error('[Toggle Public] Update failed:', updateError);
+            return res.status(400).json({
+                success: false,
+                message: `Failed to update public status: ${updateError.message}`
+            });
+        }
+
+        console.log(`[Toggle Public] Portfolio ${id} is now ${newPublicStatus ? 'PUBLIC' : 'PRIVATE'}`);
+
+        res.status(200).json({
+            success: true,
+            message: newPublicStatus ? "Portfolio is now public!" : "Portfolio is now private.",
+            data: {
+                is_public: updated.is_public,
+                public_slug: updated.public_slug,
+                view_count: updated.view_count
+            }
+        });
+
+    } catch (error) {
+        console.error("Toggle public status error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Something went wrong while toggling public status.",
+            error: error.message
+        });
+    }
+};

@@ -46,7 +46,7 @@ const ChatbotWidget = ({ portfolioId, name }) => {
         text: msg.text
       }));
 
-      const res = await fetch(`http://localhost:5000/api/ai/chat/${portfolioId}`, {
+      const res = await fetch(`/api/ai/chat/${portfolioId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

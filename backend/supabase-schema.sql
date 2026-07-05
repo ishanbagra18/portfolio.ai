@@ -28,8 +28,16 @@ CREATE TABLE portfolios (
     github_username TEXT,
     leetcode_username TEXT,
     
+    -- Public Portfolio & Analytics
+    public_slug TEXT UNIQUE,
+    is_public BOOLEAN DEFAULT false,
+    view_count INTEGER DEFAULT 0,
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Index for fast slug lookups
+CREATE INDEX IF NOT EXISTS idx_portfolios_public_slug ON portfolios(public_slug);
 
 -- 2. TECH STACK TABLE (Languages & Tools)
 CREATE TABLE tech_stacks (
@@ -44,18 +52,6 @@ CREATE TABLE tech_stacks (
 CREATE TABLE projects (
     id SERIAL PRIMARY KEY,
     portfolio_id UUID REFERENCES portfolios(id) ON DELETE CASCADE,
-    project_name TEXT NOT NULL, -- e.g., 'GeetHub', 'ZeroGrid'
-    project_tech_stack TEXT[],  -- PostgreSQL Text Array: ['React', 'Go', 'Gin']
-    project_image TEXT,         -- Image ka URL string
-    project_github_link TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 4. EXPERIENCE TABLE
--- 3. PROJECTS TABLE
-CREATE TABLE projects (
-    id SERIAL PRIMARY KEY,
-    portfolio_id UUID REFERENCES portfolios(id) ON DELETE CASCADE,
     project_name TEXT NOT NULL, 
     project_desc TEXT,          -- Naya column add kiya gaya hai
     project_tech_stack TEXT[],  
@@ -64,7 +60,7 @@ CREATE TABLE projects (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 5. CERTIFICATIONS TABLE (Optional Section)
+-- 4. CERTIFICATIONS TABLE (Optional Section)
 CREATE TABLE certifications (
     id SERIAL PRIMARY KEY,
     portfolio_id UUID REFERENCES portfolios(id) ON DELETE CASCADE,
@@ -73,3 +69,13 @@ CREATE TABLE certifications (
     credential_url TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- ========================================================
+-- MIGRATION: Run this if the tables already exist
+-- ========================================================
+-- ALTER TABLE portfolios
+--   ADD COLUMN IF NOT EXISTS public_slug TEXT UNIQUE,
+--   ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false,
+--   ADD COLUMN IF NOT EXISTS view_count INTEGER DEFAULT 0;
+--
+-- CREATE INDEX IF NOT EXISTS idx_portfolios_public_slug ON portfolios(public_slug);

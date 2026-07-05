@@ -1,3 +1,4 @@
+import { API_BASE } from '../lib/api';
 import { useState } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import PersonalInfoForm from '../components/form/PersonalInfoForm';
@@ -104,7 +105,7 @@ const ProvideData = () => {
     try {
       const token = localStorage.getItem('auth_token');
 
-      const response = await fetch('http://localhost:5000/api/resume/autofill', {
+      const response = await fetch(`${API_BASE}/api/resume/autofill`, {
         method: 'POST',
         headers: {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
@@ -173,7 +174,7 @@ const ProvideData = () => {
         template_id: resolvedTemplateId
       };
 
-      const response = await fetch('http://localhost:5000/api/portfolio/create', {
+      const response = await fetch(`${API_BASE}/api/portfolio/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

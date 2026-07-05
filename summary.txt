@@ -22,11 +22,11 @@ Core features:
      Blueprint Technical, Neo Brutalist, Editorial Gallery)
   ✔  AI-powered resume auto-fill using Google Gemini 2.5 Flash (PDF & DOCX)
   ✔  AI text polishers for profile bios and project summaries ("Polish with AI")
-  ✔  Recruiter Chatbot Assistant widget integrated into live portfolios
+  ✔  Recruiter Chatbot Assistant widget with vector RAG search capabilities
   ✔  Smart Job Matcher comparisons with detailed audit scorecards
   ✔  Job Description Form Auto-Tailoring & Optimizing
   ✔  One-Click PDF Resume print export layout configurations
-  ✔  Create, read, and delete portfolios stored in Supabase (PostgreSQL)
+  ✔  Create, read, update, and delete portfolios stored in Supabase (PostgreSQL)
   ✔  Personal dashboard (My Portfolios) showing all user portfolios
   ✔  Template preview with sample data before committing
   ✔  Protected routes — all dashboard/portfolio pages require login
@@ -38,6 +38,7 @@ Core features:
   Frontend  : React (Vite), React Router v6, Tailwind CSS
   Backend   : Node.js, Express.js (ES Modules)
   Database  : Supabase (PostgreSQL) — used for portfolio data storage
+  Vector DB : Qdrant (Semantic similarity search / RAG context storage)
   Auth      : Supabase Auth (admin SDK) + custom JWT (jsonwebtoken)
   AI        : Google Gemini 2.5 Flash via @google/genai
   File Parse: multer (upload), pdf-parse (PDF), mammoth (DOCX)
@@ -62,11 +63,25 @@ Core features:
   │       ├── routes/
   │       │   ├── authRoutes.js       ← /api/auth/* routes
   │       │   ├── portfolioRoutes.js  ← /api/portfolio/* routes
-  │       │   └── resumeRoutes.js     ← /api/resume/* routes
-  │       └── controllers/
-  │           ├── authController.js       ← Auth business logic
-  │           ├── portfolioController.js  ← Portfolio CRUD logic
-  │           └── resumeController.js     ← AI resume parsing logic
+  │       │   ├── resumeRoutes.js     ← /api/resume/* routes
+  │       │   └── aiRoutes.js         ← /api/ai/* routes
+  │       ├── controllers/
+  │       │   ├── authController.js       ← Auth business logic
+  │       │   ├── portfolioController.js  ← Portfolio CRUD logic
+  │       │   ├── resumeController.js     ← AI resume parsing & ATS check logic
+  │       │   └── aiController.js         ← AI generation, matching & tailoring logic
+  │       ├── chat/
+  │       │   └── chatController.js       ← Recruiter AI Chatbot RAG controller
+  │       ├── ai/
+  │       │   ├── chunking/               ← Text chunking utilities for RAG
+  │       │   ├── embedding/              ← Google Gemini vector embeddings service
+  │       │   ├── retrieval/              ← MMR context retrieval and diversification
+  │       │   ├── prompt/                 ← Prompt builders for LLM and RAG
+  │       │   └── vector/
+  │       │       └── qdrantClient.js     ← Qdrant Vector database client setup
+  │       ├── services/
+  │       │   └── ragService.js           ← Portfolio document RAG indexing service
+  │       └── index_all.js                ← Utility script to index all portfolios to Qdrant
   │
   └── frontend/
       └── vite-project/
@@ -236,16 +251,23 @@ Core features:
                                         experiences, certifications, templateId } }
     Errors   : 400 (no ID), 401, 404 (not found)
 
+  PUT  /api/portfolio/:id
+    Purpose  : Update details of an existing portfolio and re-index vectors to Qdrant
+    Auth     : Required (Bearer JWT)
+    Params   : id — portfolio UUID
+    Body     : Same schema as /api/portfolio/create
+    Response : { success: true, message: "Portfolio successfully updated" }
+    Errors   : 400, 401, 403, 404, 500
+
   DELETE /api/portfolio/:id
-    Purpose  : Delete a portfolio and ALL its related records permanently
+    Purpose  : Delete a portfolio and ALL its related records (including Qdrant vectors) permanently
     Auth     : Required (Bearer JWT)
     Params   : id — portfolio UUID
     Security : Ownership check — only the owner can delete their portfolio
                (returns 403 if another user tries)
     Response : { success: true, message: "Portfolio successfully delete ho gaya." }
     Errors   : 400 (no ID), 401, 403 (not owner), 404 (not found), 500
-    DB       : Deletes from tech_stacks, projects, experiences, certifications
-               (all in parallel), then deletes from portfolios
+    DB       : Deletes from tech_stacks, projects, experiences, certifications, then deletes from portfolios
 
   ─── RESUME  (/api/resume) ───────────────────────────────────────────────────
 
@@ -275,6 +297,17 @@ Core features:
     Notes    : File is saved temporarily to uploads/ folder, then deleted
                after text extraction. Only PDF and DOCX are supported.
 
+  POST /api/resume/ats-check
+    Purpose  : Upload a PDF or DOCX resume → AI (Google Gemini 2.5 Flash)
+               analyzes ATS score, formatting, and highlights mistakes / missing keywords
+    Auth     : Optional
+    Body     : multipart/form-data with field "resume" (PDF or DOCX file)
+    Response : {
+                 success: true,
+                 data: { atsScore, formattingScore, contentScore, summary, mistakes[], improvements[], missingKeywords[] }
+               }
+    Errors   : 400, 500
+
   ─── GEMINI AI FEATURES  (/api/ai) ───────────────────────────────────────────
 
   POST /api/ai/polish
@@ -284,15 +317,10 @@ Core features:
     Response : { success: true, polishedText: "..." }
 
   POST /api/ai/chat/:portfolioId
-    Purpose  : Interactive chatbot for recruiters visiting live portfolios
+    Purpose  : Interactive chatbot for recruiters visiting live portfolios. Uses Qdrant Vector search (RAG) to fetch relevant chunks as context if Qdrant is online, otherwise falls back to database context.
     Auth     : None (publicly accessible on live shareable link)
-    Body     : { message, history: [ { role, parts: [...] }, ... ] }
-    Response : { success: true, responseText: "..." }
-
-  GET  /api/ai/chat/history/:portfolioId
-    Purpose  : Fetches default start chips and conversation configs
-    Auth     : None
-    Response : { success: true, initialMessage: "...", suggestionChips: [...] }
+    Body     : { message, history: [ { role: 'user' | 'model', text }, ... ] }
+    Response : { success: true, reply: "...", answer: "..." }
 
   POST /api/ai/match-job/:portfolioId
     Purpose  : Compare portfolio experience/skills against a target Job Description
@@ -398,24 +426,35 @@ Core features:
     JWT_SECRET              = <your secret key>
     JWT_EXPIRES_IN          = 7d
     GEMINI_API_KEY          = <google gemini api key>
+    QDRANT_URL              = http://localhost:6333  (Optional, defaults to localhost:6333)
 
   Frontend (.env):
-    VITE_API_URL            = http://localhost:5000
+    VITE_API_URL            = http://localhost:5000  (Or relative routing via Vite proxy)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   HOW TO RUN LOCALLY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  Backend:
-    cd portfolio/backend
-    npm install
-    node src/server.js          (or: nodemon src/server.js)
+  1. Vector Database (Qdrant):
+     A. Run fresh Qdrant container:
+        docker run -d -p 6333:6333 -p 6334:6334 -v qdrant_storage:/qdrant/storage qdrant/qdrant
+     B. Or start existing container:
+        docker start romantic_swartz  (or boring_blackwell / container ID)
 
-  Frontend:
-    cd portfolio/frontend/vite-project
-    npm install
-    npm run dev
+  2. Index existing portfolio data to Qdrant (first setup/reset):
+     cd portfolio/backend
+     node src/index_all.js
 
-  Both must be running simultaneously for the app to work.
+  3. Backend server:
+     cd portfolio/backend
+     npm install
+     node src/server.js          (or: nodemon src/server.js)
+
+  4. Frontend server:
+     cd portfolio/frontend/vite-project
+     npm install
+     npm run dev
+
+  All components must be running for RAG and Chat features to work fully.
 
 ================================================================================

@@ -5,7 +5,10 @@ const qdrantUrl = process.env.QDRANT_URL || 'http://localhost:6333';
 const COLLECTION_NAME = 'portfolios';
 
 console.log(`[Qdrant Client] Initializing Qdrant connection at: ${qdrantUrl}`);
-const client = new QdrantClient({ url: qdrantUrl });
+const client = new QdrantClient({ 
+  url: qdrantUrl,
+  checkCompatibility: false
+});
 
 /**
  * Checks if Qdrant server is reachable.

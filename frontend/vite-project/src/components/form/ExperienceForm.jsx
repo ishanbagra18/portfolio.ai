@@ -1,3 +1,4 @@
+import { API_BASE } from '../../lib/api';
 import React, { useState } from 'react';
 
 const ExperienceForm = ({ data, onChange, onAdd }) => {
@@ -12,7 +13,7 @@ const ExperienceForm = ({ data, onChange, onAdd }) => {
     setPolishingIndex(index);
     try {
       const token = localStorage.getItem("auth_token");
-      const res = await fetch("http://localhost:5000/api/ai/polish", {
+      const res = await fetch(`${API_BASE}/api/ai/polish`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

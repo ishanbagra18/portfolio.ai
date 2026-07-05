@@ -50,6 +50,78 @@ const ViewTemplates = () => {
       description: 'An ivory catalogue theme with serif display type, hairline rules, and gallery plate numbering. Quiet, refined, and confident.',
       previewLink: '/portfolio/template6',
       dataLink: '/provide-data/template6' 
+    },
+    {
+      id: 'template7',
+      number: '07',
+      name: 'Aurora Glass',
+      description: 'A sleek, frosted glassmorphism style with vibrant glowing auroras and soft ambient highlights.',
+      previewLink: '/portfolio/template7',
+      dataLink: '/provide-data/template7'
+    },
+    {
+      id: 'template8',
+      number: '08',
+      name: 'Cyberpunk Hacker',
+      description: 'A high-contrast cybernetic terminal featuring neon highlights, command-line headers, and monospace code blocks.',
+      previewLink: '/portfolio/template8',
+      dataLink: '/provide-data/template8'
+    },
+    {
+      id: 'template9',
+      number: '09',
+      name: 'Retro CRT Console',
+      description: 'A vintage green-on-black command line layout with retro CRT styling, cursor blinks, and ASCII accents.',
+      previewLink: '/portfolio/template9',
+      dataLink: '/provide-data/template9'
+    },
+    {
+      id: 'template10',
+      number: '10',
+      name: 'Sage Botanical',
+      description: 'A serene organic layout with sage green and cream tones, serif display typography, and smooth curved shapes.',
+      previewLink: '/portfolio/template10',
+      dataLink: '/provide-data/template10'
+    },
+    {
+      id: 'template11',
+      number: '11',
+      name: 'Newspaper Chronicles',
+      description: 'A classic printed broadsheet theme with columnized layouts, drop-cap initials, and aged newsprint tones.',
+      previewLink: '/portfolio/template11',
+      dataLink: '/provide-data/template11'
+    },
+    {
+      id: 'template12',
+      number: '12',
+      name: 'Constructivist Swiss',
+      description: 'An asymmetrical Swiss graphic layout utilizing bold primary red, solid black geometric blocks, and massive sans-serif type.',
+      previewLink: '/portfolio/template12',
+      dataLink: '/provide-data/template12'
+    },
+    {
+      id: 'template13',
+      number: '13',
+      name: '8-Bit Arcade',
+      description: 'A nostalgic retro game style with pixel-art box borders, health-bar skill meters, and game dialog containers.',
+      previewLink: '/portfolio/template13',
+      dataLink: '/provide-data/template13'
+    },
+    {
+      id: 'template14',
+      number: '14',
+      name: 'Tactical HUD',
+      description: 'A technical sci-fi blueprint design with sensor grids, border crosshairs, telemetry charts, and thin coordinate borders.',
+      previewLink: '/portfolio/template14',
+      dataLink: '/provide-data/template14'
+    },
+    {
+      id: 'template15',
+      number: '15',
+      name: 'Soft Claymorphism',
+      description: 'A playful, modern 3D clay style featuring pastel hues, bulbous borders, and soft inner shadows.',
+      previewLink: '/portfolio/template15',
+      dataLink: '/provide-data/template15'
     }
   ];
 

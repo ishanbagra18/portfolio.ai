@@ -8,6 +8,7 @@ import Experience from './components/Experience';
 import Certifications from './components/Certifications';
 import Footer from './components/Footer';
 import ChatbotWidget from '../../components/ChatbotWidget';
+import { API_BASE } from '../../lib/api';
 
 const defaultData = {
   personalInfo: {
@@ -65,12 +66,12 @@ const defaultData = {
   ]
 };
 
-const Template4 = () => {
+const Template4 = ({ publicData, isPublicView }) => {
   const location = useLocation();
   const { portfolioId } = useParams();
 
-  const [portfolioData, setPortfolioData] = useState(location.state || null);
-  const [loading, setLoading] = useState(!location.state);
+  const [portfolioData, setPortfolioData] = useState(publicData || location.state || null);
+  const [loading, setLoading] = useState(!publicData && !location.state);
 
   useEffect(() => {
     const link = document.createElement('link');
@@ -86,12 +87,18 @@ const Template4 = () => {
   }, []);
 
   useEffect(() => {
+    if (publicData) {
+      setPortfolioData(publicData);
+      setLoading(false);
+      return;
+    }
+
     if (portfolioId) {
       const fetchPortfolio = async () => {
         try {
           const token = localStorage.getItem('auth_token');
 
-          const res = await fetch(`http://localhost:5000/api/portfolio/${portfolioId}`, {
+          const res = await fetch(`${API_BASE}/api/portfolio/${portfolioId}`, {
             headers: {
               ...(token ? { 'Authorization': `Bearer ${token}` } : {})
             }
@@ -120,7 +127,7 @@ const Template4 = () => {
       setPortfolioData(defaultData);
       setLoading(false);
     }
-  }, [portfolioId]);
+  }, [portfolioId, publicData]);
 
   if (loading) {
     return (
@@ -137,7 +144,7 @@ const Template4 = () => {
 
   return (
     <div className="min-h-screen bg-[#0B1D33] text-white font-sans selection:bg-[#FF6B35] selection:text-[#0B1D33]">
-      {!portfolioId && !location.state && (
+      {!portfolioId && !location.state && !isPublicView && (
         <div className="bg-[#FF6B35]/20 border-b border-[#FF6B35]/40 text-[#FF6B35] px-4 py-2 text-center text-xs font-semibold tracking-wide">
           ✨ You are currently viewing the live sample preview. Provide your data to generate your own!
         </div>
@@ -151,7 +158,7 @@ const Template4 = () => {
       {data?.certifications && <Certifications data={data.certifications} />}
       {data?.personalInfo && <Footer data={data.personalInfo} />}
 
-      {portfolioId && (
+      {!isPublicView && portfolioId && (
         <button
           onClick={() => window.print()}
           title="Download as Resume (PDF)"
@@ -166,7 +173,7 @@ const Template4 = () => {
         </button>
       )}
 
-      {portfolioId && data?.personalInfo && (
+      {!isPublicView && portfolioId && data?.personalInfo && (
         <ChatbotWidget portfolioId={portfolioId} name={data.personalInfo.full_name} />
       )}
     </div>

@@ -46,6 +46,16 @@ const Projects = ({ data }) => {
                       </p>
                     )}
 
+                    {project.project_image && (
+                      <div className="mt-4 overflow-hidden rounded bg-[#eae6dc] max-w-md flex justify-center items-center shadow-inner">
+                        {project.project_image.match(/\.(mp4|webm|ogg)$/i) || project.project_image.includes('video-') ? (
+                          <video src={project.project_image} controls className="w-full h-auto object-cover max-h-48" />
+                        ) : (
+                          <img src={project.project_image} alt={project.project_name} className="w-full h-auto object-cover max-h-48 filter grayscale hover:grayscale-0 transition-all duration-300" />
+                        )}
+                      </div>
+                    )}
+
                     {techStack.length > 0 && (
                       <p className="mt-4 font-['Inter'] text-[11px] uppercase tracking-[0.2em] text-[#1B1B1B]/60">
                         {techStack.join("  ·  ")}

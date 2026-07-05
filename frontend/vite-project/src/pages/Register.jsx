@@ -45,53 +45,53 @@ export default function Register() {
         Create <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">Account</span>
       </h2>
       <p className="text-center text-sm text-slate-400 mb-8">Sign up to get started with your profile</p>
-      
+
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="block text-left text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Full Name</label>
-          <input 
-            className="w-full px-4 py-3 bg-slate-800/40 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200" 
+          <input
+            className="w-full px-4 py-3 bg-slate-800/40 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200"
             placeholder="John Doe"
-            value={name} 
-            onChange={e => setName(e.target.value)} 
-            type="text" 
-            required 
+            value={name}
+            onChange={e => setName(e.target.value)}
+            type="text"
+            required
           />
         </div>
 
         <div>
           <label className="block text-left text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Email Address</label>
-          <input 
-            className="w-full px-4 py-3 bg-slate-800/40 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200" 
+          <input
+            className="w-full px-4 py-3 bg-slate-800/40 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200"
             placeholder="you@example.com"
-            value={email} 
-            onChange={e => setEmail(e.target.value)} 
-            type="email" 
-            required 
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            type="email"
+            required
           />
         </div>
 
         <div>
           <label className="block text-left text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Password</label>
-          <input 
-            className="w-full px-4 py-3 bg-slate-800/40 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200" 
+          <input
+            className="w-full px-4 py-3 bg-slate-800/40 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200"
             placeholder="••••••••"
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
-            type="password" 
-            required 
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            type="password"
+            required
           />
         </div>
 
         <div>
           <label className="block text-left text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Confirm Password</label>
-          <input 
-            className="w-full px-4 py-3 bg-slate-800/40 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200" 
+          <input
+            className="w-full px-4 py-3 bg-slate-800/40 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200"
             placeholder="••••••••"
-            value={confirmPassword} 
-            onChange={e => setConfirmPassword(e.target.value)} 
-            type="password" 
-            required 
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            type="password"
+            required
           />
         </div>
 
@@ -102,9 +102,9 @@ export default function Register() {
           </div>
         ) : null}
 
-        <button 
-          disabled={loading} 
-          type="submit" 
+        <button
+          disabled={loading}
+          type="submit"
           className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-medium py-3 rounded-xl transition-all duration-300 transform active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-lg shadow-violet-500/20"
         >
           {loading ? 'Creating Account...' : 'Sign Up'}

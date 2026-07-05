@@ -15,8 +15,19 @@ import Template3 from "./Templates/Template3/Template3";
 import Template4 from "./Templates/Template4/Template4";
 import Template5 from "./Templates/Template5/Template5";
 import Template6 from "./Templates/Template6/Template6";
+import Template7 from "./Templates/Template7/Template7";
+import Template8 from "./Templates/Template8/Template8";
+import Template9 from "./Templates/Template9/Template9";
+import Template10 from "./Templates/Template10/Template10";
+import Template11 from "./Templates/Template11/Template11";
+import Template12 from "./Templates/Template12/Template12";
+import Template13 from "./Templates/Template13/Template13";
+import Template14 from "./Templates/Template14/Template14";
+import Template15 from "./Templates/Template15/Template15";
 import { isAuthenticated } from "./lib/auth";
 import MyPortfolios from "./components/MyPortfolios";
+import PublicPortfolio from "./pages/PublicPortfolio";
+import PortfolioCritique from "./pages/PortfolioCritique";
 import "./index.css";
 
 /* ---------------- Protected Route ---------------- */
@@ -209,6 +220,16 @@ export default function App() {
         }
       />
 
+      {/* AI Portfolio Critique */}
+      <Route
+        path="/critique/:portfolioId"
+        element={
+          <ProtectedRoute>
+            <PortfolioCritique />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Templates (Notice the "?" at the end of :portfolioId) */}
       <Route
         path="/portfolio/template1/:portfolioId?"
@@ -263,6 +284,90 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/portfolio/template7/:portfolioId?"
+        element={
+          <ProtectedRoute>
+            <Template7 />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/portfolio/template8/:portfolioId?"
+        element={
+          <ProtectedRoute>
+            <Template8 />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/portfolio/template9/:portfolioId?"
+        element={
+          <ProtectedRoute>
+            <Template9 />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/portfolio/template10/:portfolioId?"
+        element={
+          <ProtectedRoute>
+            <Template10 />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/portfolio/template11/:portfolioId?"
+        element={
+          <ProtectedRoute>
+            <Template11 />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/portfolio/template12/:portfolioId?"
+        element={
+          <ProtectedRoute>
+            <Template12 />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/portfolio/template13/:portfolioId?"
+        element={
+          <ProtectedRoute>
+            <Template13 />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/portfolio/template14/:portfolioId?"
+        element={
+          <ProtectedRoute>
+            <Template14 />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/portfolio/template15/:portfolioId?"
+        element={
+          <ProtectedRoute>
+            <Template15 />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Public Portfolio (No auth — accessible by anyone with slug) */}
+      <Route path="/p/:slug" element={<PublicPortfolio />} />
 
       {/* Unknown Route */}
       <Route

@@ -1,3 +1,4 @@
+import { API_BASE } from '../lib/api';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 
@@ -15,7 +16,7 @@ const JobMatcher = () => {
     const fetchPortfolioDetails = async () => {
       try {
         const token = localStorage.getItem('auth_token');
-        const res = await fetch(`http://localhost:5000/api/portfolio/${id}`, {
+        const res = await fetch(`${API_BASE}/api/portfolio/${id}`, {
           headers: {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {})
           }
@@ -46,7 +47,7 @@ const JobMatcher = () => {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const res = await fetch(`http://localhost:5000/api/ai/match-job/${id}`, {
+      const res = await fetch(`${API_BASE}/api/ai/match-job/${id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

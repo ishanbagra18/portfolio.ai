@@ -37,22 +37,39 @@ export const getEmbeddings = async (texts) => {
   if (!Array.isArray(texts)) {
     throw new Error("Texts parameter must be an array of strings.");
   }
-  const cleanTexts = texts.map(t => typeof t === 'string' ? t.trim() : '').filter(Boolean);
+  
+  // Clean texts and fallback empty strings to a placeholder to ensure same array size
+  const cleanTexts = texts.map(t => (typeof t === 'string' && t.trim()) ? t.trim() : 'N/A');
   if (cleanTexts.length === 0) return [];
   
   try {
-    const response = await ai.models.embedContent({
-      model: 'gemini-embedding-2',
-      contents: cleanTexts,
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-2:batchEmbedContents?key=${process.env.GEMINI_API_KEY || ''}`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        requests: cleanTexts.map(text => ({
+          model: 'models/gemini-embedding-2',
+          content: { parts: [{ text }] }
+        }))
+      })
     });
     
-    if (!response || !response.embeddings) {
-      throw new Error("Invalid response structure from Gemini Batch Embedding API.");
+    if (!response.ok) {
+      const errBody = await response.json().catch(() => ({}));
+      throw new Error(errBody.error?.message || `HTTP ${response.status}`);
     }
     
-    return response.embeddings.map(e => e.values);
+    const data = await response.json();
+    if (!data || !data.embeddings) {
+      throw new Error("Invalid response structure from Gemini Batch Embedding REST API.");
+    }
+    
+    return data.embeddings.map(e => e.values);
   } catch (error) {
-    console.warn("[Embedding Service] Batch embedding failed, attempting individual fallbacks:", error.message);
+    console.warn("[Embedding Service] REST batch embedding failed, attempting individual fallbacks:", error.message);
     const promises = cleanTexts.map(text => getEmbedding(text));
     return await Promise.all(promises);
   }

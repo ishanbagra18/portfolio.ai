@@ -8,6 +8,7 @@ import Experience from './components/Experience';
 import Certifications from './components/Certifications';
 import Footer from './components/Footer';
 import ChatbotWidget from '../../components/ChatbotWidget';
+import { API_BASE } from '../../lib/api';
 
 const defaultData = {
   personalInfo: {
@@ -65,15 +66,21 @@ const defaultData = {
   ]
 };
 
-const Template3 = () => {
+const Template3 = ({ publicData, isPublicView }) => {
   const location = useLocation();
   const { portfolioId } = useParams();
 
   // Instant preview ke liye location.state se shuru karo (agar available hai)
-  const [portfolioData, setPortfolioData] = useState(location.state || null);
-  const [loading, setLoading] = useState(!location.state); // agar state hai toh loading false, warna true
+  const [portfolioData, setPortfolioData] = useState(publicData || location.state || null);
+  const [loading, setLoading] = useState(!publicData && !location.state);
 
   useEffect(() => {
+    if (publicData) {
+      setPortfolioData(publicData);
+      setLoading(false);
+      return;
+    }
+
     // ✅ FIX: Agar portfolioId hai, toh HAMESHA backend se fresh data fetch karo
     // location.state sirf instant flash-preview ke liye use hoga, source of truth backend hi rahega
     if (portfolioId) {
@@ -81,7 +88,7 @@ const Template3 = () => {
   try {
     const token = localStorage.getItem('auth_token'); // wahi key jo ProvideData.jsx me use hoti hai
 
-    const res = await fetch(`http://localhost:5000/api/portfolio/${portfolioId}`, {
+    const res = await fetch(`${API_BASE}/api/portfolio/${portfolioId}`, {
       headers: {
         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
       }
@@ -113,7 +120,7 @@ const Template3 = () => {
       setPortfolioData(defaultData);
       setLoading(false);
     }
-  }, [portfolioId]); // 👈 sirf portfolioId change hone par re-run ho, location.state par depend mat karo
+  }, [portfolioId, publicData]); // 👈 sirf portfolioId change hone par re-run ho
 
   if (loading) {
     return (
@@ -130,7 +137,7 @@ const Template3 = () => {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-white selection:text-black">
-      {!portfolioId && !location.state && (
+      {!portfolioId && !location.state && !isPublicView && (
         <div className="bg-white/10 border-b border-white/20 text-gray-300 px-4 py-2 text-center text-xs font-semibold tracking-wide">
           ✨ You are currently viewing the live sample preview. Provide your data to generate your own!
         </div>
@@ -144,7 +151,7 @@ const Template3 = () => {
       {data?.certifications && <Certifications data={data.certifications} />}
       {data?.personalInfo && <Footer data={data.personalInfo} />}
 
-      {portfolioId && (
+      {!isPublicView && portfolioId && (
         <button
           onClick={() => window.print()}
           title="Download as Resume (PDF)"
@@ -159,7 +166,7 @@ const Template3 = () => {
         </button>
       )}
 
-      {portfolioId && data?.personalInfo && (
+      {!isPublicView && portfolioId && data?.personalInfo && (
         <ChatbotWidget portfolioId={portfolioId} name={data.personalInfo.full_name} />
       )}
     </div>

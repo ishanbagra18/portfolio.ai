@@ -1,3 +1,4 @@
+import { API_BASE } from '../lib/api';
 import React, { useState } from 'react';
 
 const JDTailorWidget = ({ currentData, onTailored }) => {
@@ -17,7 +18,7 @@ const JDTailorWidget = ({ currentData, onTailored }) => {
 
     try {
       const token = localStorage.getItem("auth_token");
-      const res = await fetch("http://localhost:5000/api/ai/tailor-form", {
+      const res = await fetch(`${API_BASE}/api/ai/tailor-form`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

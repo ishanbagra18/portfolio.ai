@@ -411,3 +411,124 @@ Target Job Description:
     }
 };
 
+/* ---------------- AI PORTFOLIO CRITIQUE ---------------- */
+export const critiquePortfolio = async (req, res) => {
+    try {
+        const { portfolioId } = req.params;
+
+        if (!portfolioId) {
+            return res.status(400).json({ success: false, message: "Portfolio ID is required." });
+        }
+
+        // Fetch full portfolio details
+        const { data: personalInfo, error: piError } = await supabase
+            .from('portfolios')
+            .select('*')
+            .eq('id', portfolioId)
+            .single();
+
+        if (piError || !personalInfo) {
+            return res.status(404).json({ success: false, message: "Portfolio data not found." });
+        }
+
+        const [
+            { data: techStacks },
+            { data: projects },
+            { data: experiences },
+            { data: certifications }
+        ] = await Promise.all([
+            supabase.from('tech_stacks').select('*').eq('portfolio_id', portfolioId),
+            supabase.from('projects').select('*').eq('portfolio_id', portfolioId),
+            supabase.from('experiences').select('*').eq('portfolio_id', portfolioId),
+            supabase.from('certifications').select('*').eq('portfolio_id', portfolioId)
+        ]);
+
+        const context = {
+            name: personalInfo.full_name,
+            title: personalInfo.main_title,
+            about: personalInfo.about_paragraph,
+            education: `${personalInfo.course_name} in ${personalInfo.specialization_course_name} from ${personalInfo.college_name}`,
+            skills: (techStacks || []).map(s => `${s.name} (${s.category || 'General'})`),
+            projects: (projects || []).map(p => ({
+                name: p.project_name,
+                description: p.project_desc,
+                tech_stack: p.project_tech_stack
+            })),
+            experiences: (experiences || []).map(e => ({
+                role: e.role,
+                company: e.company_name,
+                work: e.work_description
+            })),
+            certifications: (certifications || []).map(c => `${c.certification_name} by ${c.issuing_organization}`)
+        };
+
+        const prompt = `You are an expert tech recruiter and hiring manager. 
+Analyze this candidate's portfolio data and provide a detailed, critical hiring manager critique.
+Rate their portfolio profile, identify strengths, red flags, and provide highly actionable feedback to make their portfolio stand out to top tech companies.
+
+Candidate Profile Data:
+${JSON.stringify(context, null, 2)}
+
+Provide feedback structured in JSON format.`;
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        overallRating: { type: Type.INTEGER, description: "Hiring rating from 0 to 100 representing readiness for recruitment." },
+                        readabilityScore: { type: Type.INTEGER, description: "Score from 0 to 100 for readability, layout structure, and brevity." },
+                        visualAppealCritique: { type: Type.STRING, description: "Recruiter's visual layout critique and presentation tips." },
+                        structureAndFormatting: { type: Type.STRING, description: "Critique on structure, formatting, sections, and clear logic flow." },
+                        projectImpact: { type: Type.STRING, description: "Evaluation of projects impact, depth, description quality, and technical challenges." },
+                        experienceRelevance: { type: Type.STRING, description: "Recruiter's rating of work history relevance, action verbs, and impact alignment." },
+                        keyStrengths: { 
+                            type: Type.ARRAY, 
+                            items: { type: Type.STRING }, 
+                            description: "Key positive highlights that stood out to the recruiter." 
+                        },
+                        redFlags: { 
+                            type: Type.ARRAY, 
+                            items: { type: Type.STRING }, 
+                            description: "Concerns or mistakes a hiring manager would immediately note (e.g. typos, missing details, bad formatting)." 
+                        },
+                        actionableTips: { 
+                            type: Type.ARRAY, 
+                            items: { type: Type.STRING }, 
+                            description: "Highly specific, direct improvement steps the candidate must implement." 
+                        }
+                    },
+                    required: [
+                        "overallRating", 
+                        "readabilityScore", 
+                        "visualAppealCritique", 
+                        "structureAndFormatting", 
+                        "projectImpact", 
+                        "experienceRelevance", 
+                        "keyStrengths", 
+                        "redFlags", 
+                        "actionableTips"
+                    ]
+                }
+            }
+        });
+
+        const critique = JSON.parse(response.text);
+
+        return res.status(200).json({
+            success: true,
+            critique
+        });
+    } catch (err) {
+        console.error("AI critique error:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to perform AI portfolio critique.",
+            error: err.message
+        });
+    }
+};
+

@@ -1,3 +1,4 @@
+import { API_BASE } from '../lib/api';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import PersonalInfoForm from '../components/form/PersonalInfoForm';
@@ -43,7 +44,7 @@ const EditPortfolio = () => {
     const load = async () => {
       try {
         const token = localStorage.getItem('auth_token');
-        const res   = await fetch(`http://localhost:5000/api/portfolio/${portfolioId}`, {
+        const res   = await fetch(`${API_BASE}/api/portfolio/${portfolioId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const result = await res.json();
@@ -123,7 +124,7 @@ const EditPortfolio = () => {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/api/resume/autofill', {
+      const response = await fetch(`${API_BASE}/api/resume/autofill`, {
         method: 'POST',
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: fd
@@ -175,7 +176,7 @@ const EditPortfolio = () => {
         template_id: templateId
       };
 
-      const res    = await fetch(`http://localhost:5000/api/portfolio/${portfolioId}`, {
+      const res    = await fetch(`${API_BASE}/api/portfolio/${portfolioId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload)

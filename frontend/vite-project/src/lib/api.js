@@ -1,6 +1,7 @@
 import { getToken } from './auth'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001'
+export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = API_BASE;
 
 async function request(path, options = {}) {
   const token = getToken()
@@ -56,5 +57,15 @@ export function logout() {
 
 export function getPublicPortfolio(userId) {
   return request(`/api/auth/portfolio/${userId}`)
+}
+
+export function fetchPublicPortfolioBySlug(slug) {
+  return request(`/api/portfolio/public/${slug}`)
+}
+
+export function togglePortfolioPublic(portfolioId) {
+  return request(`/api/portfolio/${portfolioId}/toggle-public`, {
+    method: 'POST',
+  })
 }
 

@@ -1,3 +1,4 @@
+import { API_BASE } from '../lib/api';
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 
@@ -31,7 +32,7 @@ const AtsChecker = () => {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:5000/api/resume/ats-check', {
+      const response = await fetch(`${API_BASE}/api/resume/ats-check`, {
         method: 'POST',
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
