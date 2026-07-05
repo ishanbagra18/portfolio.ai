@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+import { API_BASE } from '../lib/api';
+
 const ChatbotWidget = ({ portfolioId, name }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -46,7 +48,7 @@ const ChatbotWidget = ({ portfolioId, name }) => {
         text: msg.text
       }));
 
-      const res = await fetch(`/api/ai/chat/${portfolioId}`, {
+      const res = await fetch(`${API_BASE}/api/ai/chat/${portfolioId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
