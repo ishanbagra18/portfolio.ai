@@ -30,7 +30,19 @@ if (process.env.FRONTEND_URL) {
 
 app.use(
   cors({
-    origin: origins,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      
+      const cleanOrigin = origin.replace(/\/$/, '');
+      const isAllowed = origins.some(allowed => allowed.replace(/\/$/, '') === cleanOrigin)
+        || cleanOrigin.endsWith('.vercel.app');
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 )
