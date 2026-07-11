@@ -28,6 +28,14 @@ if (process.env.FRONTEND_URL) {
   origins.push(process.env.FRONTEND_URL.replace(/\/$/, ''));
 }
 
+// Private Network Access (PNA) Preflight CORS support
+app.use((req, res, next) => {
+  if (req.headers['access-control-request-private-network']) {
+    res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  }
+  next();
+});
+
 app.use(
   cors({
     origin: (origin, callback) => {
