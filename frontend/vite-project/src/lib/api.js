@@ -6,14 +6,19 @@ const API_BASE_URL = API_BASE;
 async function request(path, options = {}) {
   const token = getToken()
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  })
+  let response
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options.headers || {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    })
+  } catch (err) {
+    throw new Error(`Unable to connect to backend server at ${API_BASE_URL}. Make sure backend server is running.`)
+  }
 
   const data = await response.json().catch(() => ({}))
 

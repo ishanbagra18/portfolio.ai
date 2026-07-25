@@ -37,10 +37,14 @@ export async function signup(req, res) {
     })
 
     if (error) {
-      if (error.message?.toLowerCase().includes('already')) {
+      const msg = error.message?.toLowerCase() || ''
+      if (msg.includes('already')) {
         return res.status(409).json({ message: 'User already exists with this email' })
       }
-      return res.status(500).json({ message: error.message })
+      if (msg.includes('fetch failed') || msg.includes('enotfound')) {
+        return res.status(500).json({ message: 'Database connection failed: Could not reach Supabase. Please verify your SUPABASE_URL in backend/.env' })
+      }
+      return res.status(400).json({ message: error.message })
     }
 
     const createdUser = data.user
@@ -87,10 +91,14 @@ export async function login(req, res) {
     })
 
     if (error) {
-      if (error.message?.toLowerCase().includes('invalid login credentials')) {
+      const msg = error.message?.toLowerCase() || ''
+      if (msg.includes('invalid') || msg.includes('credentials') || msg.includes('user not found')) {
         return res.status(401).json({ message: 'Invalid email or password' })
       }
-      return res.status(500).json({ message: error.message })
+      if (msg.includes('fetch failed') || msg.includes('enotfound')) {
+        return res.status(500).json({ message: 'Database connection failed: Could not reach Supabase. Please verify your SUPABASE_URL in backend/.env' })
+      }
+      return res.status(400).json({ message: error.message })
     }
 
     if (!data.user) {
@@ -115,7 +123,7 @@ export async function login(req, res) {
     })
   } catch (err) {
     console.error('Login error:', err)
-    return res.status(500).json({ message: 'Internal server error' })
+    return res.status(500).json({ message: err.message || 'Internal server error' })
   }
 }
 
