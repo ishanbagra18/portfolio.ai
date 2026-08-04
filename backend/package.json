@@ -10,6 +10,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
     "@google/genai": "^2.10.0",
+    "@langchain/core": "^1.2.4",
+    "@langchain/google-genai": "^2.2.0",
     "@qdrant/js-client-rest": "^1.18.0",
     "@supabase/supabase-js": "^2.57.4",
     "bcryptjs": "^2.4.3",
@@ -20,6 +22,7 @@
     "mammoth": "^1.12.0",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.3",
-    "pdf-parse": "^2.4.5"
+    "pdf-parse": "^2.4.5",
+    "zod": "^4.4.3"
   }
 }

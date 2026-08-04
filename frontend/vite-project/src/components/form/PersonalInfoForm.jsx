@@ -101,6 +101,25 @@ const PersonalInfoForm = ({ data = {}, onChange }) => {
           />
         </div>
 
+        {/* Personalized Portfolio Link (Public Slug) */}
+        <div className="flex flex-col md:col-span-2">
+          <label className="text-sm font-bold text-violet-400 uppercase tracking-widest mb-3 flex items-center justify-between">
+            <span>Personalized Link Handle (Optional)</span>
+            <span className="text-xs text-gray-500 font-mono font-normal">
+              {window.location.origin}/p/{data.public_slug || 'custom-link'}
+            </span>
+          </label>
+
+          <input
+            type="text"
+            name="public_slug"
+            value={data.public_slug ?? ""}
+            onChange={onChange}
+            placeholder="e.g. ishan-bagra"
+            className="bg-transparent border-b-2 border-violet-800/60 text-2xl text-violet-200 py-3 focus:outline-none focus:border-violet-400 transition-colors placeholder:text-gray-700 font-mono"
+          />
+        </div>
+
       </div>
     </section>
   );

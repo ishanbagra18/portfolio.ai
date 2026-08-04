@@ -33,6 +33,13 @@ const generateSlug = (fullName) => {
     return `${base}-${suffix}`;
 };
 
+// Helper to validate custom slug format
+export const isValidSlug = (slug) => {
+    if (!slug || typeof slug !== 'string') return false;
+    const trimmed = slug.trim().toLowerCase();
+    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trimmed) && trimmed.length >= 3 && trimmed.length <= 40;
+};
+
 /* ---------------- CREATE PORTFOLIO ---------------- */
 export const createPortfolio = async (req, res) => {
     try {
@@ -77,8 +84,18 @@ export const createPortfolio = async (req, res) => {
             ...restPersonalInfo 
         } = personalInfo || {};
 
-        // Generate a public slug from the full name
-        const publicSlug = generateSlug(restPersonalInfo.full_name);
+        // Generate or validate public slug
+        let publicSlug = generateSlug(restPersonalInfo.full_name);
+        if (restPersonalInfo.public_slug) {
+            const candidate = String(restPersonalInfo.public_slug).toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
+            if (isValidSlug(candidate)) {
+                // Check if candidate is already taken
+                const { data: existingSlug } = await supabase.from('portfolios').select('id').eq('public_slug', candidate);
+                if (!existingSlug || existingSlug.length === 0) {
+                    publicSlug = candidate;
+                }
+            }
+        }
 
         const cleanedPersonalInfo = { 
             ...restPersonalInfo,
@@ -365,6 +382,16 @@ export const updatePortfolio = async (req, res) => {
                 user_id:                     userId,
                 resume_url:                  personalInfo.resume_url                  ?? null
             };
+
+            if (personalInfo.public_slug) {
+                const candidate = String(personalInfo.public_slug).toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
+                if (isValidSlug(candidate)) {
+                    const { data: conflict } = await supabase.from('portfolios').select('id').eq('public_slug', candidate).neq('id', id);
+                    if (!conflict || conflict.length === 0) {
+                        safePersonalInfo.public_slug = candidate;
+                    }
+                }
+            }
 
             console.log(`[Update Portfolio] id=${id} | Updating personalInfo with keys:`, Object.keys(safePersonalInfo));
 
@@ -746,3 +773,160 @@ export const togglePublicStatus = async (req, res) => {
         });
     }
 };
+
+/* ---------------- CHECK SLUG AVAILABILITY ---------------- */
+export const checkSlugAvailability = async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const { currentPortfolioId } = req.query;
+
+        if (!slug) {
+            return res.status(400).json({
+                success: false,
+                available: false,
+                message: "Slug parameter is required."
+            });
+        }
+
+        const normalizedSlug = String(slug).toLowerCase().trim();
+
+        // 1. Format validation
+        if (!isValidSlug(normalizedSlug)) {
+            return res.status(400).json({
+                success: false,
+                available: false,
+                message: "Invalid slug format. Use 3-40 lowercase letters, numbers, and hyphens (e.g. 'john-doe')."
+            });
+        }
+
+        // 2. Query Supabase
+        let query = supabase
+            .from('portfolios')
+            .select('id')
+            .eq('public_slug', normalizedSlug);
+
+        if (currentPortfolioId) {
+            query = query.neq('id', currentPortfolioId);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+            console.error('[Check Slug] Supabase query error:', error);
+            return res.status(500).json({
+                success: false,
+                available: false,
+                message: "Error checking slug availability."
+            });
+        }
+
+        const isTaken = data && data.length > 0;
+
+        return res.status(200).json({
+            success: true,
+            available: !isTaken,
+            slug: normalizedSlug,
+            message: isTaken ? "Link is already taken. Please choose another one." : "Link is available!"
+        });
+
+    } catch (error) {
+        console.error("Check slug error:", error);
+        return res.status(500).json({
+            success: false,
+            available: false,
+            message: "Server error while checking slug availability.",
+            error: error.message
+        });
+    }
+};
+
+/* ---------------- UPDATE CUSTOM SLUG ---------------- */
+export const updateCustomSlug = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { slug } = req.body;
+        const userId = req.user?.sub || req.user?.id || req.user?._id || req.user?.userId;
+
+        if (!id) {
+            return res.status(400).json({ success: false, message: "Portfolio ID is required." });
+        }
+        if (!userId) {
+            return res.status(401).json({ success: false, message: "User not authenticated." });
+        }
+        if (!slug) {
+            return res.status(400).json({ success: false, message: "Custom slug is required." });
+        }
+
+        const normalizedSlug = String(slug)
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .replace(/^-|-$/g, '');
+
+        if (!isValidSlug(normalizedSlug)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid slug format. Must be 3-40 characters using lowercase letters, numbers, and hyphens."
+            });
+        }
+
+        // 1. Verify portfolio ownership
+        const { data: existing, error: fetchError } = await supabase
+            .from('portfolios')
+            .select('id, user_id, public_slug')
+            .eq('id', id)
+            .single();
+
+        if (fetchError || !existing) {
+            return res.status(404).json({ success: false, message: "Portfolio not found." });
+        }
+        if (existing.user_id !== userId) {
+            return res.status(403).json({ success: false, message: "Unauthorized to modify this portfolio." });
+        }
+
+        // 2. Check if slug is taken by another portfolio
+        const { data: conflict, error: conflictError } = await supabase
+            .from('portfolios')
+            .select('id')
+            .eq('public_slug', normalizedSlug)
+            .neq('id', id);
+
+        if (conflictError) {
+            return res.status(500).json({ success: false, message: "Failed to verify slug availability." });
+        }
+
+        if (conflict && conflict.length > 0) {
+            return res.status(409).json({ success: false, message: `The link '/p/${normalizedSlug}' is already taken by another portfolio.` });
+        }
+
+        // 3. Update public_slug in DB
+        const { data: updated, error: updateError } = await supabase
+            .from('portfolios')
+            .update({ public_slug: normalizedSlug })
+            .eq('id', id)
+            .select('id, public_slug, is_public')
+            .single();
+
+        if (updateError) {
+            console.error('[Update Custom Slug] Error:', updateError);
+            return res.status(400).json({ success: false, message: `Failed to update link: ${updateError.message}` });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Personalized portfolio link updated successfully!",
+            data: updated
+        });
+
+    } catch (error) {
+        console.error("Update custom slug error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong while updating custom link.",
+            error: error.message
+        });
+    }
+};
+

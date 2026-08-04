@@ -6,7 +6,9 @@ import {
     updatePortfolio,
     deletePortfolio,
     getPublicPortfolio,
-    togglePublicStatus
+    togglePublicStatus,
+    checkSlugAvailability,
+    updateCustomSlug
 } from '../controllers/portfolioController.js'
 import { requireAuth } from '../middleware/auth.js'
 
@@ -30,10 +32,12 @@ const upload = multer({ storage: storage });
 
 // Public route — NO auth required (must be before /:id to avoid conflict)
 router.get('/public/:slug', getPublicPortfolio)
+router.get('/check-slug/:slug', checkSlugAvailability)
 
 // Authenticated routes
 router.post('/create', requireAuth, createPortfolio)
 router.get('/my-portfolios', requireAuth, getAllUserPortfolios)
+router.put('/:id/custom-slug', requireAuth, updateCustomSlug)
 router.put('/:id', requireAuth, updatePortfolio)
 router.delete('/:id', requireAuth, deletePortfolio)
 router.post('/:id/toggle-public', requireAuth, togglePublicStatus)

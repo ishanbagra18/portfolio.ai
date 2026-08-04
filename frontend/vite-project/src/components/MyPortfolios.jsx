@@ -1,6 +1,7 @@
 import { API_BASE } from '../lib/api';
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import CustomSlugModal from "./CustomSlugModal";
 
 /* ---------------- Confirm Delete Modal ---------------- */
 const DeleteModal = ({ portfolio, onConfirm, onCancel, isDeleting }) => {
@@ -97,6 +98,9 @@ const MyPortfolios = () => {
 
   // Copy link toast
   const [showCopyToast, setShowCopyToast] = useState(false);
+
+  // Custom link modal state
+  const [customSlugTarget, setCustomSlugTarget] = useState(null);
 
   // Toggle loading state (keyed by portfolio id)
   const [togglingId, setTogglingId] = useState(null);
@@ -304,6 +308,22 @@ const MyPortfolios = () => {
         />
       )}
 
+      {/* Custom Link Modal */}
+      {customSlugTarget && (
+        <CustomSlugModal
+          portfolio={customSlugTarget}
+          onClose={() => setCustomSlugTarget(null)}
+          onSuccess={(newSlug) => {
+            const targetId = customSlugTarget._id || customSlugTarget.id;
+            setPortfolios((prev) =>
+              prev.map((p) =>
+                (p._id || p.id) === targetId ? { ...p, public_slug: newSlug } : p
+              )
+            );
+          }}
+        />
+      )}
+
       {/* Copy toast */}
       <CopyToast show={showCopyToast} />
 
@@ -493,17 +513,32 @@ const MyPortfolios = () => {
                         </div>
 
                         <div className="flex items-center gap-2">
+                          {/* Custom Link Button */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCustomSlugTarget(portfolio);
+                            }}
+                            title="Customize Link"
+                            className="flex items-center gap-1 px-2.5 py-1 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 text-violet-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                            </svg>
+                            Custom Link
+                          </button>
+
                           {/* Copy Link Button (only when public) */}
                           {isPublic && publicSlug && (
                             <button
                               onClick={(e) => handleCopyLink(e, portfolio)}
                               title="Copy public link"
-                              className="flex items-center gap-1 px-2.5 py-1 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 text-violet-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors"
+                              className="flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m9.86-1.135a4.5 4.5 0 0 0-1.242-7.244l-4.5-4.5a4.5 4.5 0 0 0-6.364 6.364l1.757 1.757" />
                               </svg>
-                              Copy Link
+                              Copy
                             </button>
                           )}
 
@@ -531,11 +566,23 @@ const MyPortfolios = () => {
 
                       {/* Public URL display */}
                       {isPublic && publicSlug && (
-                        <div className="mb-2 px-3 py-2 bg-emerald-500/5 border border-emerald-500/20 rounded-lg" onClick={(e) => e.stopPropagation()}>
-                          <p className="text-[10px] text-emerald-400/60 font-bold uppercase tracking-widest mb-1">Public URL</p>
-                          <p className="text-emerald-300 text-xs font-mono truncate select-all">
-                            {window.location.origin}/p/{publicSlug}
-                          </p>
+                        <div
+                          className="mb-2 px-3 py-2 bg-emerald-500/5 border border-emerald-500/20 hover:border-violet-500/40 rounded-lg flex items-center justify-between group/url cursor-pointer transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCustomSlugTarget(portfolio);
+                          }}
+                          title="Click to customize link"
+                        >
+                          <div>
+                            <p className="text-[10px] text-emerald-400/60 font-bold uppercase tracking-widest mb-0.5">Public URL</p>
+                            <p className="text-emerald-300 text-xs font-mono truncate select-all">
+                              {window.location.origin}/p/{publicSlug}
+                            </p>
+                          </div>
+                          <span className="text-[10px] text-violet-400 font-bold opacity-0 group-hover/url:opacity-100 transition-opacity whitespace-nowrap ml-2">
+                            Edit ✏
+                          </span>
                         </div>
                       )}
                     </div>
