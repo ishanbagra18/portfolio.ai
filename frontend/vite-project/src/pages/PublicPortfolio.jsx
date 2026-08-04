@@ -16,7 +16,7 @@ import Template13 from '../Templates/Template13/Template13';
 import Template14 from '../Templates/Template14/Template14';
 import Template15 from '../Templates/Template15/Template15';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { API_BASE } from '../lib/api';
 
 const TEMPLATE_MAP = {
   template1: Template1,

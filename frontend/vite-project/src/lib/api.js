@@ -1,6 +1,7 @@
 import { getToken } from './auth'
 
-export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const rawApiUrl = import.meta.env.VITE_API_URL;
+export const API_BASE = rawApiUrl ? rawApiUrl.replace(/\/$/, '') : (import.meta.env.MODE === 'production' ? '' : 'http://localhost:5000');
 const API_BASE_URL = API_BASE;
 
 async function request(path, options = {}) {
