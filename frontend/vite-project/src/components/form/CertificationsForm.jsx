@@ -19,7 +19,7 @@ const CertificationsForm = ({ data, onChange, onAdd }) => {
         {data.map((cert, index) => (
           <div key={index} className="p-8 border border-gray-800 rounded-lg relative focus-within:border-white transition-colors">
             
-            <div className="absolute -top-4 left-6 bg-black px-4 text-sm font-bold text-gray-500 tracking-widest">
+            <div className="absolute -top-4 left-6 bg-[var(--neo-bg)] px-4 text-sm font-bold text-gray-500 tracking-widest">
               CERTIFICATE {index + 1}
             </div>
 
@@ -29,7 +29,7 @@ const CertificationsForm = ({ data, onChange, onAdd }) => {
                 <input 
                   type="text" name="certification_name" value={cert.certification_name ?? ''} onChange={(e) => onChange(index, e)}
                   placeholder="e.g. Machine Learning and Statistics"
-                  className="bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                  className="bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
@@ -38,7 +38,7 @@ const CertificationsForm = ({ data, onChange, onAdd }) => {
                 <input 
                   type="text" name="issuing_organization" value={cert.issuing_organization ?? ''} onChange={(e) => onChange(index, e)}
                   placeholder="e.g. Coursera"
-                  className="bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                  className="bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
@@ -47,7 +47,7 @@ const CertificationsForm = ({ data, onChange, onAdd }) => {
                 <input 
                   type="text" name="credential_url" value={cert.credential_url ?? ''} onChange={(e) => onChange(index, e)}
                   placeholder="https://..."
-                  className="bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                  className="bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
                 />
               </div>
             </div>

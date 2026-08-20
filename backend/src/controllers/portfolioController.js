@@ -380,7 +380,18 @@ export const updatePortfolio = async (req, res) => {
                 leetcode_username:           personalInfo.leetcode_username           ?? null,
                 template_id:                 finalTemplateId,
                 user_id:                     userId,
-                resume_url:                  personalInfo.resume_url                  ?? null
+                resume_url:                  personalInfo.resume_url                  ?? null,
+                achievements_data:           personalInfo.achievements_data           ?? null,
+                publications_data:           personalInfo.publications_data           ?? null,
+                hackathons_data:             personalInfo.hackathons_data             ?? null,
+                open_source_data:            personalInfo.open_source_data            ?? null,
+                volunteering_data:           personalInfo.volunteering_data           ?? null,
+                research_data:               personalInfo.research_data               ?? null,
+                education_data:              personalInfo.education_data              ?? null,
+                awards_data:                 personalInfo.awards_data                 ?? null,
+                testimonials_data:           personalInfo.testimonials_data           ?? null,
+                currently_learning:          personalInfo.currently_learning          ?? null,
+                interests:                   personalInfo.interests                   ?? null
             };
 
             if (personalInfo.public_slug) {

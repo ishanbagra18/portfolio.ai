@@ -24,7 +24,7 @@ const TechStacksForm = ({ data, onChange, onAdd }) => {
               <input 
                 type="text" name="name" value={tech.name ?? ''} onChange={(e) => onChange(index, e)}
                 placeholder="e.g. React"
-                className="w-full bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                className="w-full bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
               />
             </div>
 
@@ -33,7 +33,7 @@ const TechStacksForm = ({ data, onChange, onAdd }) => {
               <input 
                 type="text" name="category" value={tech.category ?? ''} onChange={(e) => onChange(index, e)}
                 placeholder="e.g. Frontend"
-                className="w-full bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                className="w-full bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
               />
             </div>
           </div>

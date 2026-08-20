@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import DynamicSection from './components/DynamicSection';
 import ChatbotWidget from '../../components/ChatbotWidget';
 import { API_BASE } from '../../lib/api';
+import { SECTION_SCHEMAS } from '../../lib/sectionSchemas';
+import GitHubActivity from '../../components/GitHubActivity';
 
 const defaultData = {
   personalInfo: {
@@ -311,7 +314,18 @@ const Template13 = ({ publicData, isPublicView }) => {
           </section>
         )}
 
-        {/* Game Over Footer */}
+        
+      {/* Render optional dynamic sections */}
+      {data?.personalInfo && Object.entries(SECTION_SCHEMAS).map(([key, schema]) => (
+        <DynamicSection
+          key={key}
+          title={schema.title}
+          schema={schema}
+          data={data.personalInfo[key]}
+        />
+      ))}
+
+      {/* Game Over Footer */}
         <div className="border-t-4 border-white pt-6 flex flex-col sm:flex-row justify-between items-center text-[8px] text-[#6272A4] gap-4">
           <span>&copy; {new Date().getFullYear()} {pInfo.full_name?.toUpperCase()}</span>
           <span>GAME OVER</span>

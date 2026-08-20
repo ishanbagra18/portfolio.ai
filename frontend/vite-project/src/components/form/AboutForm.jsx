@@ -62,7 +62,7 @@ const AboutForm = ({ data, onChange }) => {
               type="button"
               onClick={handlePolish}
               disabled={polishing}
-              className="text-xs font-bold text-violet-400 hover:text-white uppercase tracking-wider flex items-center gap-1.5 transition-colors disabled:opacity-50"
+              className="text-xs font-bold text-violet-400 hover:text-[var(--neo-text)] uppercase tracking-wider flex items-center gap-1.5 transition-colors disabled:opacity-50"
             >
               {polishing ? (
                 <>
@@ -78,7 +78,7 @@ const AboutForm = ({ data, onChange }) => {
             name="about_paragraph" value={data.about_paragraph ?? ''} onChange={onChange}
             placeholder="Briefly describe your focus, skills, and background..."
             rows="4"
-            className="bg-transparent border-b-2 border-gray-800 text-xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700 resize-none"
+            className="bg-transparent border-b-2 border-gray-800 text-xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700 resize-none"
           ></textarea>
         </div>
 
@@ -88,7 +88,7 @@ const AboutForm = ({ data, onChange }) => {
           <input 
             type="text" name="college_name" value={data.college_name ?? ''} onChange={onChange}
             placeholder="e.g. Indian Institute of Information Technology, Kota"
-            className="bg-transparent border-b-2 border-gray-800 text-xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
           />
         </div>
 
@@ -97,7 +97,7 @@ const AboutForm = ({ data, onChange }) => {
           <input 
             type="text" name="course_name" value={data.course_name ?? ''} onChange={onChange}
             placeholder="e.g. B.Tech"
-            className="bg-transparent border-b-2 border-gray-800 text-xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
           />
         </div>
 
@@ -106,7 +106,7 @@ const AboutForm = ({ data, onChange }) => {
           <input 
             type="text" name="specialization_course_name" value={data.specialization_course_name ?? ''} onChange={onChange}
             placeholder="e.g. Computer Science"
-            className="bg-transparent border-b-2 border-gray-800 text-xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
           />
         </div>
 
@@ -116,7 +116,7 @@ const AboutForm = ({ data, onChange }) => {
           <input 
             type="text" name="github_username" value={data.github_username ?? ''} onChange={onChange}
             placeholder="e.g. ishanbagra"
-            className="bg-transparent border-b-2 border-gray-800 text-xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
           />
         </div>
 
@@ -125,7 +125,7 @@ const AboutForm = ({ data, onChange }) => {
           <input 
             type="text" name="leetcode_username" value={data.leetcode_username ?? ''} onChange={onChange}
             placeholder="e.g. ishanbagra"
-            className="bg-transparent border-b-2 border-gray-800 text-xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
           />
         </div>
 
@@ -140,14 +140,14 @@ const AboutForm = ({ data, onChange }) => {
           <input 
             type="url" name="resume_url" value={data.resume_url ?? ''} onChange={onChange}
             placeholder="https://drive.google.com/file/d/..."
-            className="bg-transparent border-b-2 border-gray-800 text-xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
           />
           {data.resume_url && (
             <a
               href={data.resume_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 text-xs text-gray-500 hover:text-white transition-colors flex items-center gap-1.5 w-fit"
+              className="mt-2 text-xs text-gray-500 hover:text-[var(--neo-text)] transition-colors flex items-center gap-1.5 w-fit"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                 strokeWidth={1.8} stroke="currentColor" className="w-3.5 h-3.5">

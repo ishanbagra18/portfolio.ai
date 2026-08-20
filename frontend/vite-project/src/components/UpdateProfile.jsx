@@ -85,26 +85,26 @@ const UpdateProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col justify-between p-8 md:p-16 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-aurora text-[var(--neo-text)] flex flex-col justify-between p-8 md:p-16 relative overflow-hidden font-sans">
       {/* Background Gradient Effect */}
-      <div className="absolute right-0 top-0 w-1/2 h-1/2 opacity-30 pointer-events-none bg-gradient-to-bl from-teal-500/20 to-transparent blur-[120px]" />
+      <div className="noise-overlay" />
       
       <Navbar />
 
-      <div className="z-10 max-w-xl w-full my-auto mx-auto bg-zinc-950 border border-zinc-900 p-8 rounded-2xl shadow-xl">
-        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-wider border-b border-zinc-800 pb-4 mb-6">
+      <div className="z-10 max-w-xl w-full my-auto mx-auto bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 p-8 rounded-2xl shadow-xl">
+        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-wider border-b border-black/10 dark:border-white/10 pb-4 mb-6">
           Update Profile
         </h2>
 
-        {status.error && <div className="p-3 mb-6 rounded bg-red-950/50 border border-red-800 text-red-300 text-sm">{status.error}</div>}
-        {status.success && <div className="p-3 mb-6 rounded bg-teal-950/50 border border-teal-800 text-teal-300 text-sm">{status.success}</div>}
+        {status.error && <div className="p-3 mb-6 rounded bg-red-500/10 border border-red-500/20 text-red-500 text-sm">{status.error}</div>}
+        {status.success && <div className="p-3 mb-6 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-sm">{status.success}</div>}
 
         {status.fetching ? (
-          <p className="text-zinc-500 animate-pulse">Loading current details...</p>
+          <p className="text-[var(--neo-text)] opacity-60 animate-pulse">Loading current details...</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--neo-text)] opacity-60 mb-2">
                 Full Name
               </label>
               <input
@@ -113,12 +113,12 @@ const UpdateProfile = () => {
                 placeholder="Enter your full name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full bg-black border border-zinc-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5EEAD4] transition"
+                className="w-full bg-white/5 dark:bg-black/20 border border-black/20 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-[var(--neo-text)] focus:outline-none focus:border-fuchsia-500/50 transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--neo-text)] opacity-60 mb-2">
                 Email Address
               </label>
               <input
@@ -127,12 +127,12 @@ const UpdateProfile = () => {
                 placeholder="Enter your email address"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full bg-black border border-zinc-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5EEAD4] transition"
+                className="w-full bg-white/5 dark:bg-black/20 border border-black/20 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-[var(--neo-text)] focus:outline-none focus:border-fuchsia-500/50 transition"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--neo-text)] opacity-60 mb-2">
                 New Password
               </label>
               <input
@@ -141,7 +141,7 @@ const UpdateProfile = () => {
                 placeholder="Min. 6 characters (Leave blank to keep current)"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full bg-black border border-zinc-800 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-[#5EEAD4] transition"
+                className="w-full bg-white/5 dark:bg-black/20 border border-black/20 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-[var(--neo-text)] focus:outline-none focus:border-fuchsia-500/50 transition"
               />
             </div>
 
@@ -149,14 +149,14 @@ const UpdateProfile = () => {
               <button
                 type="submit"
                 disabled={status.loading}
-                className="flex-1 bg-[#5EEAD4] text-black font-bold uppercase tracking-wider text-xs md:text-sm py-3 rounded hover:bg-[#2DD4BF] transition disabled:opacity-50 cursor-pointer"
+                className="flex-1 bg-fuchsia-600 text-white font-bold uppercase tracking-wider text-xs md:text-sm py-3 rounded-xl hover:bg-fuchsia-500 transition disabled:opacity-50 cursor-pointer"
               >
                 {status.loading ? 'Saving Changes...' : 'Save Changes'}
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/profile')}
-                className="px-6 border border-zinc-800 text-zinc-400 font-semibold uppercase tracking-wider text-xs md:text-sm rounded hover:bg-zinc-900 hover:text-white transition cursor-pointer"
+                className="px-6 border border-black/20 dark:border-white/10 text-[var(--neo-text)] opacity-60 font-semibold uppercase tracking-wider text-xs md:text-sm rounded-xl hover:bg-black/5 dark:hover:bg-white/5 hover:opacity-100 transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -165,7 +165,7 @@ const UpdateProfile = () => {
         )}
       </div>
 
-      <div className="z-10 text-xs text-zinc-600 flex justify-between items-center w-full border-t border-zinc-900 pt-4 mt-12">
+      <div className="z-10 text-xs text-[var(--neo-text)] opacity-60 flex justify-between items-center w-full border-t border-black/10 dark:border-white/10 pt-4 mt-12">
         <p>© 2026 Portfolio.io. All rights reserved.</p>
       </div>
     </div>

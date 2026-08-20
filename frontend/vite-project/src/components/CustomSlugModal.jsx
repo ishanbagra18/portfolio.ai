@@ -126,28 +126,28 @@ const CustomSlugModal = ({ portfolio, onClose, onSuccess }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"
+        className="absolute inset-0 bg-[var(--neo-bg)]/80 backdrop-blur-md transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal Box */}
-      <div className="relative z-10 w-full max-w-lg bg-slate-900 border border-violet-500/30 rounded-3xl p-8 shadow-2xl shadow-violet-950/50 text-white font-sans overflow-hidden">
+      <div className="relative z-10 w-full max-w-lg bg-[var(--neo-bg)] border border-violet-500/30 rounded-3xl p-8 shadow-2xl shadow-violet-950/50 text-[var(--neo-text)] font-sans overflow-hidden">
         {/* Glow backdrop decorative effect */}
         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="flex items-center justify-between mb-6 border-b border-slate-800 pb-4">
+        <div className="flex items-center justify-between mb-6 border-b border-black/10 dark:border-black/10 dark:border-white/10 pb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-violet-500/10 border border-violet-500/20 rounded-xl flex items-center justify-center text-violet-400 font-black">
               🔗
             </div>
             <div>
-              <h3 className="text-xl font-bold text-white">Personalized Link</h3>
+              <h3 className="text-xl font-bold text-[var(--neo-text)]">Personalized Link</h3>
               <p className="text-xs text-slate-400">Choose a custom URL for your public portfolio</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition"
+            className="text-slate-400 hover:text-[var(--neo-text)] p-2 rounded-lg hover:bg-[var(--neo-bg)] transition"
           >
             ✕
           </button>
@@ -160,8 +160,8 @@ const CustomSlugModal = ({ portfolio, onClose, onSuccess }) => {
             </label>
 
             {/* Link Preview Box */}
-            <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl overflow-hidden focus-within:border-violet-500 transition-colors">
-              <span className="px-3.5 py-3 text-xs font-mono text-slate-500 bg-slate-900 border-r border-slate-800 shrink-0 select-none">
+            <div className="flex items-center bg-[var(--neo-bg)] border border-black/10 dark:border-black/10 dark:border-white/10 rounded-xl overflow-hidden focus-within:border-violet-500 transition-colors">
+              <span className="px-3.5 py-3 text-xs font-mono text-slate-500 bg-[var(--neo-bg)] border-r border-black/10 dark:border-black/10 dark:border-white/10 shrink-0 select-none">
                 {domainPrefix}
               </span>
               <input
@@ -169,7 +169,7 @@ const CustomSlugModal = ({ portfolio, onClose, onSuccess }) => {
                 value={slug}
                 onChange={handleInputChange}
                 placeholder="e.g. ishan-bagra"
-                className="w-full bg-transparent px-3 py-3 text-white text-sm font-mono focus:outline-none placeholder-slate-600"
+                className="w-full bg-transparent px-3 py-3 text-[var(--neo-text)] text-sm font-mono focus:outline-none placeholder-slate-600"
                 maxLength={40}
                 autoFocus
               />
@@ -201,7 +201,7 @@ const CustomSlugModal = ({ portfolio, onClose, onSuccess }) => {
           </div>
 
           {/* Quick presets / suggestions */}
-          <div className="mb-6 bg-slate-950/60 p-4 border border-slate-800/80 rounded-xl">
+          <div className="mb-6 bg-[var(--neo-bg)]/60 p-4 border border-black/10 dark:border-black/10 dark:border-white/10/80 rounded-xl">
             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
               Preview Link
             </p>
@@ -221,14 +221,14 @@ const CustomSlugModal = ({ portfolio, onClose, onSuccess }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-sm transition-colors"
+              className="flex-1 px-4 py-3 bg-[var(--neo-bg)] hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-sm transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSaving || (status !== 'available' && slug !== currentSlug)}
-              className="flex-1 px-4 py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-violet-600/20 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-[var(--neo-text)] font-bold rounded-xl text-sm transition-all shadow-lg shadow-violet-600/20 flex items-center justify-center gap-2"
             >
               {isSaving ? (
                 <>

@@ -7,44 +7,57 @@ import ProjectsForm from '../components/form/ProjectsForm';
 import TechStacksForm from '../components/form/TechStacksForm';
 import ExperienceForm from '../components/form/ExperienceForm';
 import CertificationsForm from '../components/form/CertificationsForm';
+import DynamicSectionForm from '../components/form/DynamicSectionForm';
 import JDTailorWidget from '../components/JDTailorWidget';
+import { SECTION_SCHEMAS } from '../lib/sectionSchemas';
 
 const EMPTY = {
   personalInfo: {
     full_name: '', email_id: '', age: '', address: '', main_title: '',
     college_name: '', course_name: '', specialization_course_name: '',
     about_paragraph: '', github_username: '', leetcode_username: '',
-    resume_url: ''
+    resume_url: '',
+    achievements_data: [],
+    publications_data: [],
+    hackathons_data: [],
+    open_source_data: [],
+    volunteering_data: [],
+    research_data: [],
+    education_data: [],
+    awards_data: [],
+    testimonials_data: [],
+    currently_learning: [],
+    interests: []
   },
-  techStacks:     [{ name: '', category: '' }],
-  projects:       [
+  techStacks: [{ name: '', category: '' }],
+  projects: [
     { project_name: '', project_desc: '', project_tech_stack: '', project_github_link: '' },
     { project_name: '', project_desc: '', project_tech_stack: '', project_github_link: '' }
   ],
-  experiences:    [{ role: '', company_name: '', date_of_joining: '', work_description: '' }],
+  experiences: [{ role: '', company_name: '', date_of_joining: '', work_description: '' }],
   certifications: [{ certification_name: '', issuing_organization: '', credential_url: '' }]
 };
 
 const EditPortfolio = () => {
-  const navigate   = useNavigate();
+  const navigate = useNavigate();
   const { portfolioId } = useParams();
 
-  const [formData,    setFormData]    = useState(EMPTY);
-  const [templateId,  setTemplateId]  = useState('template1');
-  const [fetching,    setFetching]    = useState(true);
-  const [submitting,  setSubmitting]  = useState(false);
-  const [aiLoading,   setAiLoading]   = useState(false);
-  const [fetchError,  setFetchError]  = useState(null);
+  const [formData, setFormData] = useState(EMPTY);
+  const [templateId, setTemplateId] = useState('template1');
+  const [fetching, setFetching] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
   const [submitError, setSubmitError] = useState(null);
-  const [resumeFile,  setResumeFile]  = useState(null);   // uploaded resume File object
-  const [resumeUrl,   setResumeUrl]   = useState(null);   // local blob URL for preview
+  const [resumeFile, setResumeFile] = useState(null);   // uploaded resume File object
+  const [resumeUrl, setResumeUrl] = useState(null);   // local blob URL for preview
 
   /* ─── Fetch existing portfolio data ─── */
   useEffect(() => {
     const load = async () => {
       try {
         const token = localStorage.getItem('auth_token');
-        const res   = await fetch(`${API_BASE}/api/portfolio/${portfolioId}`, {
+        const res = await fetch(`${API_BASE}/api/portfolio/${portfolioId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const result = await res.json();
@@ -68,10 +81,10 @@ const EditPortfolio = () => {
           }));
 
         setFormData({
-          personalInfo:   { ...EMPTY.personalInfo, ...(d.personalInfo || {}) },
-          techStacks:     d.techStacks?.length     ? d.techStacks     : EMPTY.techStacks,
-          projects:       d.projects?.length       ? normaliseProjects(d.projects) : EMPTY.projects,
-          experiences:    d.experiences?.length    ? d.experiences    : EMPTY.experiences,
+          personalInfo: { ...EMPTY.personalInfo, ...(d.personalInfo || {}) },
+          techStacks: d.techStacks?.length ? d.techStacks : EMPTY.techStacks,
+          projects: d.projects?.length ? normaliseProjects(d.projects) : EMPTY.projects,
+          experiences: d.experiences?.length ? d.experiences : EMPTY.experiences,
           certifications: d.certifications?.length ? d.certifications : EMPTY.certifications
         });
       } catch (err) {
@@ -99,6 +112,31 @@ const EditPortfolio = () => {
 
   const addArrayItem = (field, empty) =>
     setFormData(prev => ({ ...prev, [field]: [...prev[field], empty] }));
+
+  const handleDynamicSectionChange = (sectionKey, index, e) => {
+    const { name, value } = e.target;
+    setFormData(prev => {
+      const updatedArray = [...(prev.personalInfo[sectionKey] || [])];
+      updatedArray[index] = { ...updatedArray[index], [name]: value };
+      return {
+        ...prev,
+        personalInfo: {
+          ...prev.personalInfo,
+          [sectionKey]: updatedArray
+        }
+      };
+    });
+  };
+
+  const addDynamicSectionItem = (sectionKey, emptyObject) => {
+    setFormData(prev => ({
+      ...prev,
+      personalInfo: {
+        ...prev.personalInfo,
+        [sectionKey]: [...(prev.personalInfo[sectionKey] || []), emptyObject]
+      }
+    }));
+  };
 
   const handleGitHubImport = (imported) => {
     const empty = { project_name: '', project_desc: '', project_tech_stack: '', project_github_link: '' };
@@ -136,10 +174,10 @@ const EditPortfolio = () => {
         setFormData(prev => ({
           ...prev,
           personalInfo: { ...prev.personalInfo, ...(result.data.personalInfo || {}), ...(result.data.about || {}) },
-          projects:       result.data.projects?.length >= 2  ? result.data.projects  : prev.projects,
-          experiences:    result.data.experience?.length     ? result.data.experience : prev.experiences,
+          projects: result.data.projects?.length >= 2 ? result.data.projects : prev.projects,
+          experiences: result.data.experience?.length ? result.data.experience : prev.experiences,
           certifications: result.data.certifications?.length ? result.data.certifications : prev.certifications,
-          techStacks:     result.data.techStacks?.length     ? result.data.techStacks : prev.techStacks
+          techStacks: result.data.techStacks?.length ? result.data.techStacks : prev.techStacks
         }));
       } else {
         setSubmitError(result.error || 'Resume parse karne me problem aayi.');
@@ -176,7 +214,7 @@ const EditPortfolio = () => {
         template_id: templateId
       };
 
-      const res    = await fetch(`${API_BASE}/api/portfolio/${portfolioId}`, {
+      const res = await fetch(`${API_BASE}/api/portfolio/${portfolioId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload)
@@ -197,7 +235,7 @@ const EditPortfolio = () => {
   /* ─── Loading / Error states ─── */
   if (fetching) {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white font-sans">
+      <div className="min-h-screen bg-[var(--neo-bg)] flex flex-col items-center justify-center text-[var(--neo-text)] font-sans">
         <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-spin mb-4" />
         <p className="text-gray-400 uppercase tracking-widest text-sm font-semibold">Loading Portfolio Data...</p>
       </div>
@@ -206,7 +244,7 @@ const EditPortfolio = () => {
 
   if (fetchError) {
     return (
-      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white px-6 font-sans">
+      <div className="min-h-screen bg-[var(--neo-bg)] flex flex-col items-center justify-center text-[var(--neo-text)] px-6 font-sans">
         <div className="max-w-md w-full border border-red-500/30 rounded-2xl p-8 text-center bg-gray-950">
           <h3 className="text-xl font-bold text-red-400 mb-2">Failed to Load</h3>
           <p className="text-gray-400 text-sm mb-6">{fetchError}</p>
@@ -221,12 +259,12 @@ const EditPortfolio = () => {
 
   /* ─── Main Form ─── */
   return (
-    <div className="min-h-screen bg-black w-full font-sans text-white pb-32">
+    <div className="min-h-screen bg-[var(--neo-bg)] w-full font-sans text-[var(--neo-text)] pb-32">
 
       {/* Page Header */}
       <div className="py-24 px-6 max-w-6xl mx-auto border-b border-gray-900">
-        <div className="mb-4 inline-block px-3 py-1 border border-gray-700 bg-gray-900 text-xs font-mono uppercase tracking-widest text-gray-400">
-          Editing Template: <span className="text-white font-bold">{templateId}</span>
+        <div className="mb-4 inline-block px-3 py-1 border border-gray-700 bg-[var(--neo-bg)] text-xs font-mono uppercase tracking-widest text-gray-400">
+          Editing Template: <span className="text-[var(--neo-text)] font-bold">{templateId}</span>
         </div>
         <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
           Edit Your
@@ -247,7 +285,7 @@ const EditPortfolio = () => {
               <span className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">
                 Instant Auto-Fill
               </span>
-              <h3 className="text-2xl font-black uppercase tracking-tight text-white mb-1">
+              <h3 className="text-2xl font-black uppercase tracking-tight text-[var(--neo-text)] mb-1">
                 ⚡ Upload Resume With AI
               </h3>
               <p className="text-gray-400 text-sm max-w-md">
@@ -274,16 +312,16 @@ const EditPortfolio = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Click to open resume"
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-900 border border-gray-700 hover:border-white rounded-lg text-xs text-gray-300 hover:text-white transition-colors group"
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--neo-bg)] border border-gray-700 hover:border-white rounded-lg text-xs text-gray-300 hover:text-[var(--neo-text)] transition-colors group"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 text-gray-500 group-hover:text-white shrink-0">
+                    strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 text-gray-500 group-hover:text-[var(--neo-text)] shrink-0">
                     <path strokeLinecap="round" strokeLinejoin="round"
                       d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                   </svg>
                   <span className="truncate max-w-[180px] font-medium">{resumeFile.name}</span>
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    strokeWidth={2} stroke="currentColor" className="w-3 h-3 text-gray-500 group-hover:text-white shrink-0">
+                    strokeWidth={2} stroke="currentColor" className="w-3 h-3 text-gray-500 group-hover:text-[var(--neo-text)] shrink-0">
                     <path strokeLinecap="round" strokeLinejoin="round"
                       d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                   </svg>
@@ -309,7 +347,7 @@ const EditPortfolio = () => {
       {/* Form */}
       <form onSubmit={handleSubmit} className="max-w-6xl mx-auto px-6 w-full mt-12">
         <PersonalInfoForm data={formData.personalInfo} onChange={handlePersonalInfoChange} />
-        <AboutForm        data={formData.personalInfo} onChange={handlePersonalInfoChange} />
+        <AboutForm data={formData.personalInfo} onChange={handlePersonalInfoChange} />
         <ProjectsForm
           data={formData.projects}
           onChange={(i, e) => handleArrayChange('projects', i, e)}
@@ -333,6 +371,20 @@ const EditPortfolio = () => {
           onAdd={() => addArrayItem('certifications', { certification_name: '', issuing_organization: '', credential_url: '' })}
         />
 
+        {/* Render New Dynamic Sections */}
+        {Object.entries(SECTION_SCHEMAS).map(([key, schema], i) => (
+          <DynamicSectionForm
+            key={key}
+            sectionIndex={`0${i + 6}`.slice(-2)}
+            title={schema.title}
+            itemLabel={schema.itemLabel}
+            fields={schema.fields}
+            data={formData.personalInfo[key] || []}
+            onChange={(index, e) => handleDynamicSectionChange(key, index, e)}
+            onAdd={() => addDynamicSectionItem(key, schema.emptyState)}
+          />
+        ))}
+
         {submitError && (
           <p className="mt-8 text-red-500 text-sm font-semibold text-right">⚠ {submitError}</p>
         )}
@@ -341,7 +393,7 @@ const EditPortfolio = () => {
           <button
             type="button"
             onClick={() => navigate('/my-portfolios')}
-            className="px-8 py-4 border border-gray-700 text-gray-400 font-bold uppercase tracking-widest text-sm hover:border-white hover:text-white transition-all"
+            className="px-8 py-4 border border-gray-700 text-gray-400 font-bold uppercase tracking-widest text-sm hover:border-white hover:text-[var(--neo-text)] transition-all"
           >
             ← Cancel
           </button>
@@ -349,9 +401,8 @@ const EditPortfolio = () => {
           <button
             type="submit"
             disabled={submitting}
-            className={`px-12 py-6 font-black uppercase tracking-widest text-lg transition-colors duration-300 ${
-              submitting ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'
-            }`}
+            className={`px-12 py-6 font-black uppercase tracking-widest text-lg transition-colors duration-300 ${submitting ? 'bg-gray-700 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'
+              }`}
           >
             {submitting ? 'Saving Changes...' : 'Save Changes →'}
           </button>

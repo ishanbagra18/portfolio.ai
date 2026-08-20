@@ -173,7 +173,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
               Quick Import
             </p>
-            <p className="text-white font-semibold text-sm">
+            <p className="text-[var(--neo-text)] font-semibold text-sm">
               Fetch your top repositories directly from GitHub
             </p>
             <p className="text-gray-500 text-xs mt-0.5">
@@ -199,7 +199,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                 onKeyDown={e => e.key === 'Enter' && handleImport()}
                 placeholder="GitHub username"
                 autoFocus
-                className="bg-transparent border border-gray-700 focus:border-white text-white text-sm px-4 py-2.5 rounded w-full sm:w-48 focus:outline-none transition-colors placeholder:text-gray-600"
+                className="bg-transparent border border-gray-700 focus:border-white text-[var(--neo-text)] text-sm px-4 py-2.5 rounded w-full sm:w-48 focus:outline-none transition-colors placeholder:text-gray-600"
               />
               <div className="flex gap-2">
                 <button
@@ -213,7 +213,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                 <button
                   type="button"
                   onClick={() => { setShowInput(false); setGhError(''); }}
-                  className="px-3 py-2.5 border border-gray-700 text-gray-400 hover:text-white hover:border-white text-xs font-bold uppercase tracking-widest transition-all rounded"
+                  className="px-3 py-2.5 border border-gray-700 text-gray-400 hover:text-[var(--neo-text)] hover:border-white text-xs font-bold uppercase tracking-widest transition-all rounded"
                 >
                   Cancel
                 </button>
@@ -237,7 +237,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
             key={index}
             className="p-8 border border-gray-800 rounded-lg relative group focus-within:border-white transition-colors"
           >
-            <div className="absolute -top-4 left-6 bg-black px-4 text-sm font-bold text-gray-500 tracking-widest">
+            <div className="absolute -top-4 left-6 bg-[var(--neo-bg)] px-4 text-sm font-bold text-gray-500 tracking-widest">
               PROJECT {index + 1}
               {index < 2 && (
                 <span className="ml-2 text-red-500 text-xs">* required</span>
@@ -255,7 +255,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                   value={project.project_name ?? ''}
                   onChange={(e) => onChange(index, e)}
                   placeholder="e.g. GeetHub"
-                  className="bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                  className="bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
@@ -269,7 +269,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                   value={project.project_tech_stack ?? ''}
                   onChange={(e) => onChange(index, e)}
                   placeholder="React, Go, Gin, MongoDB"
-                  className="bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                  className="bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
@@ -283,7 +283,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                   value={project.project_github_link ?? ''}
                   onChange={(e) => onChange(index, e)}
                   placeholder="https://github.com/username/repo"
-                  className="bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                  className="bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
@@ -296,7 +296,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                     type="button"
                     onClick={() => handlePolishProject(index, project.project_desc)}
                     disabled={polishingIndex !== null}
-                    className="text-[10px] font-bold text-violet-400 hover:text-white uppercase tracking-wider flex items-center gap-1 transition-colors disabled:opacity-50"
+                    className="text-[10px] font-bold text-violet-400 hover:text-[var(--neo-text)] uppercase tracking-wider flex items-center gap-1 transition-colors disabled:opacity-50"
                   >
                     {polishingIndex === index ? (
                       <>
@@ -313,7 +313,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                   onChange={(e) => onChange(index, e)}
                   placeholder="What does this project do?"
                   rows="2"
-                  className="bg-transparent border-b border-gray-800 text-lg text-white py-2 focus:outline-none focus:border-white transition-colors resize-none mb-6"
+                  className="bg-transparent border-b border-gray-800 text-lg text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors resize-none mb-6"
                 />
               </div>
 
@@ -323,7 +323,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                   Project Image / Media (Screenshot/Demo video)
                 </label>
                 <div className="flex items-center gap-4">
-                  <label className="cursor-pointer px-5 py-2.5 border border-gray-700 bg-gray-900 text-gray-300 font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-black hover:border-white transition-all rounded">
+                  <label className="cursor-pointer px-5 py-2.5 border border-gray-700 bg-[var(--neo-bg)] text-gray-300 font-bold uppercase tracking-widest text-xs hover:bg-white hover:text-black hover:border-white transition-all rounded">
                     {uploadingIndex === index ? '⏳ Uploading...' : '+ Choose Media File'}
                     <input
                       type="file"
@@ -351,7 +351,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
                   )}
                 </div>
                 {project.project_image && (
-                  <div className="mt-4 max-w-[320px] border border-gray-800 rounded-xl overflow-hidden bg-slate-900/60 shadow-lg">
+                  <div className="mt-4 max-w-[320px] border border-gray-800 rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 backdrop-blur-md shadow-lg">
                     {project.project_image.match(/\.(mp4|webm|ogg)$/i) || project.project_image.includes('video-') ? (
                       <video src={project.project_image} controls className="w-full h-auto object-cover max-h-48" />
                     ) : (

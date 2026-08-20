@@ -1,6 +1,11 @@
 import { API_BASE } from '../lib/api';
+import { getToken } from '../lib/auth';
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
+import { motion } from 'framer-motion';
+import { Button } from '../components/ui/Button';
+import { GlassCard } from '../components/ui/GlassCard';
+import { ParallaxTilt, ParallaxBackground } from '../components/ui/Parallax';
 
 const AtsChecker = () => {
   const [file, setFile] = useState(null);
@@ -31,7 +36,7 @@ const AtsChecker = () => {
     formData.append('resume', file);
 
     try {
-      const token = localStorage.getItem('auth_token');
+      const token = getToken() || localStorage.getItem('auth_token');
       const response = await fetch(`${API_BASE}/api/resume/ats-check`, {
         method: 'POST',
         headers: {
@@ -40,19 +45,24 @@ const AtsChecker = () => {
         body: formData,
       });
 
+      const resData = await response.json().catch(() => ({}));
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(resData.error || resData.message || `Server error (${response.status})`);
       }
 
-      const resData = await response.json();
       if (resData.success && resData.data) {
         setResult(resData.data);
       } else {
         throw new Error(resData.error || 'Failed to analyze resume.');
       }
     } catch (err) {
-      console.error(err);
-      setError(err.message || 'Server error. Please try again.');
+      console.error('ATS Upload Error:', err);
+      if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+        setError(`Unable to connect to backend server at ${API_BASE}. Please make sure the backend server is running on port 5000.`);
+      } else {
+        setError(err.message || 'Server error. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -66,23 +76,27 @@ const AtsChecker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans p-8 md:p-16 relative overflow-hidden">
-      {/* Background Gradient glow */}
-      <div className="absolute right-0 top-0 w-2/3 h-full opacity-40 pointer-events-none bg-gradient-to-bl from-violet-500/20 via-fuchsia-500/10 to-transparent blur-3xl" />
-      <div className="absolute left-0 bottom-0 w-1/2 h-1/2 opacity-20 pointer-events-none bg-gradient-to-tr from-cyan-500/20 to-transparent blur-3xl" />
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen bg-aurora text-[var(--neo-text)] font-sans relative overflow-x-hidden"
+    >
+      <div className="noise-overlay" />
+      <ParallaxBackground />
 
       <Navbar />
 
-      <div className="z-10 max-w-6xl mx-auto mt-8 pb-20">
+      <div className="z-10 max-w-6xl mx-auto px-6 md:px-12 mt-8 pb-20 relative">
         {/* Header Title */}
-        <div className="border-b border-zinc-900 pb-8 mb-12">
-          <div className="inline-block px-3 py-1 border border-zinc-700 bg-zinc-950 text-xs font-mono uppercase tracking-widest text-zinc-400 mb-4">
+        <div className="border-b border-black/10 dark:border-white/10 pb-8 mb-12">
+          <div className="inline-block px-3 py-1 bg-white/5 border border-black/10 dark:border-white/10 text-xs font-mono uppercase tracking-widest text-accent-color mb-4 rounded">
             AI Analyzer
           </div>
-          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none">
-            Resume ATS <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Scanner</span>
+          <h1 className="text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-none">
+            Resume ATS <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-pink-500">Scanner</span>
           </h1>
-          <p className="text-zinc-400 text-sm md:text-base mt-3 max-w-2xl leading-relaxed">
+          <p className="opacity-80 text-sm md:text-base mt-3 max-w-2xl leading-relaxed">
             Upload your resume to get instant ATS feedback. Find structural mistakes, missing keywords, content issues, and receive actionable steps to optimize your resume.
           </p>
         </div>
@@ -91,18 +105,19 @@ const AtsChecker = () => {
         {!result && (
           <div className="max-w-2xl mx-auto">
             <form onSubmit={handleUpload} className="space-y-6">
-              <div className="p-12 border-2 border-dashed border-zinc-800 hover:border-zinc-500 rounded-3xl bg-zinc-950/40 backdrop-blur-md transition-all flex flex-col items-center justify-center text-center group">
-                <div className="w-16 h-16 bg-zinc-900 rounded-2xl flex items-center justify-center text-3xl mb-6 border border-zinc-800 group-hover:border-zinc-600 transition-colors">
+              <ParallaxTilt>
+                <GlassCard className="flex flex-col items-center justify-center text-center group border-dashed hover:border-accent-color/50 transition-all p-12">
+                <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl mb-6 border border-black/10 dark:border-white/10 group-hover:border-accent-color/30 transition-colors shadow-lg shadow-black/20">
                   📄
                 </div>
-                <h3 className="text-xl font-bold uppercase tracking-tight mb-2">
+                <h3 className="text-xl font-display font-bold uppercase tracking-tight mb-2">
                   Select Resume File
                 </h3>
-                <p className="text-zinc-500 text-xs mb-8 max-w-xs leading-relaxed">
+                <p className="opacity-60 text-xs mb-8 max-w-xs leading-relaxed">
                   Supports PDF or DOCX format. Keep formatting standard for best analysis.
                 </p>
 
-                <label className="cursor-pointer px-6 py-3 border border-zinc-700 hover:border-white text-zinc-300 hover:text-white bg-zinc-900/60 transition-all font-bold uppercase tracking-widest text-xs rounded-xl">
+                <label className="cursor-pointer px-6 py-3 border border-black/20 dark:border-white/20 hover:border-accent-color/50 bg-white/5 hover:bg-white/10 transition-all font-bold uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-black/10">
                   {file ? file.name : 'Choose File'}
                   <input
                     type="file"
@@ -111,7 +126,8 @@ const AtsChecker = () => {
                     className="hidden"
                   />
                 </label>
-              </div>
+              </GlassCard>
+              </ParallaxTilt>
 
               {error && (
                 <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-xs font-semibold text-center">
@@ -119,20 +135,21 @@ const AtsChecker = () => {
                 </div>
               )}
 
-              <button
+              <Button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-sm hover:bg-zinc-200 transition-all rounded-2xl shadow-lg flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                variant="primary"
+                className="w-full py-4 text-sm font-black  hover:bg-pink-500/20 uppercase tracking-widest rounded-2xl flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
-                    <span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-white  border-t-transparent rounded-full animate-spin" />
                     Scanning Resume with AI...
                   </>
                 ) : (
                   'Scan Resume Now →'
                 )}
-              </button>
+              </Button>
             </form>
           </div>
         )}
@@ -144,113 +161,114 @@ const AtsChecker = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
               
               {/* Overall Circular Score Chart */}
-              <div className="lg:col-span-4 p-8 border border-zinc-800 bg-zinc-950/40 rounded-3xl backdrop-blur-md flex flex-col items-center justify-center text-center">
-                <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-6">ATS Compatibility</span>
-                <div className={`relative w-44 h-44 rounded-full flex items-center justify-center border-8 border-zinc-900 ${getScoreColorClass(result.atsScore)}`}>
+              <GlassCard className="lg:col-span-4 flex flex-col items-center justify-center text-center p-8">
+                <span className="text-xs font-bold opacity-60 uppercase tracking-widest mb-6">ATS Compatibility</span>
+                <div className={`relative w-44 h-44 rounded-full flex items-center justify-center border-8 border-white/5 ${getScoreColorClass(result.atsScore)}`}>
                   <div className="text-center">
-                    <span className="text-6xl font-black tracking-tighter leading-none block">{result.atsScore}</span>
+                    <span className="text-6xl font-display font-black tracking-tighter leading-none block">{result.atsScore}</span>
                     <span className="text-xs uppercase tracking-wider font-semibold opacity-60">Score</span>
                   </div>
                 </div>
-                <h4 className="mt-8 text-lg font-bold uppercase tracking-tight text-white">
+                <h4 className="mt-8 text-lg font-display font-bold uppercase tracking-tight">
                   {result.atsScore >= 80 ? '🔥 Great Fit!' : result.atsScore >= 50 ? '⚠️ Needs Work' : '🚨 High Risk'}
                 </h4>
-              </div>
+              </GlassCard>
 
               {/* Subscores & Summary info */}
-              <div className="lg:col-span-8 p-8 border border-zinc-800 bg-zinc-950/40 rounded-3xl backdrop-blur-md flex flex-col justify-between">
+              <GlassCard className="lg:col-span-8 flex flex-col justify-between p-8">
                 <div>
-                  <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 block">Analysis Overview</span>
-                  <p className="text-zinc-300 text-lg leading-relaxed font-light">
+                  <span className="text-xs font-bold opacity-60 uppercase tracking-widest mb-3 block">Analysis Overview</span>
+                  <p className="text-lg leading-relaxed font-light opacity-90">
                     {result.summary}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mt-8 border-t border-zinc-900 pt-6">
+                <div className="grid grid-cols-2 gap-4 mt-8 border-t border-black/10 dark:border-white/10 pt-6">
                   <div className={`p-4 border rounded-2xl ${getScoreColorClass(result.formattingScore)}`}>
                     <span className="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Formatting Score</span>
-                    <span className="text-2xl font-black">{result.formattingScore} / 100</span>
+                    <span className="text-2xl font-display font-black">{result.formattingScore} / 100</span>
                   </div>
                   <div className={`p-4 border rounded-2xl ${getScoreColorClass(result.contentScore)}`}>
                     <span className="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1 block">Content Score</span>
-                    <span className="text-2xl font-black">{result.contentScore} / 100</span>
+                    <span className="text-2xl font-display font-black">{result.contentScore} / 100</span>
                   </div>
                 </div>
-              </div>
+              </GlassCard>
             </div>
 
             {/* Mistakes & Recommendations Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               
               {/* Mistakes Column */}
-              <div className="p-8 border border-zinc-800 bg-zinc-950/40 rounded-3xl backdrop-blur-md">
+              <GlassCard className="p-8">
                 <div className="flex items-center gap-2 mb-6">
                   <span className="text-xl">⚠️</span>
-                  <h3 className="text-xl font-bold uppercase tracking-tight text-red-400">Identified Mistakes</h3>
+                  <h3 className="text-xl font-display font-bold uppercase tracking-tight text-red-400">Identified Mistakes</h3>
                 </div>
                 <ul className="space-y-4">
                   {result.mistakes.map((mistake, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-zinc-400 text-sm leading-relaxed border-b border-zinc-900/60 pb-3">
+                    <li key={idx} className="flex items-start gap-3 text-sm leading-relaxed border-b border-black/10 dark:border-white/10 pb-3 opacity-80">
                       <span className="text-red-500 font-bold mt-0.5">•</span>
                       {mistake}
                     </li>
                   ))}
                 </ul>
-              </div>
+              </GlassCard>
 
               {/* Actionable Improvements Column */}
-              <div className="p-8 border border-zinc-800 bg-zinc-950/40 rounded-3xl backdrop-blur-md">
+              <GlassCard className="p-8">
                 <div className="flex items-center gap-2 mb-6">
                   <span className="text-xl">🚀</span>
-                  <h3 className="text-xl font-bold uppercase tracking-tight text-emerald-400">Recommended Steps</h3>
+                  <h3 className="text-xl font-display font-bold uppercase tracking-tight text-emerald-400">Recommended Steps</h3>
                 </div>
                 <ul className="space-y-4">
                   {result.improvements.map((improvement, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-zinc-400 text-sm leading-relaxed border-b border-zinc-900/60 pb-3">
+                    <li key={idx} className="flex items-start gap-3 text-sm leading-relaxed border-b border-black/10 dark:border-white/10 pb-3 opacity-80">
                       <span className="text-emerald-500 font-bold mt-0.5">✓</span>
                       {improvement}
                     </li>
                   ))}
                 </ul>
-              </div>
+              </GlassCard>
 
             </div>
 
             {/* Keyword tag cloud */}
-            <div className="p-8 border border-zinc-800 bg-zinc-950/40 rounded-3xl backdrop-blur-md">
+            <GlassCard className="p-8">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-xl">🏷️</span>
-                <h3 className="text-xl font-bold uppercase tracking-tight text-violet-400">Recommended Keywords to Include</h3>
+                <h3 className="text-xl font-display font-bold uppercase tracking-tight text-accent-color">Recommended Keywords to Include</h3>
               </div>
-              <p className="text-zinc-500 text-xs mb-6">
+              <p className="text-xs mb-6 opacity-60">
                 Adding these missing skills or keywords to your resume content will significantly boost search matching scores.
               </p>
               <div className="flex flex-wrap gap-2.5">
                 {result.missingKeywords.map((kw, idx) => (
                   <span 
                     key={idx} 
-                    className="px-3.5 py-2 bg-violet-950/30 border border-violet-800/40 hover:border-violet-500 text-violet-300 hover:text-white rounded-xl text-xs font-semibold tracking-wide transition-all uppercase"
+                    className="px-3.5 py-2 bg-accent-color/10 border border-accent-color/20 text-accent-color rounded-xl text-xs font-semibold tracking-wide uppercase"
                   >
                     {kw}
                   </span>
                 ))}
               </div>
-            </div>
+            </GlassCard>
 
             {/* Action Bar */}
-            <div className="flex justify-end gap-4 border-t border-zinc-900 pt-8">
-              <button
+            <div className="flex justify-end gap-4 border-t border-black/10 dark:border-white/10 pt-8">
+              <Button
                 type="button"
                 onClick={() => { setFile(null); setResult(null); }}
-                className="px-6 py-3.5 border border-zinc-700 hover:border-white text-zinc-400 hover:text-white font-bold uppercase tracking-widest text-xs rounded-xl transition-all"
+                variant="neo"
+                className="font-bold uppercase tracking-widest text-xs"
               >
                 Scan Another Resume
-              </button>
+              </Button>
             </div>
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

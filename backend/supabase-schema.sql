@@ -33,6 +33,19 @@ CREATE TABLE portfolios (
     is_public BOOLEAN DEFAULT false,
     view_count INTEGER DEFAULT 0,
     
+    -- New Optional Sections (JSONB Arrays for flexible list data)
+    achievements_data JSONB DEFAULT '[]'::jsonb,
+    publications_data JSONB DEFAULT '[]'::jsonb,
+    hackathons_data JSONB DEFAULT '[]'::jsonb,
+    open_source_data JSONB DEFAULT '[]'::jsonb,
+    volunteering_data JSONB DEFAULT '[]'::jsonb,
+    research_data JSONB DEFAULT '[]'::jsonb,
+    education_data JSONB DEFAULT '[]'::jsonb,
+    awards_data JSONB DEFAULT '[]'::jsonb,
+    testimonials_data JSONB DEFAULT '[]'::jsonb,
+    currently_learning JSONB DEFAULT '[]'::jsonb,
+    interests JSONB DEFAULT '[]'::jsonb,
+    
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -76,6 +89,17 @@ CREATE TABLE certifications (
 -- ALTER TABLE portfolios
 --   ADD COLUMN IF NOT EXISTS public_slug TEXT UNIQUE,
 --   ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false,
---   ADD COLUMN IF NOT EXISTS view_count INTEGER DEFAULT 0;
+--   ADD COLUMN IF NOT EXISTS view_count INTEGER DEFAULT 0,
+--   ADD COLUMN IF NOT EXISTS achievements_data JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS publications_data JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS hackathons_data JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS open_source_data JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS volunteering_data JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS research_data JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS education_data JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS awards_data JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS testimonials_data JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS currently_learning JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS interests JSONB DEFAULT '[]'::jsonb;
 --
 -- CREATE INDEX IF NOT EXISTS idx_portfolios_public_slug ON portfolios(public_slug);

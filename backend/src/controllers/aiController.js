@@ -48,7 +48,7 @@ Text to polish:
         }
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3.6-flash',
             contents: prompt,
         });
 
@@ -160,7 +160,7 @@ Rules:
         chatContents.push({ role: 'user', parts: [{ text: message }] });
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3.6-flash',
             contents: chatContents,
         });
 
@@ -242,7 +242,7 @@ Job Description:
 "${jobDescription}"`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3.6-flash',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -317,7 +317,7 @@ Target Job Description:
         }
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3.6-flash',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -412,7 +412,7 @@ Target Job Description:
 };
 
 /* ---------------- AI PORTFOLIO CRITIQUE ---------------- */
-export const critiquePortfolio = async (req, res) => {
+export const matchPortfolioJob = async (req, res) => {
     try {
         const { portfolioId } = req.params;
 
@@ -472,7 +472,7 @@ ${JSON.stringify(context, null, 2)}
 Provide feedback structured in JSON format.`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3.6-flash',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -532,3 +532,437 @@ Provide feedback structured in JSON format.`;
     }
 };
 
+
+/* ---------------- AI COVER LETTER GENERATOR ---------------- */
+export const generateCoverLetter = async (req, res) => {
+    try {
+        const { jobDescription } = req.body;
+
+        if (!req.file || !jobDescription) {
+            return res.status(400).json({ success: false, message: "Resume file and Job Description are required." });
+        }
+
+        const extractedText = await extractTextFromFile(req.file);
+
+        const prompt = `You are an expert career coach and professional copywriter.
+Write a compelling, professional, and tailored cover letter for this candidate based on their resume data and the target Job Description (JD).
+Do NOT invent entirely new projects or experiences. Use their actual resume data to demonstrate why they are a strong fit for the role.
+The cover letter should be well-structured (Header, Introduction, Body Paragraphs highlighting matching skills/projects, Conclusion, and Sign-off).
+
+Candidate Resume Text:
+${extractedText}
+
+Target Job Description:
+"${jobDescription}"
+
+Output ONLY the text of the cover letter. Do not include introductory notes or markdown code block formatting (just standard text formatting).`;
+
+        const aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        const response = await aiClient.models.generateContent({
+            model: 'gemini-3.6-flash',
+            contents: prompt,
+        });
+
+        const coverLetter = response.text ? response.text.trim() : "Failed to generate cover letter.";
+
+        return res.status(200).json({
+            success: true,
+            coverLetter
+        });
+    } catch (err) {
+        console.error("AI Cover Letter error:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to generate cover letter.",
+            error: err.message
+        });
+    }
+};
+
+/* ---------------- AI INTERVIEW PREP GENERATOR ---------------- */
+export const generateInterviewPrep = async (req, res) => {
+    try {
+        const { jobDescription } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: "Resume file is required." });
+        }
+
+        const extractedText = await extractTextFromFile(req.file);
+
+        const prompt = `You are a Senior Technical Hiring Manager.
+Review this candidate's resume data and the target Job Description (if provided). 
+Generate a list of approximately 10 to 15 highly targeted interview questions you would ask them. 
+Include a mix of behavioral questions (STAR method) and technical questions based ONLY on the projects, skills, and experiences they listed in their resume.
+Do NOT provide suggested answers, only the questions and a brief reasoning for why you are asking it.
+
+Candidate Resume Text:
+${extractedText}
+
+Target Job Description:
+${jobDescription ? '"' + jobDescription + '"' : 'Not provided. Ask general questions based on their resume.'}
+
+Output the result strictly in JSON format matching the following schema.`;
+
+        const aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        const response = await aiClient.models.generateContent({
+            model: 'gemini-3.6-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        questions: {
+                            type: Type.ARRAY,
+                            items: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    type: { type: Type.STRING, description: "Either 'Behavioral' or 'Technical'" },
+                                    question: { type: Type.STRING, description: "The exact interview question." },
+                                    reasoning: { type: Type.STRING, description: "Why the hiring manager is asking this based on their resume/JD." }
+                                },
+                                required: ["type", "question", "reasoning"]
+                            }
+                        }
+                    },
+                    required: ["questions"]
+                }
+            }
+        });
+
+        const prepData = JSON.parse(response.text);
+
+        return res.status(200).json({
+            success: true,
+            prepData
+        });
+    } catch (err) {
+        console.error("AI Interview Prep error:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to generate interview prep.",
+            error: err.message
+        });
+    }
+};
+
+/* ---------------- AUTOMATED COLD EMAIL PITCH GENERATOR ---------------- */
+export const generateColdEmail = async (req, res) => {
+    try {
+        const { portfolioId, jobDescription, companyName, recipientName, tone, candidateData } = req.body;
+
+        if (!jobDescription) {
+            return res.status(400).json({ success: false, message: "Job Description is required." });
+        }
+
+        let context = candidateData || {};
+
+        // If portfolioId is provided, pull real candidate details from Supabase
+        if (portfolioId) {
+            const { data: personalInfo } = await supabase
+                .from('portfolios')
+                .select('*')
+                .eq('id', portfolioId)
+                .single();
+
+            if (personalInfo) {
+                const [
+                    { data: techStacks },
+                    { data: projects },
+                    { data: experiences }
+                ] = await Promise.all([
+                    supabase.from('tech_stacks').select('*').eq('portfolio_id', portfolioId),
+                    supabase.from('projects').select('*').eq('portfolio_id', portfolioId),
+                    supabase.from('experiences').select('*').eq('portfolio_id', portfolioId)
+                ]);
+
+                context = {
+                    name: personalInfo.full_name,
+                    email: personalInfo.email_id,
+                    title: personalInfo.main_title,
+                    about: personalInfo.about_paragraph,
+                    github: personalInfo.github_username,
+                    slug: personalInfo.slug,
+                    portfolioId: personalInfo.id,
+                    skills: (techStacks || []).map(s => s.name),
+                    projects: (projects || []).map(p => ({
+                        name: p.project_name,
+                        description: p.project_desc,
+                        tech: p.project_tech_stack
+                    })),
+                    experiences: (experiences || []).map(e => ({
+                        role: e.role,
+                        company: e.company_name,
+                        work: e.work_description
+                    }))
+                };
+            }
+        }
+
+        const targetCompany = companyName || "Target Company";
+        const hrName = recipientName || "Hiring Manager";
+        const emailTone = tone || "confident";
+
+        const prompt = `You are an elite career strategist and high-converting cold email outreach expert.
+Generate a compelling, highly personalized cold pitch email and formal cover letter directed at the hiring manager or recruiter for ${targetCompany}.
+
+Candidate Profile:
+${JSON.stringify(context, null, 2)}
+
+Target Company: ${targetCompany}
+Recipient: ${hrName}
+Desired Tone: ${emailTone}
+
+Job Description / Requirements:
+"${jobDescription}"
+
+Instructions:
+1. Generate 3 catchy, professional, non-spammy subject line options.
+2. Generate a pitch email body tailored specifically to the candidate's matching projects/skills and the target company's needs.
+3. Include a bulleted section highlighting 2-3 specific portfolio accomplishments that directly address the job requirements.
+4. Include a clean call to action to discuss the role or review the candidate's live portfolio.
+5. Generate a formal cover letter version as well.
+
+Output strictly in JSON format matching the schema.`;
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-3.6-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: Type.OBJECT,
+                    properties: {
+                        subjectOptions: {
+                            type: Type.ARRAY,
+                            items: { type: Type.STRING },
+                            description: "3 compelling subject lines tailored to the role and company."
+                        },
+                        emailBody: {
+                            type: Type.STRING,
+                            description: "Full text of the tailored cold email pitch."
+                        },
+                        coverLetter: {
+                            type: Type.STRING,
+                            description: "Formal cover letter version."
+                        },
+                        matchedPoints: {
+                            type: Type.ARRAY,
+                            items: { type: Type.STRING },
+                            description: "Key matching highlights between candidate portfolio and JD."
+                        }
+                    },
+                    required: ["subjectOptions", "emailBody", "coverLetter", "matchedPoints"]
+                }
+            }
+        });
+
+        const generatedData = JSON.parse(response.text);
+
+        return res.status(200).json({
+            success: true,
+            data: generatedData
+        });
+    } catch (err) {
+        console.error("Generate Cold Email error:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to generate cold email pitch.",
+            error: err.message
+        });
+    }
+};
+
+/* ---------------- SEND COLD EMAIL TO HR VIA NODEMAILER ---------------- */
+let transporterInstance = null;
+async function getMailTransporter() {
+  if (!transporterInstance) {
+    if (process.env.SMTP_EMAIL && process.env.SMTP_PASSWORD) {
+      transporterInstance = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.SMTP_EMAIL,
+          pass: process.env.SMTP_PASSWORD,
+        },
+      });
+    } else {
+      const testAccount = await nodemailer.createTestAccount();
+      transporterInstance = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false, 
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass,
+        },
+      });
+    }
+  }
+  return transporterInstance;
+}
+
+export const sendColdEmail = async (req, res) => {
+    try {
+        const { recipientEmail, subject, body, candidateName, candidateEmail } = req.body;
+
+        if (!recipientEmail || !subject || !body) {
+            return res.status(400).json({ success: false, message: "Recipient Email, Subject, and Email Body are required." });
+        }
+
+        const mailer = await getMailTransporter();
+        const senderName = candidateName || "Applicant";
+        const senderEmail = candidateEmail || process.env.SMTP_EMAIL || "applicant@portfolio.io";
+
+        const formattedHtml = `
+            <div style="font-family: 'Inter', Arial, sans-serif; max-width: 650px; margin: 0 auto; padding: 32px 24px; background-color: #0b0f17; color: #f1f5f9; border-radius: 16px; border: 1px solid #1e293b; line-height: 1.6;">
+              <div style="border-bottom: 1px solid #1e293b; padding-bottom: 16px; margin-bottom: 24px;">
+                <span style="font-size: 11px; font-weight: 800; color: #a855f7; text-transform: uppercase; letter-spacing: 2px;">Cold Pitch Outreach</span>
+                <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin: 6px 0 0 0;">${subject}</h2>
+              </div>
+              <div style="white-space: pre-wrap; font-size: 15px; color: #cbd5e1;">
+${body}
+              </div>
+              <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #1e293b; font-size: 12px; color: #64748b; text-align: center;">
+                Sent via Portfolio.io AI Cold Outreach Engine &bull; Candidate Reply-To: ${senderEmail}
+              </div>
+            </div>
+        `;
+
+        const mailOptions = {
+            from: `"${senderName}" <${process.env.SMTP_EMAIL || 'no-reply@portfolio.io'}>`,
+            replyTo: senderEmail,
+            to: recipientEmail,
+            subject: subject,
+            text: body,
+            html: formattedHtml
+        };
+
+        const info = await mailer.sendMail(mailOptions);
+
+        let previewUrl = null;
+        if (!process.env.SMTP_EMAIL && nodemailer.getTestMessageUrl(info)) {
+            previewUrl = nodemailer.getTestMessageUrl(info);
+            console.log("------------------------------------------");
+            console.log("Cold Email Sent via Ethereal Test Account! Preview: %s", previewUrl);
+            console.log("------------------------------------------");
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: `Cold email sent successfully to ${recipientEmail}!`,
+            previewUrl
+        });
+    } catch (err) {
+        console.error("Send Cold Email error:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to send cold email to HR.",
+            error: err.message
+        });
+    }
+};
+
+/* ---------------- AUTOMATED HR & RECRUITER EMAIL DISCOVERY ENGINE ---------------- */
+export const findHREmail = async (req, res) => {
+    try {
+        const { companyName, domain } = req.body;
+
+        if (!companyName && !domain) {
+            return res.status(400).json({ success: false, message: "Company Name or Domain is required." });
+        }
+
+        // Clean company name and derive clean domain
+        let targetCompany = (companyName || '').trim();
+        let targetDomain = (domain || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+
+        if (!targetDomain && targetCompany) {
+            // Normalize company name into clean domain pattern (e.g. "Stripe" -> "stripe.com")
+            const cleanName = targetCompany.toLowerCase().replace(/[^a-z0-9]/g, '');
+            targetDomain = `${cleanName}.com`;
+        }
+
+        // Generate corporate hiring patterns
+        const patternEmails = [
+            `careers@${targetDomain}`,
+            `recruiting@${targetDomain}`,
+            `hr@${targetDomain}`,
+            `talent@${targetDomain}`,
+            `hiring@${targetDomain}`,
+            `jobs@${targetDomain}`
+        ];
+
+        // Ask Gemini 3.6 Flash for corporate recruiter contacts & lead discovery
+        const prompt = `You are a corporate intelligence and recruitment lead discovery assistant.
+For the company "${targetCompany || targetDomain}" (Domain: ${targetDomain}), identify their official HR/Talent Acquisition email contact address patterns, likely HR recipient titles, and primary contact emails.
+
+Company Name: ${targetCompany || targetDomain}
+Inferred Domain: ${targetDomain}
+
+Output strictly in JSON format matching the schema.`;
+
+        let aiDiscovered = null;
+        try {
+            const response = await ai.models.generateContent({
+                model: 'gemini-3.6-flash',
+                contents: prompt,
+                config: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: Type.OBJECT,
+                        properties: {
+                            hrTitle: { 
+                                type: Type.STRING, 
+                                description: "Suggested hiring manager title e.g. 'Stripe Talent Acquisition Team' or 'Head of Recruiting'." 
+                            },
+                            primaryEmail: { 
+                                type: Type.STRING, 
+                                description: "Best HR / Careers / Talent acquisition email address for this company." 
+                            },
+                            discoveredEmails: {
+                                type: Type.ARRAY,
+                                items: { type: Type.STRING },
+                                description: "List of 3 to 5 candidate HR and hiring manager email addresses."
+                            }
+                        },
+                        required: ["hrTitle", "primaryEmail", "discoveredEmails"]
+                    }
+                }
+            });
+
+            aiDiscovered = JSON.parse(response.text);
+        } catch (aiErr) {
+            console.warn("AI HR Email Discovery fallback:", aiErr.message);
+        }
+
+        // Merge AI discovered emails with corporate pattern emails without duplicates
+        const allDiscovered = new Set();
+        if (aiDiscovered?.primaryEmail) allDiscovered.add(aiDiscovered.primaryEmail.toLowerCase());
+        if (Array.isArray(aiDiscovered?.discoveredEmails)) {
+            aiDiscovered.discoveredEmails.forEach(e => allDiscovered.add(e.toLowerCase()));
+        }
+        patternEmails.forEach(e => allDiscovered.add(e.toLowerCase()));
+
+        const alternateEmails = Array.from(allDiscovered);
+        const primaryEmail = aiDiscovered?.primaryEmail || alternateEmails[0];
+        const hrTitle = aiDiscovered?.hrTitle || `${targetCompany || 'Company'} Talent Acquisition Team`;
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                companyName: targetCompany || targetDomain,
+                domain: targetDomain,
+                primaryEmail,
+                hrTitle,
+                alternateEmails
+            }
+        });
+    } catch (err) {
+        console.error("Find HR Email Error:", err);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to discover HR email addresses.",
+            error: err.message
+        });
+    }
+};

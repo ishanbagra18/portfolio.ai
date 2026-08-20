@@ -7,8 +7,11 @@ import Projects from './components/Projects';
 import Experience from './components/Experience';
 import Certifications from './components/Certifications';
 import Footer from './components/Footer';
+import DynamicSection from './components/DynamicSection';
 import ChatbotWidget from '../../components/ChatbotWidget';
 import { API_BASE } from '../../lib/api';
+import { SECTION_SCHEMAS } from '../../lib/sectionSchemas';
+import GitHubActivity from '../../components/GitHubActivity';
 
 const defaultData = {
   personalInfo: {
@@ -143,6 +146,20 @@ const Template2 = ({ publicData, isPublicView }) => {
       {data?.projects && <Projects data={data.projects} />}
       {data?.experiences && <Experience data={data.experiences} />}
       {data?.certifications && <Certifications data={data.certifications} />}
+
+      {/* Render optional dynamic sections */}
+      {data?.personalInfo && Object.entries(SECTION_SCHEMAS).map(([key, schema]) => (
+        <DynamicSection
+          key={key}
+          title={schema.title}
+          schema={schema}
+          data={data.personalInfo[key]}
+        />
+      ))}
+
+      {data?.personalInfo?.github_username && (
+        <GitHubActivity githubUsername={data.personalInfo.github_username} />
+      )}
       {data?.personalInfo && <Footer data={data.personalInfo} />}
 
       {!isPublicView && portfolioId && (

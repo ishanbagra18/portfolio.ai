@@ -30,7 +30,7 @@ const PersonalInfoForm = ({ data = {}, onChange }) => {
             value={data.full_name ?? ""}
             onChange={onChange}
             placeholder="e.g. Ishan Bagra"
-            className="bg-transparent border-b-2 border-gray-800 text-2xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-2xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
             required
           />
         </div>
@@ -47,7 +47,7 @@ const PersonalInfoForm = ({ data = {}, onChange }) => {
             value={data.email_id ?? ""}
             onChange={onChange}
             placeholder="hello@example.com"
-            className="bg-transparent border-b-2 border-gray-800 text-2xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-2xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
             required
           />
         </div>
@@ -64,7 +64,7 @@ const PersonalInfoForm = ({ data = {}, onChange }) => {
             value={data.age ?? ""}
             onChange={onChange}
             placeholder="e.g. 21"
-            className="bg-transparent border-b-2 border-gray-800 text-2xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-2xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
           />
         </div>
 
@@ -80,7 +80,7 @@ const PersonalInfoForm = ({ data = {}, onChange }) => {
             value={data.address ?? ""}
             onChange={onChange}
             placeholder="e.g. Kota, Rajasthan, India"
-            className="bg-transparent border-b-2 border-gray-800 text-2xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-2xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
           />
         </div>
 
@@ -96,7 +96,7 @@ const PersonalInfoForm = ({ data = {}, onChange }) => {
             value={data.main_title ?? ""}
             onChange={onChange}
             placeholder="e.g. Full-Stack Software Developer"
-            className="bg-transparent border-b-2 border-gray-800 text-2xl text-white py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
+            className="bg-transparent border-b-2 border-gray-800 text-2xl text-[var(--neo-text)] py-3 focus:outline-none focus:border-white transition-colors placeholder:text-gray-700"
             required
           />
         </div>

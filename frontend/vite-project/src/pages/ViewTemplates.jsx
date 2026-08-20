@@ -1,7 +1,67 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import { motion } from 'framer-motion';
+import { GlassCard } from '../components/ui/GlassCard';
+import { Button } from '../components/ui/Button';
+import { API_BASE } from '../lib/api';
 
 const ViewTemplates = () => {
+  const navigate = useNavigate();
+  const [likes, setLikes] = useState({});
+  const [likedTemplates, setLikedTemplates] = useState({});
+
+  useEffect(() => {
+    // Fetch likes from backend
+    const fetchLikes = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/templates/likes`);
+        const result = await res.json();
+        if (res.ok && result.success) {
+          const likesMap = {};
+          result.likes.forEach(l => {
+            likesMap[l.template_id] = l.likes_count;
+          });
+          setLikes(likesMap);
+        }
+      } catch (err) {
+        console.error("Failed to fetch template likes:", err);
+      }
+    };
+    fetchLikes();
+
+    // Load local liked state
+    const localLiked = JSON.parse(localStorage.getItem('likedTemplates') || '{}');
+    setLikedTemplates(localLiked);
+  }, []);
+
+  const handleLike = async (templateId, e) => {
+    e.stopPropagation();
+    const isCurrentlyLiked = likedTemplates[templateId];
+    
+    // Optimistic UI update
+    setLikes(prev => ({ 
+      ...prev, 
+      [templateId]: Math.max(0, (prev[templateId] || 0) + (isCurrentlyLiked ? -1 : 1)) 
+    }));
+    
+    const newLiked = { ...likedTemplates, [templateId]: !isCurrentlyLiked };
+    setLikedTemplates(newLiked);
+    localStorage.setItem('likedTemplates', JSON.stringify(newLiked));
+
+    // Send to backend
+    try {
+      await fetch(`${API_BASE}/api/templates/like/${templateId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ action: isCurrentlyLiked ? 'unlike' : 'like' })
+      });
+    } catch (err) {
+      console.error("Failed to toggle template like:", err);
+    }
+  };
   const templates = [
     {
       id: 'template1',
@@ -122,70 +182,136 @@ const ViewTemplates = () => {
       description: 'A playful, modern 3D clay style featuring pastel hues, bulbous borders, and soft inner shadows.',
       previewLink: '/portfolio/template15',
       dataLink: '/provide-data/template15'
+    },
+    {
+      id: 'template16',
+      number: '16',
+      name: 'Vaporwave Synth',
+      description: 'An 80s retrowave aesthetic featuring magenta/cyan dual glow gradients, synth grid lines, and neon badges.',
+      previewLink: '/portfolio/template16',
+      dataLink: '/provide-data/template16'
+    },
+    {
+      id: 'template17',
+      number: '17',
+      name: 'Minimalist Monolith',
+      description: 'An ultra-modern titanium slate layout with clean borders, glassmorphic panels, and refined typography.',
+      previewLink: '/portfolio/template17',
+      dataLink: '/provide-data/template17'
+    },
+    {
+      id: 'template18',
+      number: '18',
+      name: 'Nordic Minimalist Light',
+      description: 'A serene Scandinavian design with warm beige, eggshell white, charcoal serif type, and airy spacing.',
+      previewLink: '/portfolio/template18',
+      dataLink: '/provide-data/template18'
+    },
+    {
+      id: 'template19',
+      number: '19',
+      name: 'Terminal Matrix Green',
+      description: 'A phosphorescent cyberpunk hacker terminal featuring electric emerald matrix code, prompt headers, and shell boxes.',
+      previewLink: '/portfolio/template19',
+      dataLink: '/provide-data/template19'
+    },
+    {
+      id: 'template20',
+      number: '20',
+      name: 'Luxury Gold Velvet',
+      description: 'A high-end obsidian theme featuring champagne gold accents, delicate borders, luxury serif display type, and golden ambient glows.',
+      previewLink: '/portfolio/template20',
+      dataLink: '/provide-data/template20'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-black w-full flex flex-col font-sans py-24 px-6">
-      <div className="max-w-7xl mx-auto w-full">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen bg-aurora text-[var(--neo-text)] font-sans relative overflow-x-hidden"
+    >
+      <div className="noise-overlay" />
+      <Navbar />
+
+      <div className="max-w-7xl mx-auto w-full px-6 py-24 relative z-10">
         
-        <div className="flex flex-col mb-20">
-          <h1 className="text-6xl md:text-8xl font-black text-white uppercase tracking-tighter leading-none">
+        <div className="flex flex-col mb-20 pb-8 border-b border-black/10 dark:border-white/10">
+          <h1 className="text-6xl md:text-8xl font-display font-black text-[var(--neo-text)] uppercase tracking-tighter leading-none">
             Select Your
           </h1>
           <h2
-            className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mt-2"
-            style={{ WebkitTextStroke: '2px #374151', color: 'transparent' }}
+            className="text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-none mt-2"
+            style={{ WebkitTextStroke: '1.5px rgba(255,255,255,0.4)', color: 'transparent' }}
           >
             Template.
           </h2>
-          <p className="mt-8 text-xl text-gray-400 max-w-2xl font-light">
+          <p className="mt-8 text-xl opacity-80 max-w-2xl font-medium">
             Choose a design that matches your vibe. You can preview the layout or jump straight into providing your data to generate your portfolio.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {templates.map((template) => (
-            <div 
+            <GlassCard 
               key={template.id} 
-              className="group flex flex-col justify-between p-8 md:p-12 border border-gray-800 hover:border-white transition-colors duration-500 bg-[#0a0a0a]"
+              className="group flex flex-col justify-between p-8 hover:border-accent-color/50 transition-colors duration-500"
             >
               <div>
                 <span 
-                  className="text-5xl font-black tracking-tighter leading-none mb-6 block"
-                  style={{ WebkitTextStroke: '1px #374151', color: 'transparent' }}
+                  className="text-5xl font-display font-black tracking-tighter leading-none mb-6 block opacity-50 transition-opacity group-hover:opacity-100"
+                  style={{ WebkitTextStroke: '1px rgba(255,255,255,0.3)', color: 'transparent' }}
                 >
                   {template.number}
                 </span>
-                <h3 className="text-3xl font-bold text-white mb-4 group-hover:translate-x-2 transition-transform duration-300">
-                  {template.name}
-                </h3>
-                <p className="text-gray-500 mb-10 text-lg leading-relaxed">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-2xl font-display font-bold text-[var(--neo-text)] group-hover:text-accent-color transition-colors duration-300">
+                    {template.name}
+                  </h3>
+                  
+                  {/* Like Button */}
+                  <button 
+                    onClick={(e) => handleLike(template.id, e)}
+                    className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors ${
+                      likedTemplates[template.id] 
+                        ? 'text-pink-500 bg-pink-500/10' 
+                        : 'text-zinc-500 hover:text-pink-400 hover:bg-pink-500/10'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={likedTemplates[template.id] ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                    </svg>
+                    <span className="text-xs font-bold">{likes[template.id] || 0}</span>
+                  </button>
+                </div>
+                <p className="opacity-80 mb-10 text-sm leading-relaxed">
                   {template.description}
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-                <Link 
-                  to={template.previewLink}
-                  className="px-6 py-4 bg-transparent border border-gray-600 text-white font-bold uppercase tracking-widest text-sm hover:border-white hover:bg-white hover:text-black transition-all text-center"
+              <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4 border-t border-black/10 dark:border-white/10">
+                <Button 
+                  onClick={() => navigate(template.previewLink)}
+                  variant="neo"
+                  className="flex-1 text-xs  " 
                 >
                   Preview
-                </Link>
-                <Link 
-                  to={template.dataLink}
-                  state={{ templateId: template.id }}
-                  className="px-6 py-4 bg-white border border-white text-black font-bold uppercase tracking-widest text-sm hover:bg-gray-200 transition-all text-center flex-1"
+                </Button>
+                <Button 
+                  onClick={() => navigate(template.dataLink, { state: { templateId: template.id } })}
+                  variant="primary"
+                  className="flex-1 text-xs hover:bg-pink-500/50"
                 >
                   Provide Data
-                </Link>
+                </Button>
               </div>
-            </div>
+            </GlassCard>
           ))}
         </div>
 
       </div>
-    </div>
+    </motion.div>
   );
 };
 

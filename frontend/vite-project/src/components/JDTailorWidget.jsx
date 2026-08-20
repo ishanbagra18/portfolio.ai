@@ -63,7 +63,7 @@ const JDTailorWidget = ({ currentData, onTailored }) => {
   };
 
   return (
-    <div className="mb-12 p-6 border border-violet-500/20 bg-slate-950/40 rounded-2xl backdrop-blur relative overflow-hidden">
+    <div className="mb-12 p-6 border border-violet-500/20 bg-[var(--neo-bg)]/40 rounded-2xl backdrop-blur relative overflow-hidden">
       {/* Background ambient glow */}
       <div className="absolute -top-12 -right-12 w-32 h-32 bg-violet-600/10 rounded-full blur-2xl pointer-events-none" />
 
@@ -72,7 +72,7 @@ const JDTailorWidget = ({ currentData, onTailored }) => {
           <span className="px-2 py-0.5 bg-violet-600/10 border border-violet-500/20 text-violet-400 rounded text-[9px] font-bold uppercase tracking-wider">
             Gemini Auto-Fill
           </span>
-          <h2 className="text-xl font-black text-white mt-1 uppercase tracking-tight">
+          <h2 className="text-xl font-black text-[var(--neo-text)] mt-1 uppercase tracking-tight">
             Tailor Form with Job Description (JD)
           </h2>
           <p className="text-slate-400 text-xs mt-0.5 max-w-xl">
@@ -83,21 +83,21 @@ const JDTailorWidget = ({ currentData, onTailored }) => {
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-5 py-3 border border-violet-600/40 text-violet-300 font-bold uppercase tracking-widest text-xs hover:bg-violet-600 hover:text-white transition-all rounded-xl whitespace-nowrap cursor-pointer"
+          className="flex items-center gap-2 px-5 py-3 border border-violet-600/40 text-violet-300 font-bold uppercase tracking-widest text-xs hover:bg-violet-600 hover:text-[var(--neo-text)] transition-all rounded-xl whitespace-nowrap cursor-pointer"
         >
           {isOpen ? "Close Auto-Filler" : "✨ Open JD Auto-Filler"}
         </button>
       </div>
 
       {isOpen && (
-        <div className="mt-6 border-t border-slate-900 pt-6 space-y-4 animate-in fade-in duration-200">
+        <div className="mt-6 border-t border-black/5 dark:border-white/5 pt-6 space-y-4 animate-in fade-in duration-200">
           <textarea
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
             disabled={loading}
             placeholder="Paste the target job description or requirements here..."
             rows="6"
-            className="w-full bg-slate-950/80 border border-slate-800 focus:border-violet-500/50 text-slate-200 p-4 rounded-xl text-xs focus:outline-none placeholder:text-slate-700 transition resize-none leading-relaxed"
+            className="w-full bg-[var(--neo-bg)]/80 border border-black/10 dark:border-black/10 dark:border-white/10 focus:border-violet-500/50 text-slate-200 p-4 rounded-xl text-xs focus:outline-none placeholder:text-slate-700 transition resize-none leading-relaxed"
           />
 
           {error && (
@@ -112,7 +112,7 @@ const JDTailorWidget = ({ currentData, onTailored }) => {
               type="button"
               onClick={() => handleTailor(false)}
               disabled={loading}
-              className="px-5 py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-5 py-3 bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-[var(--neo-text)] font-bold text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
             >
               {loading && !currentData ? (
                 <>
@@ -130,7 +130,7 @@ const JDTailorWidget = ({ currentData, onTailored }) => {
                 type="button"
                 onClick={() => handleTailor(true)}
                 disabled={loading}
-                className="px-5 py-3 border border-slate-700 hover:border-violet-600 text-slate-300 hover:text-white disabled:opacity-50 font-bold text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+                className="px-5 py-3 border border-slate-700 hover:border-violet-600 text-slate-300 hover:text-[var(--neo-text)] disabled:opacity-50 font-bold text-xs uppercase tracking-widest rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
               >
                 {loading && currentData ? (
                   <>

@@ -1,7 +1,7 @@
 import { getToken } from './auth'
 
 const rawApiUrl = import.meta.env.VITE_API_URL;
-export const API_BASE = rawApiUrl ? rawApiUrl.replace(/\/$/, '') : (import.meta.env.MODE === 'production' ? '' : 'http://localhost:5000');
+export const API_BASE = rawApiUrl ? rawApiUrl.replace(/\/$/, '') : (import.meta.env.MODE === 'production' ? '' : 'http://127.0.0.1:5000');
 const API_BASE_URL = API_BASE;
 
 async function request(path, options = {}) {
@@ -43,6 +43,14 @@ export function login(payload) {
     body: JSON.stringify(payload),
   })
 }
+
+export function verifyOTP(payload) {
+  return request('/api/auth/login/verify', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
 
 export function getProfile() {
   return request('/api/auth/profile')

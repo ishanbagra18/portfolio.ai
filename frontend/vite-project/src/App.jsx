@@ -1,34 +1,45 @@
+import { Suspense, lazy } from "react";
 import { Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./pages/Home";
-import ViewTemplates from "./pages/ViewTemplates";
-import Providedata from "./pages/ProvideData";
-import EditPortfolio from "./pages/EditPortfolio";
-import AtsChecker from "./pages/AtsChecker";
-import JobMatcher from "./pages/JobMatcher";
-import Profile from "./components/Profile";
-import UpdateProfile from "./components/UpdateProfile";
-import Template1 from "./Templates/Template1/Template1";
-import Template2 from "./Templates/Template2/Template2";
-import Template3 from "./Templates/Template3/Template3";
-import Template4 from "./Templates/Template4/Template4";
-import Template5 from "./Templates/Template5/Template5";
-import Template6 from "./Templates/Template6/Template6";
-import Template7 from "./Templates/Template7/Template7";
-import Template8 from "./Templates/Template8/Template8";
-import Template9 from "./Templates/Template9/Template9";
-import Template10 from "./Templates/Template10/Template10";
-import Template11 from "./Templates/Template11/Template11";
-import Template12 from "./Templates/Template12/Template12";
-import Template13 from "./Templates/Template13/Template13";
-import Template14 from "./Templates/Template14/Template14";
-import Template15 from "./Templates/Template15/Template15";
+import { AnimatePresence, motion } from "framer-motion";
 import { isAuthenticated } from "./lib/auth";
-import MyPortfolios from "./components/MyPortfolios";
-import PublicPortfolio from "./pages/PublicPortfolio";
-import PortfolioCritique from "./pages/PortfolioCritique";
+import { LoadingFallback } from "./components/ui/LoadingFallback";
 import "./index.css";
+
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Home = lazy(() => import("./pages/Home"));
+const ViewTemplates = lazy(() => import("./pages/ViewTemplates"));
+const Providedata = lazy(() => import("./pages/ProvideData"));
+const EditPortfolio = lazy(() => import("./pages/EditPortfolio"));
+const AtsChecker = lazy(() => import("./pages/AtsChecker"));
+const CareerTools = lazy(() => import("./pages/CareerTools"));
+const ColdEmailGenerator = lazy(() => import("./pages/ColdEmailGenerator"));
+const PortfolioMatcher = lazy(() => import("./pages/PortfolioMatcher"));
+const Profile = lazy(() => import("./components/Profile"));
+const UpdateProfile = lazy(() => import("./components/UpdateProfile"));
+const MyPortfolios = lazy(() => import("./components/MyPortfolios"));
+const PublicPortfolio = lazy(() => import("./pages/PublicPortfolio"));
+
+const Template1 = lazy(() => import("./Templates/Template1/Template1"));
+const Template2 = lazy(() => import("./Templates/Template2/Template2"));
+const Template3 = lazy(() => import("./Templates/Template3/Template3"));
+const Template4 = lazy(() => import("./Templates/Template4/Template4"));
+const Template5 = lazy(() => import("./Templates/Template5/Template5"));
+const Template6 = lazy(() => import("./Templates/Template6/Template6"));
+const Template7 = lazy(() => import("./Templates/Template7/Template7"));
+const Template8 = lazy(() => import("./Templates/Template8/Template8"));
+const Template9 = lazy(() => import("./Templates/Template9/Template9"));
+const Template10 = lazy(() => import("./Templates/Template10/Template10"));
+const Template11 = lazy(() => import("./Templates/Template11/Template11"));
+const Template12 = lazy(() => import("./Templates/Template12/Template12"));
+const Template13 = lazy(() => import("./Templates/Template13/Template13"));
+const Template14 = lazy(() => import("./Templates/Template14/Template14"));
+const Template15 = lazy(() => import("./Templates/Template15/Template15"));
+const Template16 = lazy(() => import("./Templates/Template16/Template16"));
+const Template17 = lazy(() => import("./Templates/Template17/Template17"));
+const Template18 = lazy(() => import("./Templates/Template18/Template18"));
+const Template19 = lazy(() => import("./Templates/Template19/Template19"));
+const Template20 = lazy(() => import("./Templates/Template20/Template20"));
 
 /* ---------------- Protected Route ---------------- */
 
@@ -48,24 +59,41 @@ function AuthLayout({ children }) {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center px-4 bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 text-slate-100 font-sans selection:bg-violet-500/30 selection:text-white antialiased">
-      {/* Background Blur */}
-      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-violet-600/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-80 h-80 bg-pink-600/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen w-full flex items-center justify-center px-4 bg-aurora text-[var(--neo-text)] font-sans antialiased overflow-hidden relative">
+      {/* Noise Texture */}
+      <div className="noise-overlay" />
+      
+      {/* Background Animated Blobs */}
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }} 
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-violet-600/20 rounded-full blur-[100px] pointer-events-none" 
+      />
+      <motion.div 
+        animate={{ scale: [1, 1.5, 1], rotate: [0, -90, 0] }} 
+        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-80 h-80 bg-pink-600/20 rounded-full blur-[120px] pointer-events-none" 
+      />
 
-      <div className="relative w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl shadow-violet-950/20 hover:border-slate-700/80 transition-all duration-500">
-        <nav className="mb-8 flex justify-between items-center border-b border-slate-800/80 pb-4">
-          <span className="text-xl font-black bg-gradient-to-r from-violet-400 to-indigo-400 bg-clip-text text-transparent tracking-tight">
+      {/* Main Glass Panel */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 120, damping: 14 }}
+        className="relative w-full max-w-md glass-panel p-8"
+      >
+        <nav className="mb-8 flex justify-between items-center border-b border-white/10 pb-4">
+          <span className="text-xl font-display font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent tracking-tight">
             SecureAuth
           </span>
 
-          <div className="flex bg-slate-950/60 p-1.5 rounded-xl border border-slate-800/80 text-xs font-semibold">
+          <div className="flex bg-black/20 p-1.5 rounded-2xl border border-white/5 text-xs font-semibold backdrop-blur-md">
             <Link
               to="/login"
-              className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
+              className={`px-4 py-2 rounded-xl transition-all duration-300 ${
                 location.pathname === "/login"
-                  ? "bg-violet-600 text-white shadow-md shadow-violet-600/20"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-white/10 text-[var(--neo-text)] shadow-lg neo-pressed"
+                  : "text-[var(--neo-text)]/60 hover:text-[var(--neo-text)] hover:bg-white/5"
               }`}
             >
               Login
@@ -73,10 +101,10 @@ function AuthLayout({ children }) {
 
             <Link
               to="/register"
-              className={`px-3 py-1.5 rounded-lg transition-all duration-200 ${
+              className={`px-4 py-2 rounded-xl transition-all duration-300 ${
                 location.pathname === "/register"
-                  ? "bg-violet-600 text-white shadow-md shadow-violet-600/20"
-                  : "text-slate-400 hover:text-slate-200"
+                  ? "bg-white/10 text-[var(--neo-text)] shadow-lg neo-pressed"
+                  : "text-[var(--neo-text)]/60 hover:text-[var(--neo-text)] hover:bg-white/5"
               }`}
             >
               Register
@@ -84,8 +112,11 @@ function AuthLayout({ children }) {
           </div>
         </nav>
 
-        {children}
-      </div>
+        {/* Page Content wrapped in AnimatePresence for tab switching */}
+        <div className="relative">
+          {children}
+        </div>
+      </motion.div>
     </div>
   );
 }
@@ -93,292 +124,353 @@ function AuthLayout({ children }) {
 /* ---------------- App ---------------- */
 
 export default function App() {
+  const location = useLocation();
+  
   return (
-    <Routes>
-      {/* Root */}
-      <Route
-        path="/"
-        element={
-          <Navigate
-            to={isAuthenticated() ? "/home" : "/login"}
-            replace
-          />
-        }
-      />
+    <AnimatePresence mode="wait">
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes key={location.pathname} location={location}>
+          {/* Root */}
+        <Route
+          path="/"
+          element={
+            <Navigate
+              to={isAuthenticated() ? "/home" : "/login"}
+              replace
+            />
+          }
+        />
 
-      {/* Login */}
-      <Route
-        path="/login"
-        element={
-          <PublicOnlyRoute>
-            <AuthLayout>
-              <Login />
-            </AuthLayout>
-          </PublicOnlyRoute>
-        }
-      />
+        {/* Login */}
+        <Route
+          path="/login"
+          element={
+            <PublicOnlyRoute>
+              <AuthLayout>
+                <Login />
+              </AuthLayout>
+            </PublicOnlyRoute>
+          }
+        />
 
-      {/* Register */}
-      <Route
-        path="/register"
-        element={
-          <PublicOnlyRoute>
-            <AuthLayout>
-              <Register />
-            </AuthLayout>
-          </PublicOnlyRoute>
-        }
-      />
+        {/* Register */}
+        <Route
+          path="/register"
+          element={
+            <PublicOnlyRoute>
+              <AuthLayout>
+                <Register />
+              </AuthLayout>
+            </PublicOnlyRoute>
+          }
+        />
 
-      {/* Home */}
-      <Route
-        path="/home"
-        element={
-          <ProtectedRoute>
-            <Home />
-          </ProtectedRoute>
-        }
-      />
+        {/* Home */}
+        <Route
+          path="/home"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* My Profile */}
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
+        {/* My Profile */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Change / Update Profile */}
-      <Route
-        path="/profile/edit"
-        element={
-          <ProtectedRoute>
-            <UpdateProfile />
-          </ProtectedRoute>
-        }
-      />
+        {/* Change / Update Profile */}
+        <Route
+          path="/profile/edit"
+          element={
+            <ProtectedRoute>
+              <UpdateProfile />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* View Templates (Template Selection Page) */}
-      <Route
-        path="/viewtemplates"
-        element={
-          <ProtectedRoute>
-            <ViewTemplates />
-          </ProtectedRoute>
-        }
-      />
+        {/* View Templates (Template Selection Page) */}
+        <Route
+          path="/viewtemplates"
+          element={
+            <ProtectedRoute>
+              <ViewTemplates />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* My Portfolios (Dashboard to view all user created portfolios) */}
-      <Route
-        path="/my-portfolios"
-        element={
-          <ProtectedRoute>
-            <MyPortfolios />
-          </ProtectedRoute>
-        }
-      />
+        {/* My Portfolios (Dashboard to view all user created portfolios) */}
+        <Route
+          path="/my-portfolios"
+          element={
+            <ProtectedRoute>
+              <MyPortfolios />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Provide Data */}
-      <Route
-        path="/provide-data/:templateId"
-        element={
-          <ProtectedRoute>
-            <Providedata />
-          </ProtectedRoute>
-        }
-      />
+        {/* Provide Data */}
+        <Route
+          path="/provide-data/:templateId"
+          element={
+            <ProtectedRoute>
+              <Providedata />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Edit Portfolio */}
-      <Route
-        path="/edit-portfolio/:portfolioId"
-        element={
-          <ProtectedRoute>
-            <EditPortfolio />
-          </ProtectedRoute>
-        }
-      />
+        {/* Edit Portfolio */}
+        <Route
+          path="/edit-portfolio/:portfolioId"
+          element={
+            <ProtectedRoute>
+              <EditPortfolio />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* ATS Checker */}
-      <Route
-        path="/ats-checker"
-        element={
-          <ProtectedRoute>
-            <AtsChecker />
-          </ProtectedRoute>
-        }
-      />
+        {/* ATS Checker */}
+        <Route
+          path="/ats-checker"
+          element={
+            <ProtectedRoute>
+              <AtsChecker />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Smart Job Matcher */}
-      <Route
-        path="/job-matcher/:id"
-        element={
-          <ProtectedRoute>
-            <JobMatcher />
-          </ProtectedRoute>
-        }
-      />
+        {/* Career Tools (Resume Upload) */}
+        <Route
+          path="/career-tools"
+          element={
+            <ProtectedRoute>
+              <CareerTools />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* AI Portfolio Critique */}
-      <Route
-        path="/critique/:portfolioId"
-        element={
-          <ProtectedRoute>
-            <PortfolioCritique />
-          </ProtectedRoute>
-        }
-      />
+        {/* Smart Portfolio Matcher */}
+        <Route
+          path="/portfolio-matcher/:id"
+          element={
+            <ProtectedRoute>
+              <PortfolioMatcher />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Templates (Notice the "?" at the end of :portfolioId) */}
-      <Route
-        path="/portfolio/template1/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template1 />
-          </ProtectedRoute>
-        }
-      />
+        {/* Cold Email Pitch Generator */}
+        <Route
+          path="/cold-email-generator"
+          element={
+            <ProtectedRoute>
+              <ColdEmailGenerator />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template2/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template2 />
-          </ProtectedRoute>
-        }
-      />
+        {/* Public Portfolio View */}
+        <Route
+          path="/portfolio/template1/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template1 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template3/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template3 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template2/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template2 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template4/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template4 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template3/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template3 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template5/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template5 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template4/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template4 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template6/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template6 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template5/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template5 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template7/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template7 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template6/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template6 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template8/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template8 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template7/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template7 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template9/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template9 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template8/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template8 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template10/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template10 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template9/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template9 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template11/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template11 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template10/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template10 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template12/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template12 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template11/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template11 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template13/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template13 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template12/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template12 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template14/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template14 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template13/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template13 />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/portfolio/template15/:portfolioId?"
-        element={
-          <ProtectedRoute>
-            <Template15 />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="/portfolio/template14/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template14 />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Public Portfolio (No auth — accessible by anyone with slug) */}
-      <Route path="/p/:slug" element={<PublicPortfolio />} />
+        <Route
+          path="/portfolio/template15/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template15 />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* Unknown Route */}
-      <Route
-        path="*"
-        element={
-          <Navigate
-            to={isAuthenticated() ? "/home" : "/login"}
-            replace
-          />
-        }
-      />
-    </Routes>
+        <Route
+          path="/portfolio/template16/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template16 />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/portfolio/template17/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template17 />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/portfolio/template18/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template18 />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/portfolio/template19/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template19 />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/portfolio/template20/:portfolioId?"
+          element={
+            <ProtectedRoute>
+              <Template20 />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Public Portfolio (No auth — accessible by anyone with slug) */}
+        <Route path="/p/:slug" element={<PublicPortfolio />} />
+
+        {/* Unknown Route */}
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to={isAuthenticated() ? "/home" : "/login"}
+              replace
+            />
+          }
+        />
+        </Routes>
+      </Suspense>
+    </AnimatePresence>
   );
 }

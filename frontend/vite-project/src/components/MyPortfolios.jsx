@@ -2,72 +2,81 @@ import { API_BASE } from '../lib/api';
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import CustomSlugModal from "./CustomSlugModal";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from './ui/Button';
+import { GlassCard } from './ui/GlassCard';
+import Navbar from './Navbar';
 
 /* ---------------- Confirm Delete Modal ---------------- */
 const DeleteModal = ({ portfolio, onConfirm, onCancel, isDeleting }) => {
   const fullName = portfolio?.personalInfo?.full_name || portfolio?.full_name || "Untitled Portfolio";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-[var(--neo-bg)]/50 backdrop-blur-sm"
         onClick={onCancel}
       />
 
       {/* Modal Card */}
-      <div className="relative z-10 w-full max-w-sm bg-slate-900 border border-red-500/30 rounded-2xl p-7 shadow-2xl shadow-red-950/40">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className="relative z-10 w-full max-w-sm glass-panel p-7 border-red-500/30"
+      >
         {/* Icon */}
-        <div className="w-12 h-12 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-center mx-auto mb-5">
-          <svg
+        <div className="w-12 h-12 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-center mx-auto mb-5 overflow-hidden">
+          <motion.svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={1.8}
             stroke="currentColor"
             className="w-6 h-6 text-red-400"
+            animate={isDeleting ? { 
+              y: [0, -5, 0], 
+              rotate: [0, -10, 10, -10, 10, 0],
+              scale: [1, 1.1, 1]
+            } : {}}
+            transition={isDeleting ? { 
+              repeat: Infinity, 
+              duration: 1 
+            } : {}}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
-            />
-          </svg>
+            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+          </motion.svg>
         </div>
 
-        <h3 className="text-xl font-bold text-white text-center mb-2">
+        <h3 className="text-xl font-bold font-display text-[var(--neo-text)] text-center mb-2">
           Delete Portfolio?
         </h3>
-        <p className="text-slate-400 text-sm text-center leading-relaxed mb-7">
+        <p className="text-[var(--neo-text)] opacity-80 text-sm text-center leading-relaxed mb-7">
           Are you sure you want to delete{" "}
-          <span className="text-white font-semibold">"{fullName}"</span>? This
+          <span className="text-[var(--neo-text)] font-semibold">"{fullName}"</span>? This
           action cannot be undone.
         </p>
 
         <div className="flex gap-3">
-          <button
+          <Button
             onClick={onCancel}
             disabled={isDeleting}
-            className="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-colors"
+            variant="neo"
+            className="flex-1 px-4 py-2 text-sm"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onConfirm}
             disabled={isDeleting}
-            className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-500 disabled:opacity-60 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
+            variant="primary"
+            className="flex-1 px-4 py-2 text-sm bg-red-600 hover:bg-red-500 shadow-red-600/30"
           >
-            {isDeleting ? (
-              <>
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Deleting...
-              </>
-            ) : (
-              "Yes, Delete"
-            )}
-          </button>
+            {isDeleting ? "Deleting..." : "Yes, Delete"}
+          </Button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
@@ -76,7 +85,7 @@ const DeleteModal = ({ portfolio, onConfirm, onCancel, isDeleting }) => {
 const CopyToast = ({ show }) => {
   if (!show) return null;
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-sm font-bold rounded-xl backdrop-blur-xl shadow-2xl animate-bounce-in flex items-center gap-2">
+    <div className="fixed bottom-6 left-1/2 -tranzinc-x-1/2 z-50 px-5 py-3 bg-fuchsia-500/20 border border-fuchsia-500/40 text-fuchsia-300 text-sm font-bold rounded-xl backdrop-blur-xl shadow-2xl animate-bounce-in flex items-center gap-2">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
         <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
       </svg>
@@ -268,9 +277,10 @@ const MyPortfolios = () => {
   // ---------------- Loading UI ----------------
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white font-sans">
-        <div className="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-slate-400 tracking-wider uppercase text-sm font-semibold">
+      <div className="min-h-screen bg-aurora flex flex-col items-center justify-center text-[var(--neo-text)] font-sans">
+        <div className="noise-overlay" />
+        <div className="w-10 h-10 border-4 border-accent-color border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-[var(--neo-text)] tracking-wider uppercase text-sm font-semibold">
           Loading Your Portfolios...
         </p>
       </div>
@@ -280,17 +290,15 @@ const MyPortfolios = () => {
   // ---------------- Error UI ----------------
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white px-6 font-sans">
-        <div className="max-w-md w-full bg-slate-900/80 border border-red-500/30 rounded-2xl p-6 text-center">
-          <h3 className="text-xl font-bold text-red-400 mb-2">Oops! Something went wrong</h3>
-          <p className="text-slate-400 text-sm mb-6">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-semibold transition text-sm"
-          >
+      <div className="min-h-screen bg-aurora flex flex-col items-center justify-center text-[var(--neo-text)] px-6 font-sans">
+        <div className="noise-overlay" />
+        <GlassCard className="max-w-md w-full border-red-500/30 text-center">
+          <h3 className="text-xl font-bold font-display text-red-400 mb-2">Oops! Something went wrong</h3>
+          <p className="text-[var(--neo-text)] opacity-80 text-sm mb-6">{error}</p>
+          <Button onClick={() => window.location.reload()} variant="primary">
             Try Again
-          </button>
-        </div>
+          </Button>
+        </GlassCard>
       </div>
     );
   }
@@ -327,26 +335,35 @@ const MyPortfolios = () => {
       {/* Copy toast */}
       <CopyToast show={showCopyToast} />
 
-      <div className="min-h-screen bg-slate-950 text-slate-100 font-sans py-16 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="min-h-screen bg-aurora text-[var(--neo-text)] font-sans relative overflow-x-hidden"
+      >
+        <div className="noise-overlay" />
+        
+        <Navbar />
 
+        <div className="max-w-7xl mx-auto px-6 md:px-12 pb-16 relative z-10">
           {/* Top Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12 border-b border-slate-800/80 pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12 pb-6 border-b border-black/10 dark:border-white/10">
             <div>
-              <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white">
+              <h1 className="text-3xl md:text-5xl font-display font-black tracking-tight text-[var(--neo-text)]">
                 My Portfolios
               </h1>
-              <p className="text-slate-400 text-sm md:text-base mt-2">
+              <p className="opacity-80 text-sm md:text-base mt-2">
                 Manage, preview, and share all your generated portfolios.
               </p>
             </div>
 
-            <Link
-              to="/viewtemplates"
-              className="inline-flex items-center justify-center px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl shadow-lg shadow-violet-600/20 transition-all text-sm uppercase tracking-wider whitespace-nowrap"
+            <Button
+              onClick={() => navigate('/viewtemplates')}
+              variant="primary"
+              className="uppercase tracking-wider font-bold  hover:bg-pink-500/20 hover:text-[var(--neo-text)]"
             >
               + Create New
-            </Link>
+            </Button>
           </div>
 
           {/* Delete error toast */}
@@ -364,24 +381,22 @@ const MyPortfolios = () => {
 
           {/* Empty State */}
           {portfolios.length === 0 ? (
-            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-12 text-center max-w-2xl mx-auto my-12">
-              <div className="w-16 h-16 bg-slate-800/80 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl">
+            <GlassCard className="text-center max-w-2xl mx-auto my-12 py-16">
+              <div className="w-16 h-16 bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl shadow-xl">
                 📂
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">No Portfolios Found</h3>
-              <p className="text-slate-400 mb-8 max-w-md mx-auto text-sm leading-relaxed">
+              <h3 className="text-2xl font-display font-bold text-[var(--neo-text)] mb-2">No Portfolios Found</h3>
+              <p className="opacity-80 mb-8 max-w-md mx-auto text-sm leading-relaxed">
                 You haven't created any portfolios yet. Select a template and provide your details to generate your first live portfolio!
               </p>
-              <Link
-                to="/viewtemplates"
-                className="px-8 py-3.5 bg-white text-black font-bold uppercase tracking-widest text-xs hover:bg-slate-200 transition rounded-xl"
-              >
+              <Button onClick={() => navigate('/viewtemplates')} variant="primary" className="mx-auto block w-fit">
                 Browse Templates
-              </Link>
-            </div>
+              </Button>
+            </GlassCard>
           ) : (
             /* Portfolios Grid */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <AnimatePresence>
               {portfolios.map((portfolio) => {
                 const fullName = portfolio?.personalInfo?.full_name || portfolio?.full_name || "Untitled Portfolio";
                 const title = portfolio?.personalInfo?.main_title || portfolio?.main_title || "Software Developer";
@@ -399,20 +414,27 @@ const MyPortfolios = () => {
                 const isToggling = togglingId === (portfolio._id || portfolio.id);
 
                 return (
-                  <div
+                  <motion.div
                     key={portfolio._id || portfolio.id}
-                    onClick={() => handleCardClick(portfolio)}
-                    className="group relative bg-slate-900/60 border border-slate-800 hover:border-violet-500/50 rounded-2xl p-6 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:shadow-2xl hover:shadow-violet-950/30 hover:-translate-y-1"
+                    layout
+                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, filter: "blur(5px)", transition: { duration: 0.3 } }}
+                    className="h-full"
                   >
+                    <GlassCard
+                      onClick={() => handleCardClick(portfolio)}
+                      className="h-full group flex flex-col justify-between cursor-pointer hover:border-accent-color/50 transition-colors p-6 sm:p-6"
+                    >
                     {/* Top Badge Section */}
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center gap-2">
-                          <span className="px-3 py-1 bg-violet-500/10 border border-violet-500/20 text-violet-300 rounded-full text-xs font-bold uppercase tracking-wider">
+                          <span className="px-3 py-1 bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-300 rounded-full text-xs font-bold uppercase tracking-wider">
                             {templateUsed}
                           </span>
                           {/* View count badge */}
-                          <span className="flex items-center gap-1 px-2.5 py-1 bg-slate-800/80 border border-slate-700/50 text-slate-400 rounded-full text-xs font-semibold">
+                          <span className="flex items-center gap-1 px-2.5 py-1 bg-[var(--neo-bg)]/80 border border-zinc-700/50 text-zinc-400 rounded-full text-xs font-semibold">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-3.5 h-3.5">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                               <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -421,7 +443,7 @@ const MyPortfolios = () => {
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
-                          <span className="text-xs text-slate-500 font-medium">
+                          <span className="text-xs text-zinc-500 font-medium">
                             {createdAt}
                           </span>
 
@@ -430,10 +452,10 @@ const MyPortfolios = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               const portfolioId = portfolio._id || portfolio.id;
-                              navigate(`/job-matcher/${portfolioId}`);
+                              navigate(`/portfolio-matcher/${portfolioId}`);
                             }}
-                            title="Job Description Alignment Audit"
-                            className="p-1.5 rounded-lg text-slate-600 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                            title="Job Description Alignment Matcher"
+                            className="p-1.5 rounded-lg text-zinc-600 hover:text-fuchsia-400 hover:bg-fuchsia-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                               strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
@@ -442,28 +464,11 @@ const MyPortfolios = () => {
                             </svg>
                           </button>
 
-                          {/* AI Recruiter Critique Button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const portfolioId = portfolio._id || portfolio.id;
-                              navigate(`/critique/${portfolioId}`);
-                            }}
-                            title="Hiring Manager AI Critique"
-                            className="p-1.5 rounded-lg text-slate-600 hover:text-violet-400 hover:bg-violet-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                              strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
-                              <path strokeLinecap="round" strokeLinejoin="round"
-                                d="M9 12h3.75M9 15h3.75M9 9h3.75M2.25 12a9.75 9.75 0 1 1 19.5 0 9.75 9.75 0 0 1-19.5 0Z" />
-                            </svg>
-                          </button>
-
                           {/* Edit Button */}
                           <button
                             onClick={(e) => handleEditClick(e, portfolio)}
                             title="Edit portfolio"
-                            className="p-1.5 rounded-lg text-slate-600 hover:text-violet-400 hover:bg-violet-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-zinc-600 hover:text-fuchsia-400 hover:bg-fuchsia-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                               strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
@@ -476,7 +481,7 @@ const MyPortfolios = () => {
                           <button
                             onClick={(e) => handleDeleteClick(e, portfolio)}
                             title="Delete portfolio"
-                            className="p-1.5 rounded-lg text-slate-600 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                               strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
@@ -488,26 +493,26 @@ const MyPortfolios = () => {
                       </div>
 
                       {/* Personal Info Summary */}
-                      <h3 className="text-2xl font-bold text-white group-hover:text-violet-400 transition-colors duration-200 line-clamp-1">
+                      <h3 className="text-2xl font-bold text-[var(--neo-text)] group-hover:text-fuchsia-400 transition-colors duration-200 line-clamp-1">
                         {fullName}
                       </h3>
-                      <p className="text-slate-400 text-sm font-medium mt-1 mb-4 line-clamp-1">
+                      <p className="text-zinc-400 text-sm font-medium mt-1 mb-4 line-clamp-1">
                         {title}
                       </p>
 
                       {/* Public/Private Toggle Section */}
-                      <div className="flex items-center justify-between mb-4 px-3 py-2.5 bg-slate-800/50 border border-slate-700/40 rounded-xl" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-between mb-4 px-3 py-2.5 bg-[var(--neo-bg)]/50 border border-zinc-700/40 rounded-xl" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center gap-2">
                           {isPublic ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 text-emerald-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 text-fuchsia-400">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 0 1-1.161.886l-.143.048a1.107 1.107 0 0 0-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 0 1-1.652.928l-.679-.906a1.125 1.125 0 0 0-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 1 1-8.862 12.872M12.75 3.031a9 9 0 0 1 6.69 14.036m0 0-.177-.529A2.25 2.25 0 0 0 17.128 15H16.5l-.324-.324a1.453 1.453 0 0 0-2.328.377l-.036.073a1.586 1.586 0 0 1-.982.816l-.99.282c-.55.157-.894.702-.8 1.267l.073.438c.08.474.49.821.97.821.846 0 1.598.542 1.865 1.345l.215.643m5.276-3.67a9.012 9.012 0 0 1-5.276 3.67m0 0a9 9 0 0 1-10.275-4.835M15.75 9c0 .896-.393 1.7-1.016 2.25" />
                             </svg>
                           ) : (
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 text-slate-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" className="w-4 h-4 text-zinc-500">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                             </svg>
                           )}
-                          <span className={`text-xs font-bold uppercase tracking-wider ${isPublic ? 'text-emerald-400' : 'text-slate-500'}`}>
+                          <span className={`text-xs font-bold uppercase tracking-wider ${isPublic ? 'text-fuchsia-400' : 'text-zinc-500'}`}>
                             {isPublic ? 'Public' : 'Private'}
                           </span>
                         </div>
@@ -520,7 +525,7 @@ const MyPortfolios = () => {
                               setCustomSlugTarget(portfolio);
                             }}
                             title="Customize Link"
-                            className="flex items-center gap-1 px-2.5 py-1 bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 text-violet-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors"
+                            className="flex items-center gap-1 px-2.5 py-1 bg-fuchsia-500/10 hover:bg-fuchsia-500/20 border border-fuchsia-500/20 text-fuchsia-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
                               <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
@@ -533,7 +538,7 @@ const MyPortfolios = () => {
                             <button
                               onClick={(e) => handleCopyLink(e, portfolio)}
                               title="Copy public link"
-                              className="flex items-center gap-1 px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors"
+                              className="flex items-center gap-1 px-2.5 py-1 bg-fuchsia-500/10 hover:bg-fuchsia-500/20 border border-fuchsia-500/20 text-fuchsia-300 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors"
                             >
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3 h-3">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m9.86-1.135a4.5 4.5 0 0 0-1.242-7.244l-4.5-4.5a4.5 4.5 0 0 0-6.364 6.364l1.757 1.757" />
@@ -550,7 +555,7 @@ const MyPortfolios = () => {
                             className="relative w-10 h-5 rounded-full transition-colors duration-300 disabled:opacity-50"
                             style={{
                               background: isPublic
-                                ? 'linear-gradient(135deg, #059669, #10b981)'
+                                ? 'linear-gradient(135deg, #c026d3, #d946ef)'
                                 : 'linear-gradient(135deg, #334155, #475569)',
                             }}
                           >
@@ -567,7 +572,7 @@ const MyPortfolios = () => {
                       {/* Public URL display */}
                       {isPublic && publicSlug && (
                         <div
-                          className="mb-2 px-3 py-2 bg-emerald-500/5 border border-emerald-500/20 hover:border-violet-500/40 rounded-lg flex items-center justify-between group/url cursor-pointer transition-colors"
+                          className="mb-2 px-3 py-2 bg-fuchsia-500/5 border border-fuchsia-500/20 hover:border-fuchsia-500/40 rounded-lg flex items-center justify-between group/url cursor-pointer transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             setCustomSlugTarget(portfolio);
@@ -575,12 +580,12 @@ const MyPortfolios = () => {
                           title="Click to customize link"
                         >
                           <div>
-                            <p className="text-[10px] text-emerald-400/60 font-bold uppercase tracking-widest mb-0.5">Public URL</p>
-                            <p className="text-emerald-300 text-xs font-mono truncate select-all">
+                            <p className="text-[10px] text-fuchsia-400/60 font-bold uppercase tracking-widest mb-0.5">Public URL</p>
+                            <p className="text-fuchsia-300 text-xs font-mono truncate select-all">
                               {window.location.origin}/p/{publicSlug}
                             </p>
                           </div>
-                          <span className="text-[10px] text-violet-400 font-bold opacity-0 group-hover/url:opacity-100 transition-opacity whitespace-nowrap ml-2">
+                          <span className="text-[10px] text-fuchsia-400 font-bold opacity-0 group-hover/url:opacity-100 transition-opacity whitespace-nowrap ml-2">
                             Edit ✏
                           </span>
                         </div>
@@ -588,20 +593,22 @@ const MyPortfolios = () => {
                     </div>
 
                     {/* Bottom Action Footer */}
-                    <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-slate-400 group-hover:text-white transition">
+                    <div className="pt-4 border-t border-black/10 dark:border-white/10 flex items-center justify-between text-xs font-bold opacity-60 group-hover:opacity-100 group-hover:text-[var(--neo-text)] transition">
                       <span>Click to view live &rarr;</span>
-                      <span className="bg-slate-800 group-hover:bg-violet-600 text-white px-3 py-1.5 rounded-lg transition-colors">
+                      <span className="bg-white/10 group-hover:bg-accent-color text-[var(--neo-text)] px-3 py-1.5 rounded-lg transition-colors">
                         Open
                       </span>
                     </div>
-                  </div>
+                  </GlassCard>
+                </motion.div>
                 );
               })}
+              </AnimatePresence>
             </div>
           )}
 
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

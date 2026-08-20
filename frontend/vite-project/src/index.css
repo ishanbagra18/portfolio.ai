@@ -1,10 +1,86 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+}
+
+:root {
+  --neo-bg: #f8f9fa;
+  --neo-shadow-light: #ffffff;
+  --neo-shadow-dark: #d1d5db;
+  --neo-text: #1a1b1e;
+  --accent-color: #ec4899;
+}
+
+.dark {
+  --neo-bg: #1a1b1e;
+  --neo-shadow-light: #2c2d30;
+  --neo-shadow-dark: #080809;
+  --neo-text: #c1c2c5;
+  --accent-color: #818cf8;
+}
+
+body {
+  background-color: var(--neo-bg);
+  color: var(--neo-text);
+  font-family: var(--font-sans);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Background Mesh/Aurora Gradient */
+.bg-aurora {
+  background:
+    radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%);
+  background-color: var(--neo-bg);
+}
+
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Neomorphism */
+.neo-surface {
+  background-color: var(--neo-bg);
+  box-shadow:
+    8px 8px 16px var(--neo-shadow-dark),
+    -8px -8px 16px var(--neo-shadow-light);
+  border-radius: 1.5rem;
+}
+
+.neo-pressed {
+  background-color: var(--neo-bg);
+  box-shadow:
+    inset 6px 6px 12px var(--neo-shadow-dark),
+    inset -6px -6px 12px var(--neo-shadow-light);
+  border-radius: 1rem;
+}
+
+/* Glassmorphism */
+.glass-panel {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -16,6 +92,7 @@
     opacity: 0;
     transform: translateY(-6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -32,8 +109,15 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-12px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 .animate-float {
@@ -46,6 +130,7 @@
 
 /* ── Print Overrides for 1-Page A4 Resume PDF ── */
 @media print {
+
   /* Hide interactive, floating, and print-excluded widgets */
   .fixed,
   button,
@@ -59,7 +144,20 @@
   }
 
   /* Force white background and black text on all sections */
-  html, body, div, section, main, h1, h2, h3, h4, h5, p, span, li, a {
+  html,
+  body,
+  div,
+  section,
+  main,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  p,
+  span,
+  li,
+  a {
     background-color: #ffffff !important;
     background-image: none !important;
     color: #000000 !important;
@@ -121,20 +219,28 @@
   }
 
   /* Spacers and margins resets */
-  .py-20, .py-24, .py-16 {
+  .py-20,
+  .py-24,
+  .py-16 {
     padding-top: 6px !important;
     padding-bottom: 6px !important;
   }
 
-  .mb-16, .mb-14, .mb-12, .mb-10 {
+  .mb-16,
+  .mb-14,
+  .mb-12,
+  .mb-10 {
     margin-bottom: 6px !important;
   }
 
-  .gap-12, .gap-10, .gap-8 {
+  .gap-12,
+  .gap-10,
+  .gap-8 {
     gap: 4px !important;
   }
 
-  .space-y-16, .space-y-12 {
+  .space-y-16,
+  .space-y-12 {
     margin-top: 4px !important;
   }
 

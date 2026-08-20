@@ -1,9 +1,18 @@
-// import React from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { Button } from './ui/Button';
+import { User, Settings, LogOut, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { isDarkMode, toggleTheme } = useTheme();
+  const { scrollY } = useScroll();
+
+  const blur = useTransform(scrollY, [0, 100], ['blur(8px)', 'blur(16px)']);
+  const bgOpacity = useTransform(scrollY, [0, 100], ['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.15)']);
 
   const handleLogout = async () => {
     try {
@@ -21,50 +30,76 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="z-10 flex justify-between items-center w-full py-5 border-b border-zinc-800/80 mb-8 backdrop-blur-md">
+    <motion.nav
+      style={{ backdropFilter: blur, backgroundColor: bgOpacity }}
+      className="sticky top-0 z-50 flex justify-between items-center w-full px-6 py-4 border-b border-black/20 dark:border-white/20 mb-8 transition-colors"
+    >
       <div className="flex items-center gap-8">
-        <Link 
-          to="/home" 
-          className="text-xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-zinc-400 hover:opacity-80 transition duration-300"
+        <Link
+          to="/home"
+          className="text-2xl font-display font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-pink-400 hover:opacity-80 transition duration-300"
         >
           PORTFOLIO.AI
         </Link>
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/my-portfolios" className="text-sm font-semibold text-zinc-400 hover:text-white transition duration-200">
+          <Link to="/my-portfolios" className="text-sm font-semibold font-sans text-[var(--neo-text)] hover:text-accent-color transition duration-200">
             My Portfolios
           </Link>
-          <Link to="/ats-checker" className="text-sm font-semibold text-zinc-400 hover:text-white transition duration-200">
+          <Link to="/career-tools" className="text-sm font-semibold font-sans text-[var(--neo-text)] hover:text-accent-color transition duration-200">
+            Career Tools
+          </Link>
+          <Link to="/cold-email-generator" className="text-sm font-semibold font-sans text-[var(--neo-text)] hover:text-accent-color transition duration-200">
+            Cold Email
+          </Link>
+          <Link to="/ats-checker" className="text-sm font-semibold font-sans text-[var(--neo-text)] hover:text-accent-color transition duration-200">
             ATS Checker
           </Link>
         </div>
       </div>
-      
-      <div className="flex items-center gap-3 md:gap-4">
-        {/* My Profile - Clean Ghost/Border Styled Button */}
-        <Link 
-          to="/profile" 
-          className="text-xs md:text-sm font-medium text-zinc-300 bg-zinc-900/80 border border-zinc-700/60 px-5 py-2.5 rounded-full hover:bg-zinc-800 hover:text-white hover:border-zinc-500 hover:shadow-[0_0_15px_rgba(255,255,255,0.07)] active:scale-95 transition-all duration-300"
+
+      <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
+        {/* Theme Toggle Button */}
+        <Button
+          variant="glass"
+          onClick={toggleTheme}
+          className="inline-flex items-center justify-center p-2.5 rounded-full transition-all active:scale-95 text-[var(--neo-text)] hover:text-fuchsia-400"
+          title="Toggle Theme"
         >
+          {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </Button>
+
+        {/* My Profile Button */}
+        <Button
+          variant="glass"
+          onClick={() => navigate('/profile')}
+          className="hidden md:inline-flex items-center cursor-pointer gap-2 px-4 py-2.5 text-sm font-medium transition-all active:scale-95"
+        >
+          <User className="w-4 h-4 opacity-70" />
           My Profile
-        </Link>
+        </Button>
 
-        {/* Change Profile - Highlighted Gradient Border/Solid Action Button */}
-        <Link 
-          to="/profile/edit" 
-          className="text-xs md:text-sm font-semibold text-black bg-white border border-white px-5 py-2.5 rounded-full hover:bg-zinc-200 hover:border-zinc-200 hover:shadow-[0_0_20px_rgba(255,255,255,0.25)] active:scale-95 transition-all duration-300"
+        {/* Edit Profile Button */}
+        <Button
+          variant="neo"
+          onClick={() => navigate('/profile/edit')}
+          className="inline-flex items-center gap-2 px-3 cursor-pointer sm:px-4 py-2.5 text-sm font-medium transition-all active:scale-95"
         >
-          Change Profile
-        </Link>
+          <Settings className="w-4 h-4 opacity-70" />
+          <span className="hidden sm:inline">Edit Profile</span>
+          <span className="sm:hidden">Edit</span>
+        </Button>
 
-        {/* Logout - Sleek Neon Red Glow on Hover */}
-        <button 
+        {/* Logout Button */}
+        <Button
+          variant="neo"
           onClick={handleLogout}
-          className="text-xs md:text-sm font-medium text-red-400 bg-red-950/30 border border-red-800/50 px-5 py-2.5 rounded-full hover:bg-red-900/50 hover:text-red-200 hover:border-red-600 hover:shadow-[0_0_15px_rgba(239,68,68,0.25)] active:scale-95 transition-all duration-300 cursor-pointer"
+          className="inline-flex items-center gap-2 px-3 sm:px-4 py-2.5 cursor-pointer text-sm font-medium text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 focus:ring-2 focus:ring-red-500/50 transition-all active:scale-95 dark:text-red-500 dark:hover:bg-red-950/30"
         >
-          Logout
-        </button>
+          <LogOut className="w-4 h-4" />
+          <span className="hidden sm:inline">Logout</span>
+        </Button>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 

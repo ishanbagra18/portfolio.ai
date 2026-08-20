@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import DynamicSection from './components/DynamicSection';
 import ChatbotWidget from '../../components/ChatbotWidget';
 import { API_BASE } from '../../lib/api';
+import { SECTION_SCHEMAS } from '../../lib/sectionSchemas';
+import GitHubActivity from '../../components/GitHubActivity';
 
 const defaultData = {
   personalInfo: {
@@ -288,7 +291,18 @@ const Template9 = ({ publicData, isPublicView }) => {
           </section>
         )}
 
-        {/* Terminal Footer */}
+        
+      {/* Render optional dynamic sections */}
+      {data?.personalInfo && Object.entries(SECTION_SCHEMAS).map(([key, schema]) => (
+        <DynamicSection
+          key={key}
+          title={schema.title}
+          schema={schema}
+          data={data.personalInfo[key]}
+        />
+      ))}
+
+      {/* Terminal Footer */}
         <div className="border-t border-[#33FF33] pt-6 flex flex-col sm:flex-row justify-between text-xs opacity-75 gap-2">
           <span>&copy; {new Date().getFullYear()} {pInfo.full_name}</span>
           {pInfo.resume_url && (

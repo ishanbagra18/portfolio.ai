@@ -1,10 +1,11 @@
-import 'dotenv/config'
+import './loadEnv.js';
 import express from 'express'
 import cors from 'cors'
 import authRoutes from './routes/authRoutes.js'
 import portfolioRoutes from './routes/portfolioRoutes.js'
 import resumeRoutes from './routes/resumeRoutes.js' // <-- Naya Import Added
 import aiRoutes from './routes/aiRoutes.js'
+import templateRoutes from './routes/templateRoutes.js'
 
 import fs from 'fs'
 
@@ -43,7 +44,8 @@ app.use(
       
       const cleanOrigin = origin.replace(/\/$/, '');
       const isAllowed = origins.some(allowed => allowed.replace(/\/$/, '') === cleanOrigin)
-        || cleanOrigin.endsWith('.vercel.app');
+        || cleanOrigin.endsWith('.vercel.app')
+        || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin);
 
       if (isAllowed) {
         callback(null, true);
@@ -67,7 +69,14 @@ app.use('/api/auth', authRoutes)
 app.use('/api/portfolio', portfolioRoutes)
 app.use('/api/resume', resumeRoutes) // <-- Resume Route Prefix: /api/resume
 app.use('/api/ai', aiRoutes)
+app.use('/api/templates', templateRoutes)
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`)
+// Global Error Handler
+app.use((err, _req, res, _next) => {
+  console.error('Unhandled Server Error:', err);
+  res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
+});
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on http://127.0.0.1:${port}`)
 })

@@ -35,3 +35,21 @@ out/
 
 # Media uploads
 backend/uploads/
+
+# Scratch & test scripts
+test-*.js
+test-*.mjs
+test-*.cjs
+taste-temp
+impeccable-temp
+serena-plugin/
+backend/dummy.txt
+backend/sample.pdf
+backend/fix.cjs
+backend/missing.js
+backend/recover.cjs
+frontend/vite-project/applyDarkMode.cjs
+frontend/vite-project/insertSections.cjs
+frontend/vite-project/insertSections2.cjs
+frontend/vite-project/replaceColors.cjs
+frontend/vite-project/styleCareerTools.cjs

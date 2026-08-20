@@ -15,6 +15,11 @@ import Template12 from '../Templates/Template12/Template12';
 import Template13 from '../Templates/Template13/Template13';
 import Template14 from '../Templates/Template14/Template14';
 import Template15 from '../Templates/Template15/Template15';
+import Template16 from '../Templates/Template16/Template16';
+import Template17 from '../Templates/Template17/Template17';
+import Template18 from '../Templates/Template18/Template18';
+import Template19 from '../Templates/Template19/Template19';
+import Template20 from '../Templates/Template20/Template20';
 
 import { API_BASE } from '../lib/api';
 
@@ -34,6 +39,11 @@ const TEMPLATE_MAP = {
   template13: Template13,
   template14: Template14,
   template15: Template15,
+  template16: Template16,
+  template17: Template17,
+  template18: Template18,
+  template19: Template19,
+  template20: Template20,
 };
 
 const PublicPortfolio = () => {
@@ -72,7 +82,7 @@ const PublicPortfolio = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white font-sans">
+      <div className="min-h-screen bg-[var(--neo-bg)] flex flex-col items-center justify-center text-[var(--neo-text)] font-sans">
         <div className="relative">
           <div className="w-16 h-16 border-4 border-violet-500/30 rounded-full" />
           <div className="absolute inset-0 w-16 h-16 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
@@ -87,12 +97,12 @@ const PublicPortfolio = () => {
   // Error / 404 state
   if (error || !portfolioData) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white px-6 font-sans">
-        <div className="max-w-md w-full bg-slate-900/80 border border-slate-800 rounded-3xl p-10 text-center">
-          <div className="w-20 h-20 bg-slate-800/80 rounded-2xl flex items-center justify-center mx-auto mb-6 text-4xl">
+      <div className="min-h-screen bg-[var(--neo-bg)] flex flex-col items-center justify-center text-[var(--neo-text)] px-6 font-sans">
+        <div className="max-w-md w-full bg-[var(--neo-bg)]/80 border border-black/10 dark:border-black/10 dark:border-white/10 rounded-3xl p-10 text-center">
+          <div className="w-20 h-20 bg-[var(--neo-bg)]/80 rounded-2xl flex items-center justify-center mx-auto mb-6 text-4xl">
             🔒
           </div>
-          <h1 className="text-3xl font-black text-white mb-3">
+          <h1 className="text-3xl font-black text-[var(--neo-text)] mb-3">
             Portfolio Not Found
           </h1>
           <p className="text-slate-400 text-sm leading-relaxed mb-8">
@@ -100,7 +110,7 @@ const PublicPortfolio = () => {
           </p>
           <a
             href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-xl shadow-lg shadow-violet-600/20 transition-all text-sm uppercase tracking-wider"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-500 text-[var(--neo-text)] font-bold rounded-xl shadow-lg shadow-violet-600/20 transition-all text-sm uppercase tracking-wider"
           >
             Go Home
           </a>

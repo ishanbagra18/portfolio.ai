@@ -76,7 +76,7 @@ const ChatbotWidget = ({ portfolioId, name }) => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-14 h-14 bg-gradient-to-tr from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-full shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-350 hover:scale-105 active:scale-95 group relative"
+          className="w-14 h-14 bg-gradient-to-tr from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-[var(--neo-text)] rounded-full shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-350 hover:scale-105 active:scale-95 group relative"
           title={`Ask AI about ${name || 'Candidate'}`}
         >
           {/* Pulsing indicator ring */}
@@ -90,21 +90,21 @@ const ChatbotWidget = ({ portfolioId, name }) => {
 
       {/* Chatbox Window */}
       {isOpen && (
-        <div className="w-85 md:w-96 h-[480px] bg-slate-900/95 border border-slate-800 rounded-3xl shadow-2xl flex flex-col backdrop-blur-xl animate-fade-in">
+        <div className="w-85 md:w-96 h-[480px] bg-[var(--neo-bg)]/95 border border-black/10 dark:border-black/10 dark:border-white/10 rounded-3xl shadow-2xl flex flex-col backdrop-blur-xl animate-fade-in">
           
           {/* Header */}
-          <div className="p-4 border-b border-slate-800 flex justify-between items-center bg-gradient-to-r from-slate-900 to-slate-950 rounded-t-3xl">
+          <div className="p-4 border-b border-black/10 dark:border-black/10 dark:border-white/10 flex justify-between items-center bg-gradient-to-r from-slate-900 to-slate-950 rounded-t-3xl">
             <div className="flex items-center gap-2.5">
               <div className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse" />
               <div>
-                <h4 className="text-sm font-bold text-white tracking-wide">Recruiter Assistant</h4>
+                <h4 className="text-sm font-bold text-[var(--neo-text)] tracking-wide">Recruiter Assistant</h4>
                 <p className="text-[10px] text-slate-400">Ask AI about {name || 'Candidate'}</p>
               </div>
             </div>
             
             <button
               onClick={() => setIsOpen(false)}
-              className="text-slate-400 hover:text-slate-100 p-1 hover:bg-slate-850 rounded-lg cursor-pointer transition-colors"
+              className="text-slate-400 hover:text-[var(--neo-text)] p-1 hover:bg-slate-850 rounded-lg cursor-pointer transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -122,8 +122,8 @@ const ChatbotWidget = ({ portfolioId, name }) => {
                 <div
                   className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-xs leading-relaxed ${
                     msg.role === 'user'
-                      ? 'bg-violet-600 text-white rounded-tr-none'
-                      : 'bg-slate-850 text-slate-200 border border-slate-800 rounded-tl-none'
+                      ? 'bg-violet-600 text-[var(--neo-text)] rounded-tr-none'
+                      : 'bg-slate-850 text-slate-200 border border-black/10 dark:border-black/10 dark:border-white/10 rounded-tl-none'
                   }`}
                   style={{ whiteSpace: 'pre-wrap' }}
                 >
@@ -133,7 +133,7 @@ const ChatbotWidget = ({ portfolioId, name }) => {
             ))}
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-slate-850 border border-slate-800 rounded-2xl rounded-tl-none px-4 py-2.5 flex items-center gap-1">
+                <div className="bg-slate-850 border border-black/10 dark:border-black/10 dark:border-white/10 rounded-2xl rounded-tl-none px-4 py-2.5 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                   <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                   <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -150,7 +150,7 @@ const ChatbotWidget = ({ portfolioId, name }) => {
                 <button
                   key={idx}
                   onClick={() => handleSend(chip)}
-                  className="text-[10px] bg-slate-950 border border-slate-800 text-slate-300 hover:text-white hover:border-violet-500/40 px-2.5 py-1 rounded-full cursor-pointer transition-all"
+                  className="text-[10px] bg-[var(--neo-bg)] border border-black/10 dark:border-black/10 dark:border-white/10 text-slate-300 hover:text-[var(--neo-text)] hover:border-violet-500/40 px-2.5 py-1 rounded-full cursor-pointer transition-all"
                 >
                   {chip}
                 </button>
@@ -164,19 +164,19 @@ const ChatbotWidget = ({ portfolioId, name }) => {
               e.preventDefault();
               handleSend();
             }}
-            className="p-3 border-t border-slate-800 bg-slate-950/60 rounded-b-3xl flex gap-2"
+            className="p-3 border-t border-black/10 dark:border-black/10 dark:border-white/10 bg-[var(--neo-bg)]/60 rounded-b-3xl flex gap-2"
           >
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder="Ask a question..."
-              className="flex-1 bg-slate-900 border border-slate-800/80 rounded-xl px-3 text-xs text-white focus:outline-none focus:border-violet-500/50"
+              className="flex-1 bg-[var(--neo-bg)] border border-black/10 dark:border-black/10 dark:border-white/10/80 rounded-xl px-3 text-xs text-[var(--neo-text)] focus:outline-none focus:border-violet-500/50"
             />
             <button
               type="submit"
               disabled={!inputValue.trim() || loading}
-              className="w-8 h-8 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:hover:bg-violet-600 text-white rounded-lg flex items-center justify-center cursor-pointer transition-colors"
+              className="w-8 h-8 bg-violet-600 hover:bg-violet-500 disabled:opacity-40 disabled:hover:bg-violet-600 text-[var(--neo-text)] rounded-lg flex items-center justify-center cursor-pointer transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />

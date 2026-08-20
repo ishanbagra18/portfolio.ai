@@ -54,7 +54,7 @@ const ExperienceForm = ({ data, onChange, onAdd }) => {
         {data.map((exp, index) => (
           <div key={index} className="p-8 border border-gray-800 rounded-lg relative focus-within:border-white transition-colors">
             
-            <div className="absolute -top-4 left-6 bg-black px-4 text-sm font-bold text-gray-500 tracking-widest">
+            <div className="absolute -top-4 left-6 bg-[var(--neo-bg)] px-4 text-sm font-bold text-gray-500 tracking-widest">
               ROLE {index + 1}
             </div>
 
@@ -64,7 +64,7 @@ const ExperienceForm = ({ data, onChange, onAdd }) => {
                 <input 
                   type="text" name="role" value={exp.role ?? ''} onChange={(e) => onChange(index, e)}
                   placeholder="e.g. Team Lead - SIH 2025"
-                  className="bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                  className="bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
@@ -73,7 +73,7 @@ const ExperienceForm = ({ data, onChange, onAdd }) => {
                 <input 
                   type="text" name="company_name" value={exp.company_name ?? ''} onChange={(e) => onChange(index, e)}
                   placeholder="e.g. Team ZeroGrid"
-                  className="bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                  className="bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
@@ -82,7 +82,7 @@ const ExperienceForm = ({ data, onChange, onAdd }) => {
                 <input 
                   type="text" name="date_of_joining" value={exp.date_of_joining ?? ''} onChange={(e) => onChange(index, e)}
                   placeholder="YYYY-MM-DD or Month Year"
-                  className="bg-transparent border-b border-gray-800 text-xl text-white py-2 focus:outline-none focus:border-white transition-colors"
+                  className="bg-transparent border-b border-gray-800 text-xl text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors"
                 />
               </div>
 
@@ -95,7 +95,7 @@ const ExperienceForm = ({ data, onChange, onAdd }) => {
                     type="button"
                     onClick={() => handlePolishExperience(index, exp.work_description)}
                     disabled={polishingIndex !== null}
-                    className="text-[10px] font-bold text-violet-400 hover:text-white uppercase tracking-wider flex items-center gap-1 transition-colors disabled:opacity-50"
+                    className="text-[10px] font-bold text-violet-400 hover:text-[var(--neo-text)] uppercase tracking-wider flex items-center gap-1 transition-colors disabled:opacity-50"
                   >
                     {polishingIndex === index ? (
                       <>
@@ -110,7 +110,7 @@ const ExperienceForm = ({ data, onChange, onAdd }) => {
                   name="work_description" value={exp.work_description ?? ''} onChange={(e) => onChange(index, e)}
                   placeholder="Describe your responsibilities and achievements..."
                   rows="3"
-                  className="bg-transparent border-b border-gray-800 text-lg text-white py-2 focus:outline-none focus:border-white transition-colors resize-none"
+                  className="bg-transparent border-b border-gray-800 text-lg text-[var(--neo-text)] py-2 focus:outline-none focus:border-white transition-colors resize-none"
                 ></textarea>
               </div>
             </div>

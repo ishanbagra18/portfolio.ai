@@ -72,7 +72,7 @@ const PortfolioCritique = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white px-6 font-sans relative overflow-hidden">
+      <div className="min-h-screen bg-[var(--neo-bg)] flex flex-col items-center justify-center text-[var(--neo-text)] px-6 font-sans relative overflow-hidden">
         {/* Background light spheres */}
         <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-violet-600/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 bg-fuchsia-600/10 rounded-full blur-[140px] pointer-events-none" />
@@ -84,7 +84,7 @@ const PortfolioCritique = () => {
             <span className="absolute inset-0 flex items-center justify-center text-2xl animate-pulse">📋</span>
           </div>
 
-          <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2 text-center">
+          <h2 className="text-2xl font-black uppercase tracking-tight text-[var(--neo-text)] mb-2 text-center">
             Hiring Manager Review in Progress
           </h2>
           <p className="text-slate-400 text-sm text-center max-w-sm h-6 transition-all duration-300 font-mono">
@@ -97,18 +97,18 @@ const PortfolioCritique = () => {
 
   if (error || !critique) {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white px-6 font-sans relative">
-        <div className="max-w-md w-full bg-slate-900/60 backdrop-blur-xl border border-red-500/20 rounded-3xl p-10 text-center shadow-2xl">
+      <div className="min-h-screen bg-[var(--neo-bg)] flex flex-col items-center justify-center text-[var(--neo-text)] px-6 font-sans relative">
+        <div className="max-w-md w-full bg-black/5 dark:bg-white/5 backdrop-blur-md backdrop-blur-xl border border-red-500/20 rounded-3xl p-10 text-center shadow-2xl">
           <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 text-3xl text-red-400">
             ⚠️
           </div>
-          <h1 className="text-2xl font-black text-white mb-3">Critique Failed</h1>
+          <h1 className="text-2xl font-black text-[var(--neo-text)] mb-3">Critique Failed</h1>
           <p className="text-slate-400 text-sm leading-relaxed mb-8">
             {error || 'Unable to review portfolio at this time.'}
           </p>
           <button
             onClick={() => navigate('/my-portfolios')}
-            className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition text-sm uppercase tracking-wider"
+            className="w-full py-3 bg-[var(--neo-bg)] hover:bg-slate-700 text-[var(--neo-text)] font-bold rounded-xl transition text-sm uppercase tracking-wider"
           >
             Back to Dashboard
           </button>
@@ -142,25 +142,25 @@ const PortfolioCritique = () => {
   const readabilityGrade = getGrade(readabilityScore);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans py-16 px-6 md:px-12 relative overflow-hidden selection:bg-violet-500/30 selection:text-white">
+    <div className="min-h-screen bg-[var(--neo-bg)] text-[var(--neo-text)] font-sans py-16 px-6 md:px-12 relative overflow-hidden selection:bg-violet-500/30 selection:text-[var(--neo-text)]">
       {/* Background lights */}
       <div className="absolute top-0 right-0 w-2/3 h-2/3 opacity-30 pointer-events-none bg-gradient-to-bl from-violet-600/20 via-fuchsia-600/10 to-transparent blur-[120px]" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-slate-800/80 pb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-black/10 dark:border-black/10 dark:border-white/10/80 pb-8">
           <div>
             <button
               onClick={() => navigate('/my-portfolios')}
-              className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white uppercase tracking-widest mb-4 transition-colors group"
+              className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-[var(--neo-text)] uppercase tracking-widest mb-4 transition-colors group"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 transition-transform group-hover:-translate-x-1">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
               </svg>
               Back to Dashboard
             </button>
-            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white uppercase">
+            <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[var(--neo-text)] uppercase">
               AI Recruiter Critique
             </h1>
             <p className="text-slate-400 text-sm md:text-base mt-2">
@@ -175,7 +175,7 @@ const PortfolioCritique = () => {
                 <div className={`text-3xl font-black leading-none ${ratingGrade.color}`}>{overallRating}%</div>
                 <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Hiring Score</div>
               </div>
-              <div className={`text-4xl font-black ${ratingGrade.color} select-none border-l border-slate-800/60 pl-3`}>
+              <div className={`text-4xl font-black ${ratingGrade.color} select-none border-l border-black/10 dark:border-black/10 dark:border-white/10/60 pl-3`}>
                 {ratingGrade.letter}
               </div>
             </div>
@@ -185,7 +185,7 @@ const PortfolioCritique = () => {
                 <div className={`text-3xl font-black leading-none ${readabilityGrade.color}`}>{readabilityScore}%</div>
                 <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold mt-1">Readability</div>
               </div>
-              <div className={`text-4xl font-black ${readabilityGrade.color} select-none border-l border-slate-800/60 pl-3`}>
+              <div className={`text-4xl font-black ${readabilityGrade.color} select-none border-l border-black/10 dark:border-black/10 dark:border-white/10/60 pl-3`}>
                 {readabilityGrade.letter}
               </div>
             </div>
@@ -196,8 +196,8 @@ const PortfolioCritique = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           
           {/* Visual & Structure Review Card */}
-          <div className="bg-slate-900/40 border border-slate-850 rounded-3xl p-8 backdrop-blur-md">
-            <h3 className="text-xl font-extrabold text-white mb-6 uppercase tracking-wider flex items-center gap-2">
+          <div className="bg-black/5 dark:bg-white/5 backdrop-blur-md border border-slate-850 rounded-3xl p-8 backdrop-blur-md">
+            <h3 className="text-xl font-extrabold text-[var(--neo-text)] mb-6 uppercase tracking-wider flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-violet-500" />
               1. Presentation & Structure
             </h3>
@@ -216,8 +216,8 @@ const PortfolioCritique = () => {
           </div>
 
           {/* Project & Exp Review Card */}
-          <div className="bg-slate-900/40 border border-slate-850 rounded-3xl p-8 backdrop-blur-md">
-            <h3 className="text-xl font-extrabold text-white mb-6 uppercase tracking-wider flex items-center gap-2">
+          <div className="bg-black/5 dark:bg-white/5 backdrop-blur-md border border-slate-850 rounded-3xl p-8 backdrop-blur-md">
+            <h3 className="text-xl font-extrabold text-[var(--neo-text)] mb-6 uppercase tracking-wider flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-violet-500" />
               2. Technical Content Depth
             </h3>
@@ -281,8 +281,8 @@ const PortfolioCritique = () => {
         </div>
 
         {/* Actionable Recruiter Tips */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-8 mb-12">
-          <h3 className="text-2xl font-black text-white mb-6 uppercase tracking-tight flex items-center gap-3">
+        <div className="bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-black/10 dark:border-white/10 rounded-3xl p-8 mb-12">
+          <h3 className="text-2xl font-black text-[var(--neo-text)] mb-6 uppercase tracking-tight flex items-center gap-3">
             <span>💡</span> Hiring Manager Action Plan
           </h3>
           <p className="text-slate-400 text-sm mb-6">
@@ -291,7 +291,7 @@ const PortfolioCritique = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {actionableTips.map((tip, idx) => (
-              <div key={idx} className="flex items-start gap-3 p-4 bg-slate-950/40 border border-slate-900 hover:border-slate-800 rounded-2xl transition">
+              <div key={idx} className="flex items-start gap-3 p-4 bg-[var(--neo-bg)]/40 border border-black/5 dark:border-white/5 hover:border-black/10 dark:border-black/10 dark:border-white/10 rounded-2xl transition">
                 <span className="text-lg text-violet-400 font-bold shrink-0">{idx + 1}.</span>
                 <span className="text-slate-300 text-sm leading-relaxed">{tip}</span>
               </div>

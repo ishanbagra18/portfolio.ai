@@ -6,36 +6,69 @@ import { PDFParse } from 'pdf-parse'; // v2 API: named class export, not a defau
 // Initialize Gemini Client
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+// Helper to clean up uploaded file safely
+const safeUnlink = (filePath) => {
+  if (filePath && fs.existsSync(filePath)) {
+    try {
+      fs.unlinkSync(filePath);
+    } catch (err) {
+      console.error('Failed to unlink file:', filePath, err);
+    }
+  }
+};
+
+// Helper to check if file is PDF or DOCX based on mimetype or filename extension
+const getFileFormat = (file) => {
+  const fileType = (file.mimetype || '').toLowerCase();
+  const filename = (file.originalname || '').toLowerCase();
+
+  if (fileType === 'application/pdf' || filename.endsWith('.pdf')) {
+    return 'pdf';
+  }
+  if (
+    fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    fileType === 'application/msword' ||
+    fileType === 'application/x-zip-compressed' ||
+    fileType === 'application/octet-stream' && (filename.endsWith('.docx') || filename.endsWith('.doc')) ||
+    filename.endsWith('.docx') ||
+    filename.endsWith('.doc')
+  ) {
+    return 'docx';
+  }
+  return null;
+};
+
 export const parseResume = async (req, res) => {
+  let filePath = null;
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No resume file uploaded' });
     }
 
-    const filePath = req.file.path;
-    const fileType = req.file.mimetype;
+    filePath = req.file.path;
+    const format = getFileFormat(req.file);
     let extractedText = '';
 
-    // Extract text based on file format
-    if (fileType === 'application/pdf') {
+    if (format === 'pdf') {
       const dataBuffer = fs.readFileSync(filePath);
       const parser = new PDFParse({ data: dataBuffer });
       const pdfResult = await parser.getText();
-      await parser.destroy(); // free worker/resources
+      await parser.destroy();
       extractedText = pdfResult.text;
-    } else if (
-      fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-      fileType === 'application/msword'
-    ) {
+    } else if (format === 'docx') {
       const result = await mammoth.extractRawText({ path: filePath });
       extractedText = result.value;
     } else {
-      if (fs.existsSync(filePath)) fs.unlinkSync(filePath); // Clean up file
-      return res.status(400).json({ error: 'Unsupported file format. Please upload PDF or DOCX.' });
+      return res.status(400).json({ error: 'Unsupported file format. Please upload a PDF or DOCX file.' });
     }
 
-    // Clean up temporary uploaded file
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    // Clean up temporary file immediately after text extraction
+    safeUnlink(filePath);
+    filePath = null;
+
+    if (!extractedText || extractedText.trim() === '') {
+      return res.status(400).json({ error: 'Could not extract text from the file. Please ensure it is not scanned/empty.' });
+    }
 
     // Prompt Gemini to structure the extracted text matching your exact React State Schema
     const prompt = `Extract portfolio data from this resume text into structured JSON matching this exact schema:
@@ -49,7 +82,7 @@ export const parseResume = async (req, res) => {
     ${extractedText}`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.6-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -121,7 +154,9 @@ export const parseResume = async (req, res) => {
 
   } catch (error) {
     console.error('Error parsing resume:', error);
-    return res.status(500).json({ error: 'Failed to process resume' });
+    return res.status(500).json({ error: error.message || 'Failed to process resume' });
+  } finally {
+    safeUnlink(filePath);
   }
 };
 
@@ -133,38 +168,35 @@ export const parseResume = async (req, res) => {
 
 /* ---------------- ATS SCORE CHECKER ---------------- */
 export const checkAtsScore = async (req, res) => {
+  let filePath = null;
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No resume file uploaded' });
     }
 
-    const filePath = req.file.path;
-    const fileType = req.file.mimetype;
+    filePath = req.file.path;
+    const format = getFileFormat(req.file);
     let extractedText = '';
 
-    // Extract text based on file format
-    if (fileType === 'application/pdf') {
+    if (format === 'pdf') {
       const dataBuffer = fs.readFileSync(filePath);
       const parser = new PDFParse({ data: dataBuffer });
       const pdfResult = await parser.getText();
       await parser.destroy();
       extractedText = pdfResult.text;
-    } else if (
-      fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-      fileType === 'application/msword'
-    ) {
+    } else if (format === 'docx') {
       const result = await mammoth.extractRawText({ path: filePath });
       extractedText = result.value;
     } else {
-      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      return res.status(400).json({ error: 'Unsupported file format. Please upload PDF or DOCX.' });
+      return res.status(400).json({ error: 'Unsupported file format. Please upload a PDF or DOCX file.' });
     }
 
-    // Clean up temporary uploaded file
-    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    // Clean up temporary file immediately after text extraction
+    safeUnlink(filePath);
+    filePath = null;
 
     if (!extractedText || extractedText.trim() === '') {
-      return res.status(400).json({ error: 'Could not extract text from the file.' });
+      return res.status(400).json({ error: 'Could not extract text from the file. Please ensure it is not an image-only PDF.' });
     }
 
     // Prompt Gemini for ATS Evaluation
@@ -181,7 +213,7 @@ export const checkAtsScore = async (req, res) => {
     ${extractedText}`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.6-flash',
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -215,6 +247,8 @@ export const checkAtsScore = async (req, res) => {
 
   } catch (error) {
     console.error('Error analyzing ATS score:', error);
-    return res.status(500).json({ error: 'Failed to analyze resume ATS score' });
+    return res.status(500).json({ error: error.message || 'Failed to analyze resume ATS score' });
+  } finally {
+    safeUnlink(filePath);
   }
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { GlassCard } from './ui/GlassCard';
 
 const HowItWorks = () => {
   const steps = [
@@ -20,33 +21,39 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-24 border-t border-zinc-900 z-10 relative">
+    <section className="py-24 z-10 relative px-6">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16">
           <div>
-            <span className="text-xs font-bold text-[#5EEAD4] uppercase tracking-widest block mb-2">Process</span>
-            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight">
+            <span className="text-xs font-bold text-accent-color uppercase tracking-widest block mb-2">Process</span>
+            <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tight">
               Live In 3 Simple Steps
             </h2>
           </div>
-          <p className="text-zinc-500 text-sm mt-4 md:mt-0 max-w-xs">
+          <p className="opacity-60 text-sm mt-4 md:mt-0 max-w-xs font-medium">
             No design degrees or server setup required. Get from zero to deployed in minutes.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          {/* Decorative connector line */}
+          <div className="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-white/10 -translate-y-1/2 z-0"></div>
+
           {steps.map((step, index) => (
-            <div key={index} className="relative pl-6 border-l-2 border-zinc-800 hover:border-[#5EEAD4] transition duration-300 py-2">
-              <span className="text-5xl font-black text-zinc-800 tracking-tighter block mb-4">
+            <GlassCard key={index} className="relative z-10 p-8 group hover:-translate-y-2 transition-transform duration-300 text-center md:text-left">
+              <span 
+                className="text-6xl font-display font-black tracking-tighter block mb-6 opacity-20 group-hover:opacity-100 group-hover:text-accent-color transition-all duration-300"
+                style={{ WebkitTextStroke: '1px rgba(255,255,255,0.5)', color: 'transparent' }}
+              >
                 {step.number}
               </span>
-              <h3 className="text-lg font-bold uppercase tracking-wider mb-2 text-white">
+              <h3 className="text-xl font-display font-bold uppercase tracking-wider mb-3 text-[var(--neo-text)]">
                 {step.title}
               </h3>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <p className="opacity-70 text-sm leading-relaxed">
                 {step.description}
               </p>
-            </div>
+            </GlassCard>
           ))}
         </div>
       </div>
