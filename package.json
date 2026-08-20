@@ -1,0 +1,11 @@
+{
+  "name": "portfolio-ai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "npm install --prefix backend && npm install --prefix frontend/vite-project",
+    "build": "npm run build --prefix frontend/vite-project",
+    "start": "node backend/src/server.js"
+  }
+}
