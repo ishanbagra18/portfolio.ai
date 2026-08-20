@@ -80,9 +80,17 @@ app.use('/api/resume', resumeRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/templates', templateRoutes);
 
-// Static frontend serving for full-stack Render deployments
-const frontendDistPath = path.join(__dirname, '../../frontend/vite-project/dist');
-if (fs.existsSync(frontendDistPath)) {
+// Multi-path static frontend serving for full-stack Render deployments
+const candidateDistPaths = [
+  path.join(__dirname, '../../frontend/vite-project/dist'),
+  path.join(process.cwd(), 'frontend/vite-project/dist'),
+  path.join(process.cwd(), '../frontend/vite-project/dist'),
+  path.join(process.cwd(), 'dist')
+];
+
+const frontendDistPath = candidateDistPaths.find(p => fs.existsSync(p));
+if (frontendDistPath) {
+  console.log(`Serving static frontend build from: ${frontendDistPath}`);
   app.use(express.static(frontendDistPath));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) {
@@ -90,6 +98,8 @@ if (fs.existsSync(frontendDistPath)) {
     }
     res.sendFile(path.join(frontendDistPath, 'index.html'));
   });
+} else {
+  console.log('No frontend dist build folder found. Running in API mode.');
 }
 
 // Global Error Handler
