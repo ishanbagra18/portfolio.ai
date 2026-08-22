@@ -36,11 +36,7 @@ Portfolio.io helps users go from resume to live, shareable portfolio — with AI
 
 Portfolio.io is a full-stack platform for job seekers who want a polished web presence without the design or engineering overhead. Users can enter their details manually or upload a resume for AI-powered auto-fill, choose from a library of production-ready templates, and publish a live portfolio behind a custom URL — complete with an embedded AI chatbot that can answer recruiter questions on their behalf.
 
-Beyond the builder itself, the platform includes a suite of career tools: an ATS resume scanner, a job-match analyzer, AI-driven content tailoring, and an automated cold-email/HR-outreach engine — positioning it as an end-to-end job search companion rather than a static site generator.
-
-
-
----
+Beyond the builder itself, the platform includes a suite of career tools: an ATS resume scanner, a job-match analyzer, AI-driven content tailoring, and an automated cold-email/HR-outreach engine — positioning it as an end-to-end job search companion rather than a static site generator.  
 
 ## Features
 
