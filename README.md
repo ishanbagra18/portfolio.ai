@@ -38,7 +38,7 @@ Portfolio.io is a full-stack platform for job seekers who want a polished web pr
 
 Beyond the builder itself, the platform includes a suite of career tools: an ATS resume scanner, a job-match analyzer, AI-driven content tailoring, and an automated cold-email/HR-outreach engine — positioning it as an end-to-end job search companion rather than a static site generator.
 
-> 📸 *Add a screenshot or short demo GIF here — showing the template gallery and a live portfolio in action is the fastest way to get visitors to engage with the project.*
+
 
 ---
 
