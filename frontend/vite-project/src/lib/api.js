@@ -1,7 +1,7 @@
 import { getToken } from './auth'
 
 const rawApiUrl = import.meta.env.VITE_API_URL;
-export const API_BASE = rawApiUrl ? rawApiUrl.replace(/\/$/, '') : (import.meta.env.MODE === 'production' ? '' : 'http://127.0.0.1:5000');
+export const API_BASE = rawApiUrl ? rawApiUrl.replace(/\/$/, '') : (import.meta.env.MODE === 'production' ? 'https://portfolio-ai-gzyo.onrender.com' : 'http://127.0.0.1:5000');
 const API_BASE_URL = API_BASE;
 
 async function request(path, options = {}) {

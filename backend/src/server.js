@@ -100,6 +100,20 @@ if (frontendDistPath) {
   });
 } else {
   console.log('No frontend dist build folder found. Running in API mode.');
+  app.get('/', (_req, res) => {
+    res.json({
+      status: 'online',
+      message: 'Portfolio AI API Backend is running',
+      endpoints: {
+        health: '/api/health',
+        auth: '/api/auth',
+        portfolio: '/api/portfolio',
+        resume: '/api/resume',
+        ai: '/api/ai',
+        templates: '/api/templates'
+      }
+    });
+  });
 }
 
 // Global Error Handler
