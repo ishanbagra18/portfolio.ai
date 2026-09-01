@@ -207,13 +207,13 @@ const ColdEmailGenerator = () => {
       <ParallaxBackground />
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-6 md:px-12 mt-8 z-10 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 mt-4 sm:mt-8 z-10 relative">
         {/* Title Header */}
-        <div className="border-b border-black/10 dark:border-white/10 pb-8 mb-12">
+        <div className="border-b border-black/10 dark:border-white/10 pb-6 sm:pb-8 mb-8 sm:mb-12">
           <div className="inline-block px-3 py-1 bg-white/5 border border-black/10 dark:border-white/10 text-xs font-mono uppercase tracking-widest text-accent-color mb-4 rounded">
             ⚡ AI Career Suite & Direct HR Outreach
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-none">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-none">
             Automated Cold Email <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-pink-500">Generator</span>
           </h1>
           <p className="opacity-80 text-sm md:text-base mt-3 max-w-2xl leading-relaxed">
@@ -227,7 +227,7 @@ const ColdEmailGenerator = () => {
           {/* Left Column: Form Controls */}
           <div className="lg:col-span-5">
             <ParallaxTilt maxDegree={6}>
-              <GlassCard className="p-8 space-y-6">
+              <GlassCard className="p-5 sm:p-8 space-y-6">
                 <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 pb-4">
                   <h2 className="text-2xl font-display font-bold uppercase tracking-tight text-[var(--neo-text)]">
                     Outreach Settings
@@ -343,7 +343,7 @@ const ColdEmailGenerator = () => {
                     <label className="block text-xs font-bold uppercase tracking-wider opacity-70 mb-2">
                       Pitch Tone Style
                     </label>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       {['confident', 'direct', 'enthusiastic', 'formal'].map(t => (
                         <button
                           key={t}

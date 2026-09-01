@@ -62,27 +62,27 @@ const Home = () => {
 
       <Navbar />
 
-      <div className="z-10 max-w-6xl mx-auto px-6 pt-12 pb-24 w-full flex-grow flex flex-col justify-center relative" ref={heroRef}>
+      <div className="z-10 max-w-7xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16 sm:pb-24 w-full flex-grow flex flex-col justify-center relative" ref={heroRef}>
         <div className="max-w-4xl relative z-10">
-          <h1 className="text-5xl md:text-8xl font-display font-black tracking-tighter leading-[1.05] mb-8 select-none ">
+          <h1 className="text-[2.5rem] sm:text-6xl md:text-8xl font-display font-black tracking-tighter leading-[1.08] sm:leading-[1.05] mb-6 sm:mb-8 select-none">
             <div className="hero-line overflow-hidden">
-              <span className="inline-block pb-2">Build Portfolios</span>
+              <span className="inline-block pb-1 sm:pb-2">Build Portfolios</span>
             </div>
             <div className="hero-line overflow-hidden">
-              <span className="inline-block bg-gradient-to-r from-violet-500 to-pink-500 bg-clip-text text-transparent pb-2">That Stand Out</span>
+              <span className="inline-block bg-gradient-to-r from-violet-500 to-pink-500 bg-clip-text text-transparent pb-1 sm:pb-2">That Stand Out</span>
             </div>
             <div className="hero-line overflow-hidden">
-              <span className="inline-block pb-2">From The Crowd</span>
+              <span className="inline-block pb-1 sm:pb-2">From The Crowd</span>
             </div>
           </h1>
 
-          <p className="hero-subtext text-[var(--neo-text)] opacity-80 text-lg md:text-xl max-w-md leading-relaxed mb-10 tracking-wide font-medium">
-            AI-powered layouts. Production-ready designs. <br />
+          <p className="hero-subtext text-[var(--neo-text)] opacity-80 text-base sm:text-lg md:text-xl max-w-md leading-relaxed mb-8 sm:mb-10 tracking-wide font-medium">
+            AI-powered layouts. Production-ready designs. <br className="hidden sm:inline" />
             Deploy your professional portfolio in less than 5 minutes.
           </p>
 
           <div className="flex flex-wrap gap-4 items-center">
-            <Button variant="primary" onClick={() => navigate('/viewtemplates')} className="hero-btn group hover:bg-pink-400">
+            <Button variant="primary" onClick={() => navigate('/viewtemplates')} className="hero-btn group hover:bg-pink-400 bg-gradient-to-r from-pink-500 via-purple-600">
               Create Portfolio 
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
@@ -113,11 +113,11 @@ const Home = () => {
         </div>
         
         {/* Bento Grid with 3D Parallax Tilt */}
-        <div className="mt-32 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="mt-20 md:mt-32 grid grid-cols-1 md:grid-cols-3 gap-6">
           <ParallaxTilt className="md:col-span-2 md:row-span-2">
-            <GlassCard className="h-full min-h-[380px] flex justify-end flex-col group hover:border-white/40 transition-colors relative overflow-hidden">
+            <GlassCard className="h-full min-h-[420px] sm:min-h-[440px] flex justify-between flex-col group hover:border-white/40 transition-colors relative overflow-hidden p-6 sm:p-8">
               {/* Mock UI Visual */}
-              <div className="absolute top-6 left-6 right-6 bottom-32 bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 p-6 flex flex-col gap-3 overflow-hidden group-hover:bg-white/10 transition-colors duration-500">
+              <div className="w-full bg-white/5 rounded-2xl border border-black/10 dark:border-white/10 p-5 sm:p-6 flex flex-col gap-3 group-hover:bg-white/10 transition-colors duration-500 mb-6 sm:mb-8">
                 <div className="flex items-center gap-2 mb-1">
                   <svg className="w-3.5 h-3.5 text-accent-color" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
@@ -126,7 +126,7 @@ const Home = () => {
                 </div>
                 <div className="text-[var(--neo-text)] font-bold text-base">Optimal layout generated.</div>
                 <div className="text-[var(--neo-text)]/50 text-xs leading-relaxed max-w-[90%]">Portfolio structure customized based on your recent GitHub activity and resume data.</div>
-                <div className="grid grid-cols-3 gap-3 mt-auto">
+                <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-2">
                   <div className="h-14 bg-white/5 rounded-xl border border-white/5 flex flex-col items-center justify-center">
                     <span className="font-bold text-[var(--neo-text)] text-sm">98%</span>
                     <span className="text-[9px] text-[var(--neo-text)]/40 uppercase tracking-widest mt-0.5 font-mono">Match</span>
@@ -142,9 +142,9 @@ const Home = () => {
                 </div>
               </div>
               
-              <div className="relative mt-auto pt-8">
-                <h3 className="text-3xl font-display font-bold">Intelligent Layouts</h3>
-                <p className="opacity-80 mt-2 text-lg">Our AI analyzes your data to pick the best presentation format automatically.</p>
+              <div className="mt-auto">
+                <h3 className="text-2xl sm:text-3xl font-display font-bold">Intelligent Layouts</h3>
+                <p className="opacity-80 mt-2 text-base sm:text-lg leading-relaxed">Our AI analyzes your data to pick the best presentation format automatically.</p>
               </div>
             </GlassCard>
           </ParallaxTilt>

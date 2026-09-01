@@ -235,28 +235,28 @@ const ViewTemplates = () => {
       <div className="noise-overlay" />
       <Navbar />
 
-      <div className="max-w-7xl mx-auto w-full px-6 py-24 relative z-10">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-12 py-12 sm:py-24 relative z-10">
         
-        <div className="flex flex-col mb-20 pb-8 border-b border-black/10 dark:border-white/10">
-          <h1 className="text-6xl md:text-8xl font-display font-black text-[var(--neo-text)] uppercase tracking-tighter leading-none">
+        <div className="flex flex-col mb-12 sm:mb-20 pb-6 sm:pb-8 border-b border-black/10 dark:border-white/10">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black text-[var(--neo-text)] uppercase tracking-tighter leading-none">
             Select Your
           </h1>
           <h2
-            className="text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-none mt-2"
+            className="text-3.5xl sm:text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-none mt-2"
             style={{ WebkitTextStroke: '1.5px rgba(255,255,255,0.4)', color: 'transparent' }}
           >
             Template.
           </h2>
-          <p className="mt-8 text-xl opacity-80 max-w-2xl font-medium">
+          <p className="mt-4 sm:mt-8 text-base sm:text-xl opacity-80 max-w-2xl font-medium">
             Choose a design that matches your vibe. You can preview the layout or jump straight into providing your data to generate your portfolio.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {templates.map((template) => (
             <GlassCard 
               key={template.id} 
-              className="group flex flex-col justify-between p-8 hover:border-accent-color/50 transition-colors duration-500"
+              className="group flex flex-col justify-between p-6 sm:p-8 hover:border-accent-color/50 transition-colors duration-500"
             >
               <div>
                 <span 

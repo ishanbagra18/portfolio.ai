@@ -1,6 +1,7 @@
 import { API_BASE } from '../lib/api';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 const PortfolioMatcher = () => {
   const { id } = useParams();
@@ -83,8 +84,11 @@ const PortfolioMatcher = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--neo-bg)] text-[var(--neo-text)] font-sans py-16 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[var(--neo-bg)] text-[var(--neo-text)] font-sans relative overflow-x-hidden pb-24">
+      <div className="noise-overlay" />
+      <Navbar />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-16 relative z-10">
         {/* Back Link */}
         <Link
           to="/my-portfolios"

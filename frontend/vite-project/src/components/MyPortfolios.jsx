@@ -345,11 +345,11 @@ const MyPortfolios = () => {
         
         <Navbar />
 
-        <div className="max-w-7xl mx-auto px-6 md:px-12 pb-16 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 pb-16 relative z-10">
           {/* Top Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12 pb-6 border-b border-black/10 dark:border-white/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 sm:mb-12 pb-6 border-b border-black/10 dark:border-white/10">
             <div>
-              <h1 className="text-3xl md:text-5xl font-display font-black tracking-tight text-[var(--neo-text)]">
+              <h1 className="text-2.5xl sm:text-4xl md:text-5xl font-display font-black tracking-tight text-[var(--neo-text)]">
                 My Portfolios
               </h1>
               <p className="opacity-80 text-sm md:text-base mt-2">
@@ -455,7 +455,7 @@ const MyPortfolios = () => {
                               navigate(`/portfolio-matcher/${portfolioId}`);
                             }}
                             title="Job Description Alignment Matcher"
-                            className="p-1.5 rounded-lg text-zinc-600 hover:text-fuchsia-400 hover:bg-fuchsia-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-zinc-600 hover:text-fuchsia-400 hover:bg-fuchsia-500/10 transition-colors duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                               strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
@@ -468,7 +468,7 @@ const MyPortfolios = () => {
                           <button
                             onClick={(e) => handleEditClick(e, portfolio)}
                             title="Edit portfolio"
-                            className="p-1.5 rounded-lg text-zinc-600 hover:text-fuchsia-400 hover:bg-fuchsia-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-zinc-600 hover:text-fuchsia-400 hover:bg-fuchsia-500/10 transition-colors duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                               strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">
@@ -481,7 +481,7 @@ const MyPortfolios = () => {
                           <button
                             onClick={(e) => handleDeleteClick(e, portfolio)}
                             title="Delete portfolio"
-                            className="p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-zinc-600 hover:text-red-400 hover:bg-red-500/10 transition-colors duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                               strokeWidth={1.8} stroke="currentColor" className="w-4 h-4">

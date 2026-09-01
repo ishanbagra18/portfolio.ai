@@ -242,27 +242,27 @@ const ProvideData = () => {
   return (
     <div className="min-h-screen bg-[var(--neo-bg)] w-full font-sans text-[var(--neo-text)] pb-32 bg-black">
 
-      <div className="py-24 px-6 max-w-6xl mx-auto border-b border-gray-900">
+      <div className="py-12 sm:py-24 px-4 sm:px-6 md:px-12 max-w-6xl mx-auto border-b border-gray-900">
         <div className="mb-4 inline-block px-3 py-1 border border-gray-700 bg-[var(--neo-bg)] text-xs font-mono uppercase tracking-widest text-gray-400">
           Selected Template: <span className="text-[var(--neo-text)] font-bold">{resolvedTemplateId}</span>
         </div>
-        <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+        <h1 className="text-4xl sm:text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
           Build Your
         </h1>
         <h2
-          className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mt-2"
+          className="text-3.5xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mt-2"
           style={{ WebkitTextStroke: '2px #374151', color: 'transparent' }}
         >
           Portfolio.
         </h2>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 mt-12">
-        <div className="p-8 border border-gray-800 rounded-lg bg-gray-950/50 focus-within:border-white transition-colors">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 mt-8 sm:mt-12">
+        <div className="p-5 sm:p-8 border border-gray-800 rounded-lg bg-gray-950/50 focus-within:border-white transition-colors">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <span className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Instant Auto-Fill</span>
-              <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-[var(--neo-text)] mb-1">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-black uppercase tracking-tight text-[var(--neo-text)] mb-1">
                 ⚡ Upload Resume With AI
               </h3>
               <p className="text-gray-400 text-sm max-w-md">
@@ -270,8 +270,8 @@ const ProvideData = () => {
               </p>
             </div>
 
-            <div className="flex flex-col items-start md:items-end gap-3">
-              <label className="cursor-pointer px-8 py-4 border border-gray-600 text-gray-300 font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black hover:border-white transition-all">
+            <div className="flex flex-col items-start md:items-end gap-3 w-full sm:w-auto">
+              <label className="cursor-pointer px-5 sm:px-8 py-3.5 sm:py-4 border border-gray-600 text-gray-300 font-bold uppercase tracking-widest text-xs sm:text-sm hover:bg-white hover:text-black hover:border-white transition-all text-center w-full sm:w-auto">
                 {loading ? 'AI Resume Analyse Kar Raha Hai...' : '+ Upload Resume (.PDF / .DOCX)'}
                 <input
                   type="file"

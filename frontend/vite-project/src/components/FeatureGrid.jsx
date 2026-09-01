@@ -33,8 +33,8 @@ const FeatureGrid = () => {
   ];
 
   return (
-    <section className="py-24 z-10 relative px-6">
-      <div className="max-w-6xl mx-auto">
+    <section className="py-24 z-10 relative px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tight mb-4">
           Everything You Need
         </h2>

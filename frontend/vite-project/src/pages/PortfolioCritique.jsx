@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-
+import Navbar from '../components/Navbar';
 import { API_BASE } from '../lib/api';
 
 const PortfolioCritique = () => {
@@ -142,11 +142,12 @@ const PortfolioCritique = () => {
   const readabilityGrade = getGrade(readabilityScore);
 
   return (
-    <div className="min-h-screen bg-[var(--neo-bg)] text-[var(--neo-text)] font-sans py-16 px-6 md:px-12 relative overflow-hidden selection:bg-violet-500/30 selection:text-[var(--neo-text)]">
+    <div className="min-h-screen bg-[var(--neo-bg)] text-[var(--neo-text)] font-sans relative overflow-hidden selection:bg-violet-500/30 selection:text-[var(--neo-text)] pb-24">
+      <Navbar />
       {/* Background lights */}
       <div className="absolute top-0 right-0 w-2/3 h-2/3 opacity-30 pointer-events-none bg-gradient-to-bl from-violet-600/20 via-fuchsia-600/10 to-transparent blur-[120px]" />
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-16 relative z-10">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-black/10 dark:border-black/10 dark:border-white/10/80 pb-8">

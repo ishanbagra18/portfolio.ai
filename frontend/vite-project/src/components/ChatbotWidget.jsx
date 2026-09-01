@@ -71,18 +71,18 @@ const ChatbotWidget = ({ portfolioId, name }) => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-[9999] print:hidden">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] print:hidden">
       {/* Floating Toggle Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-14 h-14 bg-gradient-to-tr from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-[var(--neo-text)] rounded-full shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-350 hover:scale-105 active:scale-95 group relative"
+          className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-tr from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-[var(--neo-text)] rounded-full shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-350 hover:scale-105 active:scale-95 group relative"
           title={`Ask AI about ${name || 'Candidate'}`}
         >
           {/* Pulsing indicator ring */}
           <span className="absolute -inset-0.5 rounded-full bg-violet-500/35 animate-ping group-hover:animate-none pointer-events-none" />
           
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" className="w-6 h-6">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor" className="w-5 h-5 sm:w-6 sm:h-6">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025 8.286 8.286 0 0 1-1.89-2.917C2.47 14.773 2 13.434 2 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
           </svg>
         </button>
@@ -90,7 +90,7 @@ const ChatbotWidget = ({ portfolioId, name }) => {
 
       {/* Chatbox Window */}
       {isOpen && (
-        <div className="w-85 md:w-96 h-[480px] bg-[var(--neo-bg)]/95 border border-black/10 dark:border-black/10 dark:border-white/10 rounded-3xl shadow-2xl flex flex-col backdrop-blur-xl animate-fade-in">
+        <div className="w-[calc(100vw-2rem)] max-w-[380px] sm:w-96 h-[460px] sm:h-[480px] bg-[var(--neo-bg)]/95 border border-black/10 dark:border-white/10 rounded-3xl shadow-2xl flex flex-col backdrop-blur-xl animate-fade-in">
           
           {/* Header */}
           <div className="p-4 border-b border-black/10 dark:border-black/10 dark:border-white/10 flex justify-between items-center bg-gradient-to-r from-slate-900 to-slate-950 rounded-t-3xl">

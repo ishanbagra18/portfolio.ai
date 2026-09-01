@@ -21,8 +21,8 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-24 z-10 relative px-6">
-      <div className="max-w-6xl mx-auto">
+    <section className="py-24 z-10 relative px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16">
           <div>
             <span className="text-xs font-bold text-accent-color uppercase tracking-widest block mb-2">Process</span>

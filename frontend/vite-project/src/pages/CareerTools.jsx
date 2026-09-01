@@ -92,25 +92,21 @@ const CareerTools = () => {
   };
 
   return (
+    <div className="min-h-screen bg-aurora text-[var(--neo-text)] font-sans relative overflow-x-hidden pb-24">
+      <div className="noise-overlay" />
+      <Navbar />
 
-
-
-
-    <div className="min-h-screen bg-aurora text-[var(--neo-text)] font-sans py-16 px-6 md:px-12">
-
-
-
-      <div className="noise-overlay" />     <div className="max-w-7xl mx-auto relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8 sm:py-16 relative z-10">
         {/* Back Link */}
         <Link
           to="/home"
-          className="inline-flex items-center gap-2 text-xs font-bold opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] uppercase tracking-wider mb-8 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] uppercase tracking-wider mb-6 sm:mb-8 transition-colors"
         >
           &larr; Back to Home
         </Link>
 
         {/* Header Title */}
-        <div className="border-b border-white/5 pb-8 mb-12">
+        <div className="border-b border-white/5 pb-6 sm:pb-8 mb-8 sm:mb-12">
           <div className="flex items-center gap-3 mb-2">
             <span className="px-2.5 py-1 bg-fuchsia-600/10 border border-fuchsia-500/20 text-fuchsia-300 rounded text-[10px] font-bold uppercase tracking-wider">
               Gemini Powered
@@ -119,7 +115,7 @@ const CareerTools = () => {
               AI Career Tools
             </span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-[var(--neo-text)]">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-[var(--neo-text)]">
             Job Matcher & Prep
           </h1>
           <p className="opacity-80 text-[var(--neo-text)] text-sm md:text-base mt-2">
@@ -133,7 +129,7 @@ const CareerTools = () => {
             </div>
             <Link
               to="/cold-email-generator"
-              className="px-5 py-2.5 bg-accent-color hover:bg-pink-500 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition shadow-lg shrink-0"
+              className="px-5 py-2.5 bg-accent-color hover:bg-pink-500 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition shadow-lg shrink-0 w-full sm:w-auto text-center"
             >
               Launch Generator &rarr;
             </Link>
@@ -141,10 +137,10 @@ const CareerTools = () => {
         </div>
 
         {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* Left Column: Input Form */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-2xl p-6 sm:p-8 backdrop-blur sticky top-8">
+            <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-2xl p-5 sm:p-8 backdrop-blur sticky top-8">
               <h3 className="text-lg font-bold text-[var(--neo-text)] mb-2 uppercase tracking-wide">
                 Target Role Details
               </h3>
@@ -163,8 +159,8 @@ const CareerTools = () => {
                     type="file"
                     accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     onChange={handleFileChange}
-                    className="block w-full text-sm opacity-80 text-[var(--neo-text)]
-                      file:mr-4 file:py-2.5 file:px-4
+                    className="block w-full text-xs sm:text-sm opacity-80 text-[var(--neo-text)]
+                      file:mr-2 sm:file:mr-4 file:py-2 file:px-3 sm:file:px-4
                       file:rounded-xl file:border-0
                       file:text-xs file:font-bold file:uppercase file:tracking-wider
                       file:bg-fuchsia-600/10 file:text-fuchsia-400
@@ -181,7 +177,7 @@ const CareerTools = () => {
                     value={jobDescription}
                     onChange={(e) => setJobDescription(e.target.value)}
                     placeholder="Paste the responsibilities, required tech stack, or description here..."
-                    rows="10"
+                    rows="8"
                     disabled={loading}
                     className="bg-[var(--neo-bg)]/20 border border-black/10 dark:border-white/10 focus:border-fuchsia-500/50 text-[var(--neo-text)] p-4 rounded-xl text-sm focus:outline-none placeholder:text-slate-600 transition resize-none leading-relaxed"
                   />
@@ -216,10 +212,10 @@ const CareerTools = () => {
           <div className="lg:col-span-8 space-y-8">
             
             {/* Tabs */}
-            <div className="flex p-1 bg-white/10 border border-black/10 dark:border-white/10 rounded-xl w-fit mb-8">
+            <div className="flex flex-wrap sm:flex-nowrap p-1 bg-white/10 border border-black/10 dark:border-white/10 rounded-xl w-full sm:w-fit mb-8 gap-1 sm:gap-0">
               <button
                 onClick={() => setActiveTab('match')}
-                className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+                className={`flex-1 sm:flex-none text-center px-4 sm:px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
                   activeTab === 'match' ? 'bg-white/20 text-[var(--neo-text)] shadow-sm' : 'opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] hover:bg-white/20/50'
                 }`}
               >
@@ -227,7 +223,7 @@ const CareerTools = () => {
               </button>
               <button
                 onClick={() => setActiveTab('cover-letter')}
-                className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+                className={`flex-1 sm:flex-none text-center px-4 sm:px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
                   activeTab === 'cover-letter' ? 'bg-white/20 text-[var(--neo-text)] shadow-sm' : 'opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] hover:bg-white/20/50'
                 }`}
               >
@@ -235,7 +231,7 @@ const CareerTools = () => {
               </button>
               <button
                 onClick={() => setActiveTab('interview-prep')}
-                className={`px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
+                className={`flex-1 sm:flex-none text-center px-4 sm:px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
                   activeTab === 'interview-prep' ? 'bg-white/20 text-[var(--neo-text)] shadow-sm' : 'opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] hover:bg-white/20/50'
                 }`}
               >

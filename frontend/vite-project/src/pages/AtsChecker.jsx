@@ -87,13 +87,13 @@ const AtsChecker = () => {
 
       <Navbar />
 
-      <div className="z-10 max-w-6xl mx-auto px-6 md:px-12 mt-8 pb-20 relative">
+      <div className="z-10 max-w-6xl mx-auto px-4 sm:px-6 md:px-12 mt-4 sm:mt-8 pb-20 relative">
         {/* Header Title */}
-        <div className="border-b border-black/10 dark:border-white/10 pb-8 mb-12">
+        <div className="border-b border-black/10 dark:border-white/10 pb-6 sm:pb-8 mb-8 sm:mb-12">
           <div className="inline-block px-3 py-1 bg-white/5 border border-black/10 dark:border-white/10 text-xs font-mono uppercase tracking-widest text-accent-color mb-4 rounded">
             AI Analyzer
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-none">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-none">
             Resume ATS <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-pink-500">Scanner</span>
           </h1>
           <p className="opacity-80 text-sm md:text-base mt-3 max-w-2xl leading-relaxed">
@@ -106,7 +106,7 @@ const AtsChecker = () => {
           <div className="max-w-2xl mx-auto">
             <form onSubmit={handleUpload} className="space-y-6">
               <ParallaxTilt>
-                <GlassCard className="flex flex-col items-center justify-center text-center group border-dashed hover:border-accent-color/50 transition-all p-12">
+                <GlassCard className="flex flex-col items-center justify-center text-center group border-dashed hover:border-accent-color/50 transition-all p-6 sm:p-12">
                 <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl mb-6 border border-black/10 dark:border-white/10 group-hover:border-accent-color/30 transition-colors shadow-lg shadow-black/20">
                   📄
                 </div>

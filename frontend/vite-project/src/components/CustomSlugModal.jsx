@@ -131,17 +131,17 @@ const CustomSlugModal = ({ portfolio, onClose, onSuccess }) => {
       />
 
       {/* Modal Box */}
-      <div className="relative z-10 w-full max-w-lg bg-[var(--neo-bg)] border border-violet-500/30 rounded-3xl p-8 shadow-2xl shadow-violet-950/50 text-[var(--neo-text)] font-sans overflow-hidden">
+      <div className="relative z-10 w-full max-w-lg bg-[var(--neo-bg)] border border-violet-500/30 rounded-3xl p-5 sm:p-8 shadow-2xl shadow-violet-950/50 text-[var(--neo-text)] font-sans overflow-hidden">
         {/* Glow backdrop decorative effect */}
         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-violet-600/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex items-center justify-between mb-6 border-b border-black/10 dark:border-black/10 dark:border-white/10 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-violet-500/10 border border-violet-500/20 rounded-xl flex items-center justify-center text-violet-400 font-black">
+            <div className="w-10 h-10 bg-violet-500/10 border border-violet-500/20 rounded-xl flex items-center justify-center text-violet-400 font-black shrink-0">
               🔗
             </div>
             <div>
-              <h3 className="text-xl font-bold text-[var(--neo-text)]">Personalized Link</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-[var(--neo-text)]">Personalized Link</h3>
               <p className="text-xs text-slate-400">Choose a custom URL for your public portfolio</p>
             </div>
           </div>
@@ -161,7 +161,7 @@ const CustomSlugModal = ({ portfolio, onClose, onSuccess }) => {
 
             {/* Link Preview Box */}
             <div className="flex items-center bg-[var(--neo-bg)] border border-black/10 dark:border-black/10 dark:border-white/10 rounded-xl overflow-hidden focus-within:border-violet-500 transition-colors">
-              <span className="px-3.5 py-3 text-xs font-mono text-slate-500 bg-[var(--neo-bg)] border-r border-black/10 dark:border-black/10 dark:border-white/10 shrink-0 select-none">
+              <span className="px-2.5 sm:px-3.5 py-3 text-xs font-mono text-slate-500 bg-[var(--neo-bg)] border-r border-black/10 dark:border-black/10 dark:border-white/10 shrink-0 select-none truncate max-w-[130px] sm:max-w-none">
                 {domainPrefix}
               </span>
               <input
@@ -169,7 +169,7 @@ const CustomSlugModal = ({ portfolio, onClose, onSuccess }) => {
                 value={slug}
                 onChange={handleInputChange}
                 placeholder="e.g. ishan-bagra"
-                className="w-full bg-transparent px-3 py-3 text-[var(--neo-text)] text-sm font-mono focus:outline-none placeholder-slate-600"
+                className="w-full bg-transparent px-3 py-3 text-[var(--neo-text)] text-sm font-mono focus:outline-none placeholder-slate-600 min-w-0"
                 maxLength={40}
                 autoFocus
               />
