@@ -144,7 +144,23 @@ export async function login(req, res) {
       { expiresIn: jwtExpiresIn },
     )
 
-    // Instead of returning login success immediately, we now require 2FA
+    // Only require 2FA if explicitly enabled in environment AND SMTP is configured
+    const is2FAEnabled = process.env.ENABLE_2FA === 'true' && Boolean(process.env.SMTP_EMAIL && process.env.SMTP_PASSWORD);
+
+    if (!is2FAEnabled) {
+      return res.json({
+        message: 'Login successful',
+        token,
+        user: {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.user_metadata?.name || data.user.user_metadata?.full_name || data.user.user_metadata?.displayName || '',
+          created_at: data.user.created_at,
+        },
+      });
+    }
+
+    // 2FA OTP flow (when ENABLE_2FA=true)
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digit OTP
     
     pendingLogins.set(normalizedEmail, {
