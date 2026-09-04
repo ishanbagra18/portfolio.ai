@@ -154,7 +154,11 @@ export const parseResume = async (req, res) => {
 
   } catch (error) {
     console.error('Error parsing resume:', error);
-    return res.status(500).json({ error: error.message || 'Failed to process resume' });
+    let userMsg = error.message || 'Failed to process resume';
+    if (userMsg.includes('PERMISSION_DENIED') || userMsg.includes('denied access') || userMsg.includes('403')) {
+      userMsg = 'Google Gemini API Key Error: Your API key or Google Cloud Project has been denied access by Google. Please create a new GEMINI_API_KEY at https://aistudio.google.com and update it in your Render backend environment variables.';
+    }
+    return res.status(500).json({ error: userMsg });
   } finally {
     safeUnlink(filePath);
   }
@@ -247,7 +251,11 @@ export const checkAtsScore = async (req, res) => {
 
   } catch (error) {
     console.error('Error analyzing ATS score:', error);
-    return res.status(500).json({ error: error.message || 'Failed to analyze resume ATS score' });
+    let userMsg = error.message || 'Failed to analyze resume ATS score';
+    if (userMsg.includes('PERMISSION_DENIED') || userMsg.includes('denied access') || userMsg.includes('403')) {
+      userMsg = 'Google Gemini API Key Error: Your API key or Google Cloud Project has been denied access by Google. Please create a new GEMINI_API_KEY at https://aistudio.google.com and update it in your Render backend environment variables.';
+    }
+    return res.status(500).json({ error: userMsg });
   } finally {
     safeUnlink(filePath);
   }
