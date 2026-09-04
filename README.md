@@ -36,7 +36,7 @@ Portfolio.io helps users go from resume to live, shareable portfolio — with AI
 
 Portfolio.io is a full-stack platform for job seekers who want a polished web presence without the design or engineering overhead. Users can enter their details manually or upload a resume for AI-powered auto-fill, choose from a library of production-ready templates, and publish a live portfolio behind a custom URL — complete with an embedded AI chatbot that can answer recruiter questions on their behalf.
 
-Beyond the builder itself, the platform includes a suite of career tools: an ATS resume scanner, a job-match analyzer, AI-driven content tailoring, and an automated cold-email/HR-outreach engine — positioning it as an end-to-end job search companion rather than a static site generator.  
+Beyond the builder itself, the platform includes a suite of career tools: an ATS resume scanner, a job-match analyzer, and AI-driven content tailoring — positioning it as an end-to-end job search companion rather than a static site generator.
 
 ## Features
 
@@ -92,11 +92,7 @@ Built on Google Gemini, with retrieval-augmented generation for context-aware re
 - **AI Recruiter Assistant** — an embedded chatbot per portfolio, powered by RAG over a Qdrant vector store, that answers recruiter questions about a candidate's background in real time
 - **Smart Job Matcher** — compares a portfolio against a target job description and returns a match score, strengths, missing keywords, and improvement recommendations
 - **AI Job Tailoring** — adapts portfolio content to align with a specific job description
-- **Cold Email & HR Outreach Suite**
-  - Generates tailored pitch emails and cover letters from portfolio highlights and a job description
-  - Automated HR/recruiter email discovery via company domain resolution
-  - Multiple AI-generated subject line options and selectable tone (Confident, Direct, Enthusiastic, Formal)
-  - Direct SMTP dispatch via Nodemailer, with clipboard and `mailto` fallbacks
+
 
 ### Public Sharing & Custom URL Slugs
 

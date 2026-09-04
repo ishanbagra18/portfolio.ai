@@ -122,18 +122,7 @@ const CareerTools = () => {
             Upload your resume and analyze JD alignment, generate tailored cover letters, and practice targeted interview questions.
           </p>
 
-          <div className="mt-6 p-4 rounded-xl bg-gradient-to-r from-violet-600/20 to-pink-600/20 border border-violet-500/30 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-pink-400 block">New Feature</span>
-              <p className="text-sm font-bold text-white">Automated Cold Email Pitch & HR Outreach Suite</p>
-            </div>
-            <Link
-              to="/cold-email-generator"
-              className="px-5 py-2.5 bg-accent-color hover:bg-pink-500 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition shadow-lg shrink-0 w-full sm:w-auto text-center"
-            >
-              Launch Generator &rarr;
-            </Link>
-          </div>
+
         </div>
 
         {/* Main Grid */}

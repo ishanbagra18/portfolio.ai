@@ -35,7 +35,6 @@ const Navbar = () => {
     { path: '/viewtemplates', label: 'Templates', icon: Layers },
     { path: '/my-portfolios', label: 'My Portfolios', icon: LayoutDashboard },
     { path: '/career-tools', label: 'Career Tools', icon: Briefcase },
-    { path: '/cold-email-generator', label: 'Cold Email', icon: Mail },
     { path: '/ats-checker', label: 'ATS Checker', icon: FileCheck },
   ];
 

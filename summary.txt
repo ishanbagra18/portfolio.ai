@@ -29,8 +29,6 @@ Core features:
   ✔  Recruiter Chatbot Assistant widget with vector RAG search capabilities (Qdrant)
   ✔  Smart Job Matcher comparisons with detailed audit scorecards
   ✔  Job Description Form Auto-Tailoring & Optimizing
-  ✔  Automated Cold Email Pitch & HR Outreach Suite (`ColdEmailGenerator`)
-  ✔  Automated HR & Recruiter Email Discovery Engine (`POST /api/ai/find-hr-email`)
   ✔  One-Click PDF Resume print export layout configurations
   ✔  GitHub Activity Heatmap Integration (`GitHubActivity`)
   ✔  Dynamic Section Schemas for achievements, publications, hackathons, open source, volunteering

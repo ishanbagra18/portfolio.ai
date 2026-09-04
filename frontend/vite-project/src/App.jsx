@@ -13,7 +13,6 @@ const Providedata = lazy(() => import("./pages/ProvideData"));
 const EditPortfolio = lazy(() => import("./pages/EditPortfolio"));
 const AtsChecker = lazy(() => import("./pages/AtsChecker"));
 const CareerTools = lazy(() => import("./pages/CareerTools"));
-const ColdEmailGenerator = lazy(() => import("./pages/ColdEmailGenerator"));
 const PortfolioMatcher = lazy(() => import("./pages/PortfolioMatcher"));
 const Profile = lazy(() => import("./components/Profile"));
 const UpdateProfile = lazy(() => import("./components/UpdateProfile"));
@@ -265,15 +264,7 @@ export default function App() {
           }
         />
 
-        {/* Cold Email Pitch Generator */}
-        <Route
-          path="/cold-email-generator"
-          element={
-            <ProtectedRoute>
-              <ColdEmailGenerator />
-            </ProtectedRoute>
-          }
-        />
+
 
         {/* Public Portfolio View */}
         <Route
