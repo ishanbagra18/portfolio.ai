@@ -4,7 +4,7 @@ const rawApiUrl = import.meta.env.VITE_API_URL;
 export const API_BASE = rawApiUrl ? rawApiUrl.replace(/\/$/, '') : (import.meta.env.MODE === 'production' ? 'https://portfolio-ai-gzyo.onrender.com' : 'http://127.0.0.1:5000');
 const API_BASE_URL = API_BASE;
 
-async function request(path, options = {}) {
+async function request(path, options = {}, retries = 1) {
   const token = getToken()
 
   let response
@@ -18,7 +18,11 @@ async function request(path, options = {}) {
       },
     })
   } catch (err) {
-    throw new Error(`Unable to connect to backend server at ${API_BASE_URL}. Make sure backend server is running.`)
+    if (retries > 0) {
+      await new Promise(res => setTimeout(res, 2500))
+      return request(path, options, retries - 1)
+    }
+    throw new Error(`Unable to connect to backend server at ${API_BASE_URL}. If the server was sleeping (Render cold start), please try again in a few seconds.`)
   }
 
   const data = await response.json().catch(() => ({}))
