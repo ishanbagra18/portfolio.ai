@@ -1,3 +1,7 @@
+// added chatbot acc to the website
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
