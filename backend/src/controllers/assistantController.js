@@ -1,8 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { supabase } from '../config/supabase.js';
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
 // Product Help Q&A Index
 const PRODUCT_HELP_DOCS = `
 PRODUCT HELP KNOWLEDGE BASE (Portfolio.ai):
@@ -176,6 +174,16 @@ Rules:
 
 ${PRODUCT_HELP_DOCS}
 `;
+
+    const apiKey = (process.env.GEMINI_API_KEY || '').trim();
+    if (!apiKey) {
+      return res.status(500).json({
+        success: false,
+        message: "GEMINI_API_KEY environment variable is missing on the server. Please add GEMINI_API_KEY in your Render Dashboard."
+      });
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
 
     // Call Gemini with tools
     const response = await ai.models.generateContent({

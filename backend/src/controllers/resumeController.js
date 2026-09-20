@@ -3,8 +3,14 @@ import mammoth from 'mammoth';
 import { GoogleGenAI, Type } from '@google/genai';
 import { PDFParse } from 'pdf-parse'; // v2 API: named class export, not a default function
 
-// Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Dynamic AI client getter to ensure runtime process.env evaluation
+const getAiClient = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey || apiKey.trim() === '') {
+    throw new Error('GEMINI_API_KEY environment variable is missing on the server. Please add GEMINI_API_KEY in your Render Environment Variables.');
+  }
+  return new GoogleGenAI({ apiKey: apiKey.trim() });
+};
 
 // Clean error formatter
 const formatErrorMessage = (error) => {
@@ -18,11 +24,11 @@ const formatErrorMessage = (error) => {
     // Not JSON string
   }
 
-  if (msg.includes('PERMISSION_DENIED') || msg.includes('403')) {
-    return 'Google Gemini API Key Error: Your API key has been denied access by Google. Please check your GEMINI_API_KEY environment variable.';
+  if (msg.includes('PERMISSION_DENIED') || msg.includes('403') || msg.includes('denied access') || msg.includes('denied')) {
+    return 'Google Gemini API Key Error: The GEMINI_API_KEY set on your Render server is invalid, revoked, or denied access by Google. Please update GEMINI_API_KEY in your Render Dashboard with a fresh key from Google AI Studio (aistudio.google.com).';
   }
   if (msg.includes('UNAVAILABLE') || msg.includes('503') || msg.includes('high demand')) {
-    return 'Gemini AI service is currently busy or experiencing high demand. Please try scanning again in a few seconds.';
+    return 'Gemini AI service is currently experiencing high demand. Please try scanning again in a few seconds.';
   }
   if (msg.includes('Invalid PDF structure') || msg.includes('InvalidPDFException') || msg.includes('pdf-parse')) {
     return 'The uploaded PDF file is corrupt or unreadable. Please re-export or upload a valid PDF or DOCX resume.';
@@ -31,7 +37,8 @@ const formatErrorMessage = (error) => {
 };
 
 // Robust helper to try candidate models if 503 / 404 / rate issues occur
-const generateGeminiContent = async (ai, params) => {
+const generateGeminiContent = async (aiIgnored, params) => {
+  const ai = getAiClient();
   const modelCandidates = ['gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.1-flash-lite'];
   let lastErr = null;
   for (const model of modelCandidates) {
@@ -42,7 +49,10 @@ const generateGeminiContent = async (ai, params) => {
       });
     } catch (err) {
       lastErr = err;
-      console.warn(`Model ${model} failed, trying fallback model... (${err.message})`);
+      console.warn(`Model ${model} failed: (${err.message})`);
+      if (err.message.includes('PERMISSION_DENIED') || err.message.includes('403') || err.message.includes('denied access')) {
+        break; // Stop fallback loop immediately if API key itself is denied
+      }
     }
   }
   throw lastErr;
