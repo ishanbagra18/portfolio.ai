@@ -5,9 +5,11 @@ import { motion } from 'framer-motion';
 import { GlassCard } from '../components/ui/GlassCard';
 import { Button } from '../components/ui/Button';
 import { API_BASE } from '../lib/api';
+import { useTheme } from '../contexts/ThemeContext';
 
 const ViewTemplates = () => {
   const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
   const [likes, setLikes] = useState({});
   const [likedTemplates, setLikedTemplates] = useState({});
 
@@ -38,13 +40,13 @@ const ViewTemplates = () => {
   const handleLike = async (templateId, e) => {
     e.stopPropagation();
     const isCurrentlyLiked = likedTemplates[templateId];
-    
+
     // Optimistic UI update
-    setLikes(prev => ({ 
-      ...prev, 
-      [templateId]: Math.max(0, (prev[templateId] || 0) + (isCurrentlyLiked ? -1 : 1)) 
+    setLikes(prev => ({
+      ...prev,
+      [templateId]: Math.max(0, (prev[templateId] || 0) + (isCurrentlyLiked ? -1 : 1))
     }));
-    
+
     const newLiked = { ...likedTemplates, [templateId]: !isCurrentlyLiked };
     setLikedTemplates(newLiked);
     localStorage.setItem('likedTemplates', JSON.stringify(newLiked));
@@ -68,8 +70,8 @@ const ViewTemplates = () => {
       number: '01',
       name: 'Neon Dark',
       description: 'A sleek dark theme featuring vibrant gradient text and clean card-based layouts. Perfect for a modern tech vibe.',
-      previewLink: '/portfolio/template1', 
-      dataLink: '/provide-data/template1' 
+      previewLink: '/portfolio/template1',
+      dataLink: '/provide-data/template1'
     },
     {
       id: 'template2',
@@ -77,7 +79,7 @@ const ViewTemplates = () => {
       name: 'Bold Minimal',
       description: 'A premium, high-contrast black theme with massive typography and minimalist borders. Leaves a strong impact.',
       previewLink: '/portfolio/template2',
-      dataLink: '/provide-data/template2' 
+      dataLink: '/provide-data/template2'
     },
     {
       id: 'template3',
@@ -85,7 +87,7 @@ const ViewTemplates = () => {
       name: 'White Elegance',
       description: 'A premium, high-contrast white theme with clean lines and ample whitespace. Exudes sophistication and professionalism.',
       previewLink: '/portfolio/template3',
-      dataLink: '/provide-data/template3' 
+      dataLink: '/provide-data/template3'
     },
     {
       id: 'template4',
@@ -93,7 +95,7 @@ const ViewTemplates = () => {
       name: 'Blueprint Technical',
       description: 'A navy schematic theme with grid paper, corner brackets, and monospace annotations. Built for engineers who think in diagrams.',
       previewLink: '/portfolio/template4',
-      dataLink: '/provide-data/template4' 
+      dataLink: '/provide-data/template4'
     },
     {
       id: 'template5',
@@ -101,7 +103,7 @@ const ViewTemplates = () => {
       name: 'Neo Brutalist',
       description: 'A warm scrapbook theme with thick black borders, hard offset shadows, and rotated stickers. Playful, loud, and hard to ignore.',
       previewLink: '/portfolio/template5',
-      dataLink: '/provide-data/template5' 
+      dataLink: '/provide-data/template5'
     },
     {
       id: 'template6',
@@ -109,7 +111,7 @@ const ViewTemplates = () => {
       name: 'Editorial Gallery',
       description: 'An ivory catalogue theme with serif display type, hairline rules, and gallery plate numbering. Quiet, refined, and confident.',
       previewLink: '/portfolio/template6',
-      dataLink: '/provide-data/template6' 
+      dataLink: '/provide-data/template6'
     },
     {
       id: 'template7',
@@ -226,7 +228,7 @@ const ViewTemplates = () => {
   ];
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -236,75 +238,72 @@ const ViewTemplates = () => {
       <Navbar />
 
       <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-12 py-12 sm:py-24 relative z-10">
-        
-        <div className="flex flex-col mb-12 sm:mb-20 pb-6 sm:pb-8 border-b border-black/10 dark:border-white/10">
-          <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black text-[var(--neo-text)] uppercase tracking-tighter leading-none">
+
+        <div className="flex flex-col mb-12 sm:mb-20 pb-6 sm:pb-8 border-b border-zinc-200 dark:border-white/10">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-display font-black text-zinc-900 dark:text-white uppercase tracking-tighter leading-none">
             Select Your
           </h1>
           <h2
             className="text-3.5xl sm:text-5xl md:text-7xl font-display font-black uppercase tracking-tighter leading-none mt-2"
-            style={{ WebkitTextStroke: '1.5px rgba(255,255,255,0.4)', color: 'transparent' }}
+            style={{ WebkitTextStroke: isDarkMode ? '1.5px rgba(255,255,255,0.4)' : '1.5px rgba(15,23,42,0.65)', color: 'transparent' }}
           >
             Template.
           </h2>
-          <p className="mt-4 sm:mt-8 text-base sm:text-xl opacity-80 max-w-2xl font-medium">
+          <p className="mt-4 sm:mt-8 text-base sm:text-xl text-zinc-600 dark:text-zinc-300 max-w-2xl font-medium">
             Choose a design that matches your vibe. You can preview the layout or jump straight into providing your data to generate your portfolio.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {templates.map((template) => (
-            <GlassCard 
-              key={template.id} 
-              className="group flex flex-col justify-between p-6 sm:p-8 hover:border-accent-color/50 transition-colors duration-500"
+            <GlassCard
+              key={template.id}
+              className="group flex flex-col justify-between p-6 sm:p-8 hover:border-pink-500/50 transition-colors duration-500"
             >
               <div>
-                <span 
-                  className="text-5xl font-display font-black tracking-tighter leading-none mb-6 block opacity-50 transition-opacity group-hover:opacity-100"
-                  style={{ WebkitTextStroke: '1px rgba(255,255,255,0.3)', color: 'transparent' }}
+                <span
+                  className="text-5xl font-display font-black tracking-tighter leading-none mb-6 block transition-opacity opacity-70 group-hover:opacity-100"
+                  style={{ WebkitTextStroke: isDarkMode ? '1px rgba(255,255,255,0.35)' : '1px rgba(15,23,42,0.5)', color: 'transparent' }}
                 >
                   {template.number}
                 </span>
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-2xl font-display font-bold text-[var(--neo-text)] group-hover:text-accent-color transition-colors duration-300">
+                  <h3 className="text-2xl font-display font-bold text-zinc-900 dark:text-white group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors duration-300">
                     {template.name}
                   </h3>
-                  
+
                   {/* Like Button */}
-                  <button 
+                  <button
                     onClick={(e) => handleLike(template.id, e)}
-                    className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors ${
-                      likedTemplates[template.id] 
-                        ? 'text-pink-500 bg-pink-500/10' 
-                        : 'text-zinc-500 hover:text-pink-400 hover:bg-pink-500/10'
-                    }`}
+                    className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${likedTemplates[template.id]
+                        ? 'text-pink-500 bg-pink-500/10'
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-pink-500 hover:bg-pink-500/10'
+                      }`}
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill={likedTemplates[template.id] ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
                     </svg>
                     <span className="text-xs font-bold">{likes[template.id] || 0}</span>
                   </button>
                 </div>
-                <p className="opacity-80 mb-10 text-sm leading-relaxed">
+                <p className="text-zinc-600 dark:text-zinc-300 mb-10 text-sm leading-relaxed font-medium">
                   {template.description}
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4 border-t border-black/10 dark:border-white/10">
-                <Button 
+              <div className="flex flex-col sm:flex-row gap-3 mt-auto pt-4 border-t border-zinc-200 dark:border-white/10">
+                <button
                   onClick={() => navigate(template.previewLink)}
-                  variant="neo"
-                  className="flex-1 text-xs  " 
+                  className="flex-1 px-4 py-2.5 rounded-full border border-zinc-300 dark:border-white/15 bg-zinc-100 dark:bg-white/5 hover:bg-zinc-200 dark:hover:bg-white/10 text-zinc-900 dark:text-white text-xs font-semibold transition active:scale-95 cursor-pointer text-center"
                 >
                   Preview
-                </Button>
-                <Button 
+                </button>
+                <button
                   onClick={() => navigate(template.dataLink, { state: { templateId: template.id } })}
-                  variant="primary"
-                  className="flex-1 text-xs hover:bg-pink-500/50"
+                  className="flex-1 px-4 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 text-white text-xs font-bold transition shadow-md shadow-pink-500/20 active:scale-95 cursor-pointer text-center"
                 >
                   Provide Data
-                </Button>
+                </button>
               </div>
             </GlassCard>
           ))}

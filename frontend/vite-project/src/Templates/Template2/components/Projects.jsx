@@ -1,4 +1,8 @@
-const Projects = ({ data }) => {
+import React from 'react';
+import { useSectionNumber } from '../../../components/SectionRenderer';
+
+const Projects = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '03');
   if (!data || data.length === 0) return null;
 
   return (
@@ -9,7 +13,7 @@ const Projects = ({ data }) => {
       <div className="relative z-10 mx-auto w-full max-w-7xl">
         <div className="mb-10 flex items-end justify-between gap-4 border-b border-white/10 pb-6">
           <h3 className="text-2xl sm:text-3xl font-bold uppercase tracking-[0.3em] text-white">
-            03. Projects
+            {sectionNumber}. Projects
           </h3>
 
           <p className="hidden sm:block text-sm text-white/35">

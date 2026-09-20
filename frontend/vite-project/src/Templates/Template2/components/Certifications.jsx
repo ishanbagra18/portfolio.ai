@@ -1,6 +1,8 @@
-// import React from 'react';
+import React from 'react';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const Certifications = ({ data }) => {
+const Certifications = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '05');
   if (!data || data.length === 0) return null;
 
   return (
@@ -13,7 +15,7 @@ const Certifications = ({ data }) => {
             className="text-6xl md:text-8xl font-black tracking-tighter leading-none"
             style={{ WebkitTextStroke: '2px #374151', color: 'transparent' }}
           >
-            05
+            {sectionNumber}
           </span>
           <h3 className="text-5xl md:text-7xl font-black text-white uppercase tracking-tighter leading-none">
             Certifications

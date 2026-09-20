@@ -1,6 +1,8 @@
 import { GridBackground, SheetLabel } from './Schematic';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const Experience = ({ data }) => {
+const Experience = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '05');
   if (!data || data.length === 0) return null;
 
   return (
@@ -8,7 +10,7 @@ const Experience = ({ data }) => {
       <GridBackground />
 
       <div className="relative z-10 mx-auto max-w-5xl">
-        <SheetLabel index="05" title="Experience / Timeline" />
+        <SheetLabel index={sectionNumber} title="Experience / Timeline" />
 
         <div className="relative border-l border-dashed border-[#7EC8E3]/25 pl-8 space-y-10">
           {data.map((exp, index) => (

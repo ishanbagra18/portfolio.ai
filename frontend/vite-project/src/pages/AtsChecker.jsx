@@ -1,4 +1,4 @@
-import { API_BASE } from '../lib/api';
+import { API_BASE, fetchWithFallback } from '../lib/api';
 import { getToken } from '../lib/auth';
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
@@ -37,7 +37,7 @@ const AtsChecker = () => {
 
     try {
       const token = getToken() || localStorage.getItem('auth_token');
-      const response = await fetch(`${API_BASE}/api/resume/ats-check`, {
+      const response = await fetchWithFallback('/api/resume/ats-check', {
         method: 'POST',
         headers: {
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -76,7 +76,7 @@ const AtsChecker = () => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -107,26 +107,26 @@ const AtsChecker = () => {
             <form onSubmit={handleUpload} className="space-y-6">
               <ParallaxTilt>
                 <GlassCard className="flex flex-col items-center justify-center text-center group border-dashed hover:border-accent-color/50 transition-all p-6 sm:p-12">
-                <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl mb-6 border border-black/10 dark:border-white/10 group-hover:border-accent-color/30 transition-colors shadow-lg shadow-black/20">
-                  📄
-                </div>
-                <h3 className="text-xl font-display font-bold uppercase tracking-tight mb-2">
-                  Select Resume File
-                </h3>
-                <p className="opacity-60 text-xs mb-8 max-w-xs leading-relaxed">
-                  Supports PDF or DOCX format. Keep formatting standard for best analysis.
-                </p>
+                  <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl mb-6 border border-black/10 dark:border-white/10 group-hover:border-accent-color/30 transition-colors shadow-lg shadow-black/20">
+                    📄
+                  </div>
+                  <h3 className="text-xl font-display font-bold uppercase tracking-tight mb-2">
+                    Select Resume File
+                  </h3>
+                  <p className="opacity-60 text-xs mb-8 max-w-xs leading-relaxed">
+                    Supports PDF or DOCX format. Keep formatting standard for best analysis.
+                  </p>
 
-                <label className="cursor-pointer px-6 py-3 border border-black/20 dark:border-white/20 hover:border-accent-color/50 bg-white/5 hover:bg-white/10 transition-all font-bold uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-black/10">
-                  {file ? file.name : 'Choose File'}
-                  <input
-                    type="file"
-                    accept=".pdf,.docx,.doc"
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                </label>
-              </GlassCard>
+                  <label className="cursor-pointer px-6 py-3 border border-black/20 dark:border-white/20 hover:border-accent-color/50 bg-white/5 hover:bg-white/10 transition-all font-bold uppercase tracking-widest text-xs rounded-xl shadow-lg shadow-black/10">
+                    {file ? file.name : 'Choose File'}
+                    <input
+                      type="file"
+                      accept=".pdf,.docx,.doc"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                </GlassCard>
               </ParallaxTilt>
 
               {error && (
@@ -159,7 +159,7 @@ const AtsChecker = () => {
           <div className="space-y-12 animate-fade-in">
             {/* Score Grid Row */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-              
+
               {/* Overall Circular Score Chart */}
               <GlassCard className="lg:col-span-4 flex flex-col items-center justify-center text-center p-8">
                 <span className="text-xs font-bold opacity-60 uppercase tracking-widest mb-6">ATS Compatibility</span>
@@ -198,7 +198,7 @@ const AtsChecker = () => {
 
             {/* Mistakes & Recommendations Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              
+
               {/* Mistakes Column */}
               <GlassCard className="p-8">
                 <div className="flex items-center gap-2 mb-6">
@@ -244,8 +244,8 @@ const AtsChecker = () => {
               </p>
               <div className="flex flex-wrap gap-2.5">
                 {result.missingKeywords.map((kw, idx) => (
-                  <span 
-                    key={idx} 
+                  <span
+                    key={idx}
                     className="px-3.5 py-2 bg-accent-color/10 border border-accent-color/20 text-accent-color rounded-xl text-xs font-semibold tracking-wide uppercase"
                   >
                     {kw}

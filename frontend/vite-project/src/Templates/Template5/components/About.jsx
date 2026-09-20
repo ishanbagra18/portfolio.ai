@@ -1,6 +1,8 @@
 import { Dots, Tag, Card, TornDivider } from './Brutal';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const About = ({ data }) => {
+const About = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '02');
   return (
     <section className="relative w-full overflow-hidden bg-[#F6F1E4] px-4 sm:px-6 lg:px-10 py-24">
       <TornDivider color="#12110F" />
@@ -8,7 +10,7 @@ const About = ({ data }) => {
 
       <div className="relative z-10 mx-auto max-w-7xl pt-12">
         <Tag bg="#B6F24B" rotate="rotate-1">
-          02 · About
+          {sectionNumber} · About
         </Tag>
 
         <h3 className="mt-6 max-w-2xl font-['Archivo_Black'] text-3xl sm:text-4xl lg:text-5xl leading-tight text-[#12110F]">

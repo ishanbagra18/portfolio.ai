@@ -1,3 +1,4 @@
+import SectionRenderer from '../../components/SectionRenderer';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import DynamicSection from './components/DynamicSection';
@@ -125,12 +126,37 @@ const Template10 = ({ publicData, isPublicView }) => {
     );
   }
 
-  const data = portfolioData || defaultData;
+  const data = publicData || portfolioData || defaultData;
   const pInfo = data.personalInfo || {};
   const tStacks = data.techStacks || [];
   const projs = data.projects || [];
   const exps = data.experiences || [];
   const certs = data.certifications || [];
+
+  const sectionOrder = data?.personalInfo?.section_order || [];
+  const sectionVisibility = data?.personalInfo?.section_visibility || {};
+
+  const sectionMap = {
+    about: null,
+    tech_stacks: null,
+    projects: null,
+    experiences: null,
+    certifications: null,
+    ...Object.fromEntries(
+      Object.entries(SECTION_SCHEMAS).map(([key, schema]) => [
+        key,
+        data?.personalInfo?.[key]?.length ? (
+          <DynamicSection
+            key={key}
+            title={schema.title}
+            schema={schema}
+            data={data.personalInfo[key]}
+          />
+        ) : null
+      ])
+    )
+  };
+
 
   return (
     <div className="min-h-screen bg-[#F8F9F6] text-[#2E3C2B] font-['Lora'] relative overflow-x-hidden selection:bg-[#4B5F43] selection:text-[#F8F9F6]">
@@ -339,7 +365,11 @@ const Template10 = ({ publicData, isPublicView }) => {
         />
       ))}
 
-      {/* Footer */}
+      
+      {/* Render Sections via SectionRenderer */}
+      <SectionRenderer sectionOrder={sectionOrder} sectionVisibility={sectionVisibility} sectionMap={sectionMap} />
+
+{/* Footer */}
       <footer className="border-t border-[#EAECE6] bg-white py-12 px-6 mt-20">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6 text-sm text-[#556650]">
           <p>&copy; {new Date().getFullYear()} {pInfo.full_name}.</p>

@@ -10,6 +10,9 @@ import portfolioRoutes from './routes/portfolioRoutes.js';
 import resumeRoutes from './routes/resumeRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import templateRoutes from './routes/templateRoutes.js';
+import billingRoutes from './routes/billingRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import careerRoutes from './routes/careerRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,6 +82,9 @@ app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/templates', templateRoutes);
+app.use('/api/billing', billingRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/career', careerRoutes);
 
 // Multi-path static frontend serving for full-stack Render deployments
 const candidateDistPaths = [
@@ -122,6 +128,6 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ error: err.message || 'Internal Server Error' });
 });
 
-app.listen(port, '0.0.0.0', () => {
+app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

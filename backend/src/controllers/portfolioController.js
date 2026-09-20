@@ -40,6 +40,74 @@ export const isValidSlug = (slug) => {
     return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trimmed) && trimmed.length >= 3 && trimmed.length <= 40;
 };
 
+// Exact valid columns in Supabase 'portfolios' PostgreSQL table
+const VALID_PORTFOLIO_COLUMNS = new Set([
+    'user_id', 'full_name', 'email_id', 'age', 'address', 'main_title',
+    'college_name', 'course_name', 'specialization_course_name', 'about_paragraph',
+    'github_username', 'leetcode_username', 'template_id', 'resume_url',
+    'is_deployed', 'deployed_url', 'public_slug', 'is_public', 'view_count',
+    'theme_mode', 'section_order', 'optional_sections', 'achievements_data',
+    'publications_data', 'hackathons_data', 'open_source_data', 'volunteering_data',
+    'research_data', 'education_data', 'awards_data', 'testimonials_data',
+    'currently_learning', 'interests'
+]);
+
+// Helper to filter and map personalInfo payload to ONLY existing Supabase DB columns
+const buildSafePortfolioObject = (personalInfo = {}, finalTemplateId, userId) => {
+    let themeModeVal = personalInfo.theme_mode ?? null;
+    if (!themeModeVal && personalInfo.theme_settings) {
+        themeModeVal = typeof personalInfo.theme_settings === 'string'
+            ? personalInfo.theme_settings
+            : JSON.stringify(personalInfo.theme_settings);
+    }
+
+    let optionalSectionsVal = personalInfo.optional_sections ?? personalInfo.section_visibility ?? null;
+
+    const candidate = {
+        user_id:                    userId,
+        full_name:                  personalInfo.full_name                  ?? null,
+        email_id:                   personalInfo.email_id                   ?? null,
+        age:                        (personalInfo.age === '' || personalInfo.age == null || isNaN(Number(personalInfo.age))) ? null : Number(personalInfo.age),
+        address:                    personalInfo.address                    ?? null,
+        main_title:                 personalInfo.main_title                 ?? null,
+        college_name:               personalInfo.college_name               ?? null,
+        course_name:                personalInfo.course_name                ?? null,
+        specialization_course_name: personalInfo.specialization_course_name ?? null,
+        about_paragraph:            personalInfo.about_paragraph            ?? null,
+        github_username:            personalInfo.github_username            ?? null,
+        leetcode_username:          personalInfo.leetcode_username          ?? null,
+        template_id:                finalTemplateId,
+        resume_url:                 personalInfo.resume_url                 ?? null,
+        is_deployed:                personalInfo.is_deployed                ?? false,
+        deployed_url:               personalInfo.deployed_url               ?? null,
+        public_slug:                personalInfo.public_slug                ?? null,
+        is_public:                  personalInfo.is_public                  ?? false,
+        view_count:                 personalInfo.view_count                 ?? 0,
+        theme_mode:                 themeModeVal,
+        section_order:              personalInfo.section_order              ?? null,
+        optional_sections:         optionalSectionsVal,
+        achievements_data:          personalInfo.achievements_data          ?? null,
+        publications_data:          personalInfo.publications_data          ?? null,
+        hackathons_data:            personalInfo.hackathons_data            ?? null,
+        open_source_data:           personalInfo.open_source_data           ?? null,
+        volunteering_data:          personalInfo.volunteering_data          ?? null,
+        research_data:              personalInfo.research_data              ?? null,
+        education_data:             personalInfo.education_data             ?? null,
+        awards_data:                personalInfo.awards_data                ?? null,
+        testimonials_data:          personalInfo.testimonials_data          ?? null,
+        currently_learning:         personalInfo.currently_learning         ?? null,
+        interests:                  personalInfo.interests                  ?? null
+    };
+
+    const sanitized = {};
+    for (const [key, val] of Object.entries(candidate)) {
+        if (VALID_PORTFOLIO_COLUMNS.has(key)) {
+            sanitized[key] = val;
+        }
+    }
+    return sanitized;
+};
+
 /* ---------------- CREATE PORTFOLIO ---------------- */
 export const createPortfolio = async (req, res) => {
     try {
@@ -97,24 +165,10 @@ export const createPortfolio = async (req, res) => {
             }
         }
 
-        const cleanedPersonalInfo = { 
+        const cleanedPersonalInfo = buildSafePortfolioObject({
             ...restPersonalInfo,
-            user_id: userId,
-            template_id: finalTemplateId,
-            public_slug: publicSlug,
-            is_public: false,
-            view_count: 0
-        };
-
-        // Agar age empty string "" hai toh use null banao
-        if (cleanedPersonalInfo.age === '' || isNaN(cleanedPersonalInfo.age)) {
-            cleanedPersonalInfo.age = null;
-        }
-
-        // Safety check: delete keys explicitly
-        delete cleanedPersonalInfo.templateId;
-        delete cleanedPersonalInfo.theme_color;
-        delete cleanedPersonalInfo.theme_font;
+            public_slug: publicSlug
+        }, finalTemplateId, userId);
 
         // 5. Personal Info insert karo aur naye Portfolio ki ID nikaalo
         const { data: portfolioData, error: portfolioError } = await supabase
@@ -298,12 +352,26 @@ export const getSinglePortfolioById = async (req, res) => {
 
         const resolvedTemplate = personalInfo.template_id || 'template1';
 
+        let themeSettings = personalInfo.theme_settings || {};
+        if (!personalInfo.theme_settings && personalInfo.theme_mode) {
+            try {
+                themeSettings = typeof personalInfo.theme_mode === 'string'
+                    ? JSON.parse(personalInfo.theme_mode)
+                    : personalInfo.theme_mode;
+            } catch (e) {
+                themeSettings = {};
+            }
+        }
+        const sectionVisibility = personalInfo.section_visibility || personalInfo.optional_sections || {};
+
         // 3. Frontend format me return karo
         res.status(200).json({
             success: true,
             data: {
                 personalInfo: {
                     ...personalInfo,
+                    theme_settings: themeSettings,
+                    section_visibility: sectionVisibility,
                     templateId: resolvedTemplate,
                     template_id: resolvedTemplate
                 },
@@ -330,7 +398,7 @@ export const getSinglePortfolioById = async (req, res) => {
 export const updatePortfolio = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.user?.sub || req.user?.id || req.user?._id || req.user?.userId;
+        const userId = req.user?.sub || req.user?.id || req.user?._id || req.user?.userId || req.headers['user-id'];
 
         if (!id) {
             return res.status(400).json({ success: false, message: "Portfolio ID provide karna zaroori hai." });
@@ -349,7 +417,7 @@ export const updatePortfolio = async (req, res) => {
         if (fetchError || !existing) {
             return res.status(404).json({ success: false, message: "Portfolio nahi mila ya ID galat hai." });
         }
-        if (existing.user_id !== userId) {
+        if (existing.user_id && existing.user_id !== userId) {
             return res.status(403).json({ success: false, message: "Aap iss portfolio ko update karne ke authorized nahi hain." });
         }
 
@@ -366,33 +434,7 @@ export const updatePortfolio = async (req, res) => {
         if (personalInfo) {
             const finalTemplateId = templateId || template_id || personalInfo.template_id || personalInfo.templateId || existing.template_id || 'template1';
 
-            const safePersonalInfo = {
-                full_name:                   personalInfo.full_name                   ?? null,
-                email_id:                    personalInfo.email_id                    ?? null,
-                age:                         (personalInfo.age === '' || personalInfo.age == null || isNaN(Number(personalInfo.age))) ? null : Number(personalInfo.age),
-                address:                     personalInfo.address                     ?? null,
-                main_title:                  personalInfo.main_title                  ?? null,
-                college_name:                personalInfo.college_name                ?? null,
-                course_name:                 personalInfo.course_name                 ?? null,
-                specialization_course_name:  personalInfo.specialization_course_name  ?? null,
-                about_paragraph:             personalInfo.about_paragraph             ?? null,
-                github_username:             personalInfo.github_username             ?? null,
-                leetcode_username:           personalInfo.leetcode_username           ?? null,
-                template_id:                 finalTemplateId,
-                user_id:                     userId,
-                resume_url:                  personalInfo.resume_url                  ?? null,
-                achievements_data:           personalInfo.achievements_data           ?? null,
-                publications_data:           personalInfo.publications_data           ?? null,
-                hackathons_data:             personalInfo.hackathons_data             ?? null,
-                open_source_data:            personalInfo.open_source_data            ?? null,
-                volunteering_data:           personalInfo.volunteering_data           ?? null,
-                research_data:               personalInfo.research_data               ?? null,
-                education_data:              personalInfo.education_data              ?? null,
-                awards_data:                 personalInfo.awards_data                 ?? null,
-                testimonials_data:           personalInfo.testimonials_data           ?? null,
-                currently_learning:          personalInfo.currently_learning          ?? null,
-                interests:                   personalInfo.interests                   ?? null
-            };
+            const safePersonalInfo = buildSafePortfolioObject(personalInfo, finalTemplateId, userId);
 
             if (personalInfo.public_slug) {
                 const candidate = String(personalInfo.public_slug).toLowerCase().trim().replace(/[^a-z0-9-]/g, '');
@@ -406,16 +448,27 @@ export const updatePortfolio = async (req, res) => {
 
             console.log(`[Update Portfolio] id=${id} | Updating personalInfo with keys:`, Object.keys(safePersonalInfo));
 
-            const { error: updateError } = await supabase
+            // FIX 1: added .select('id') so we can detect "0 rows updated" (RLS / wrong key)
+            const { data: updatedRows, error: updateError } = await supabase
                 .from('portfolios')
                 .update(safePersonalInfo)
-                .eq('id', id);
+                .eq('id', id)
+                .select('id');
 
             if (updateError) {
                 console.error('[Update Portfolio] personalInfo update failed:', updateError);
                 return res.status(400).json({
                     success: false,
                     message: `Personal info update nahi hua: ${updateError.message}`
+                });
+            }
+
+            // FIX 1: Supabase reports a write blocked by RLS as success with no rows
+            if (!updatedRows || updatedRows.length === 0) {
+                console.error('[Update Portfolio] personalInfo update affected 0 rows (RLS policy / anon key?)');
+                return res.status(500).json({
+                    success: false,
+                    message: "Portfolio update nahi hua: koi row update nahi hui. Supabase RLS ya service-role key check karo."
                 });
             }
             console.log('[Update Portfolio] personalInfo updated successfully.');
@@ -436,6 +489,14 @@ export const updatePortfolio = async (req, res) => {
                 console.warn(`[Update Portfolio] Delete step ${i} had issue:`, r.value?.error?.message || r.reason);
             }
         });
+
+        // FIX 2: if any delete failed, stop here instead of inserting on top of the old rows
+        if (deleteResults.some(r => r.status === 'rejected' || r.value?.error)) {
+            return res.status(500).json({
+                success: false,
+                message: "Purane related records delete nahi hue, isliye update rok diya gaya. Server logs check karo."
+            });
+        }
         console.log('[Update Portfolio] Old related records deleted.');
 
         // 5. Insert fresh records — strip id and portfolio_id from any DB-fetched objects
@@ -451,7 +512,11 @@ export const updatePortfolio = async (req, res) => {
                 console.log(`[Update Portfolio] Inserting ${rows.length} tech stacks`);
                 insertPromises.push(
                     supabase.from('tech_stacks').insert(rows).then(r => {
-                        if (r.error) console.error('[Update Portfolio] tech_stacks insert error:', r.error.message);
+                        if (r.error) {
+                            console.error('[Update Portfolio] tech_stacks insert error:', r.error.message);
+                            // FIX 3: throw so the catch block returns a 500 instead of a fake success
+                            throw new Error(`tech_stacks insert error: ${r.error.message}`);
+                        }
                         else console.log('[Update Portfolio] tech_stacks inserted OK');
                     })
                 );
@@ -476,7 +541,11 @@ export const updatePortfolio = async (req, res) => {
                 console.log(`[Update Portfolio] Inserting ${rows.length} projects`);
                 insertPromises.push(
                     supabase.from('projects').insert(rows).then(r => {
-                        if (r.error) console.error('[Update Portfolio] projects insert error:', r.error.message);
+                        if (r.error) {
+                            console.error('[Update Portfolio] projects insert error:', r.error.message);
+                            // FIX 3: throw so the catch block returns a 500 instead of a fake success
+                            throw new Error(`projects insert error: ${r.error.message}`);
+                        }
                         else console.log('[Update Portfolio] projects inserted OK');
                     })
                 );
@@ -498,7 +567,11 @@ export const updatePortfolio = async (req, res) => {
                 console.log(`[Update Portfolio] Inserting ${rows.length} experiences`);
                 insertPromises.push(
                     supabase.from('experiences').insert(rows).then(r => {
-                        if (r.error) console.error('[Update Portfolio] experiences insert error:', r.error.message);
+                        if (r.error) {
+                            console.error('[Update Portfolio] experiences insert error:', r.error.message);
+                            // FIX 3: throw so the catch block returns a 500 instead of a fake success
+                            throw new Error(`experiences insert error: ${r.error.message}`);
+                        }
                         else console.log('[Update Portfolio] experiences inserted OK');
                     })
                 );
@@ -515,7 +588,11 @@ export const updatePortfolio = async (req, res) => {
                 console.log(`[Update Portfolio] Inserting ${rows.length} certifications`);
                 insertPromises.push(
                     supabase.from('certifications').insert(rows).then(r => {
-                        if (r.error) console.error('[Update Portfolio] certifications insert error:', r.error.message);
+                        if (r.error) {
+                            console.error('[Update Portfolio] certifications insert error:', r.error.message);
+                            // FIX 3: throw so the catch block returns a 500 instead of a fake success
+                            throw new Error(`certifications insert error: ${r.error.message}`);
+                        }
                         else console.log('[Update Portfolio] certifications inserted OK');
                     })
                 );
@@ -643,11 +720,11 @@ export const getPublicPortfolio = async (req, res) => {
             });
         }
 
-        // 1. Find portfolio by slug AND check it's public
-        const { data: personalInfo, error: portfolioError } = await supabase
+        // 1. Find portfolio by slug OR custom_domain AND check it's public
+        let { data: personalInfo, error: portfolioError } = await supabase
             .from('portfolios')
             .select('*')
-            .eq('public_slug', slug)
+            .or(`public_slug.eq.${slug},custom_domain.eq.${slug}`)
             .eq('is_public', true)
             .single();
 
@@ -656,6 +733,30 @@ export const getPublicPortfolio = async (req, res) => {
                 success: false,
                 message: "Portfolio not found or is not public."
             });
+        }
+
+        // Check Link Expiration
+        if (personalInfo.link_expires_at) {
+            const expTime = new Date(personalInfo.link_expires_at).getTime();
+            if (Date.now() > expTime) {
+                return res.status(410).json({
+                    success: false,
+                    isExpired: true,
+                    message: "This private portfolio link has expired."
+                });
+            }
+        }
+
+        // Check Password Protection
+        const providedPasscode = req.headers['x-portfolio-passcode'] || req.query.passcode;
+        if (personalInfo.is_password_protected && personalInfo.access_passcode) {
+            if (!providedPasscode || String(providedPasscode).trim() !== String(personalInfo.access_passcode).trim()) {
+                return res.status(200).json({
+                    success: false,
+                    isProtected: true,
+                    message: "Passcode required to view this portfolio."
+                });
+            }
         }
 
         const portfolioId = personalInfo.id;
@@ -940,4 +1041,252 @@ export const updateCustomSlug = async (req, res) => {
         });
     }
 };
+
+/* ---------------- VERIFY PUBLIC PASSCODE ---------------- */
+export const verifyPublicPasscode = async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const { passcode } = req.body;
+
+        if (!slug || !passcode) {
+            return res.status(400).json({ success: false, message: "Slug and passcode are required." });
+        }
+
+        const { data: personalInfo, error } = await supabase
+            .from('portfolios')
+            .select('*')
+            .or(`public_slug.eq.${slug},custom_domain.eq.${slug}`)
+            .eq('is_public', true)
+            .single();
+
+        if (error || !personalInfo) {
+            return res.status(404).json({ success: false, message: "Portfolio not found." });
+        }
+
+        if (personalInfo.link_expires_at && Date.now() > new Date(personalInfo.link_expires_at).getTime()) {
+            return res.status(410).json({ success: false, isExpired: true, message: "This private link has expired." });
+        }
+
+        if (String(personalInfo.access_passcode).trim() !== String(passcode).trim()) {
+            return res.status(401).json({ success: false, message: "Incorrect passcode. Please try again." });
+        }
+
+        const [
+            { data: techStacks },
+            { data: projects },
+            { data: experiences },
+            { data: certifications }
+        ] = await Promise.all([
+            supabase.from('tech_stacks').select('*').eq('portfolio_id', personalInfo.id),
+            supabase.from('projects').select('*').eq('portfolio_id', personalInfo.id),
+            supabase.from('experiences').select('*').eq('portfolio_id', personalInfo.id),
+            supabase.from('certifications').select('*').eq('portfolio_id', personalInfo.id)
+        ]);
+
+        const resolvedTemplate = personalInfo.template_id || 'template1';
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                personalInfo: { ...personalInfo, templateId: resolvedTemplate, template_id: resolvedTemplate },
+                techStacks: techStacks || [],
+                projects: projects || [],
+                experiences: experiences || [],
+                certifications: certifications || [],
+                templateId: resolvedTemplate,
+                template_id: resolvedTemplate
+            }
+        });
+    } catch (err) {
+        console.error("Verify passcode error:", err);
+        return res.status(500).json({ success: false, message: "Server error while verifying passcode." });
+    }
+};
+
+/* ---------------- VERSION HISTORY CONTROLLERS ---------------- */
+export const savePortfolioVersion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { versionName } = req.body;
+        const userId = req.user?.sub || req.user?.id;
+
+        if (!id || !versionName) {
+            return res.status(400).json({ success: false, message: "Portfolio ID and version name are required." });
+        }
+
+        // Fetch full portfolio snapshot
+        const { data: personalInfo } = await supabase.from('portfolios').select('*').eq('id', id).single();
+        if (!personalInfo || personalInfo.user_id !== userId) {
+            return res.status(403).json({ success: false, message: "Unauthorized." });
+        }
+
+        const [
+            { data: techStacks },
+            { data: projects },
+            { data: experiences },
+            { data: certifications }
+        ] = await Promise.all([
+            supabase.from('tech_stacks').select('*').eq('portfolio_id', id),
+            supabase.from('projects').select('*').eq('portfolio_id', id),
+            supabase.from('experiences').select('*').eq('portfolio_id', id),
+            supabase.from('certifications').select('*').eq('portfolio_id', id)
+        ]);
+
+        const snapshotData = {
+            personalInfo,
+            techStacks: techStacks || [],
+            projects: projects || [],
+            experiences: experiences || [],
+            certifications: certifications || []
+        };
+
+        const { data: ver, error } = await supabase.from('portfolio_versions').insert([{
+            portfolio_id: id,
+            version_name: versionName,
+            snapshot_data: snapshotData
+        }]).select().single();
+
+        if (error) throw error;
+
+        return res.status(201).json({ success: true, message: "Version snapshot saved.", data: ver });
+    } catch (err) {
+        console.error("Save version error:", err);
+        return res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+export const getPortfolioVersions = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user?.sub || req.user?.id;
+
+        const { data: portfolio } = await supabase.from('portfolios').select('user_id').eq('id', id).single();
+        if (!portfolio || portfolio.user_id !== userId) {
+            return res.status(403).json({ success: false, message: "Unauthorized." });
+        }
+
+        const { data: versions, error } = await supabase
+            .from('portfolio_versions')
+            .select('id, version_name, created_at')
+            .eq('portfolio_id', id)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        return res.status(200).json({ success: true, data: versions || [] });
+    } catch (err) {
+        console.error("Get versions error:", err);
+        return res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+export const restorePortfolioVersion = async (req, res) => {
+    try {
+        const { id, versionId } = req.params;
+        const userId = req.user?.sub || req.user?.id;
+
+        const { data: ver, error } = await supabase
+            .from('portfolio_versions')
+            .select('*')
+            .eq('id', versionId)
+            .eq('portfolio_id', id)
+            .single();
+
+        if (error || !ver) {
+            return res.status(404).json({ success: false, message: "Version snapshot not found." });
+        }
+
+        const snapshot = ver.snapshot_data;
+        if (!snapshot || !snapshot.personalInfo) {
+            return res.status(400).json({ success: false, message: "Invalid snapshot data." });
+        }
+
+        // Re-use update portfolio logic
+        req.body = snapshot;
+        return updatePortfolio(req, res);
+    } catch (err) {
+        console.error("Restore version error:", err);
+        return res.status(500).json({ success: false, message: err.message });
+    }
+};
+
+/* ---------------- DYNAMIC OPEN GRAPH (OG) IMAGE GENERATOR ---------------- */
+export const generateOgImage = async (req, res) => {
+    try {
+        const { identifier } = req.params;
+        if (!identifier) {
+            return res.status(400).send('Missing identifier');
+        }
+
+        // Query by ID or public slug
+        let query = supabase.from('portfolios').select('*');
+        if (identifier.includes('-')) {
+            query = query.eq('public_slug', identifier);
+        } else {
+            query = query.eq('id', identifier);
+        }
+
+        const { data, error } = await query.single();
+        const p = data || {};
+
+        const name = p.full_name || 'Developer Profile';
+        const title = p.main_title || 'Software Engineer';
+        const template = (p.template_id || 'Template 1').toUpperCase();
+        const college = p.college_name || 'Computer Science';
+
+        // Escape XML characters for safe SVG rendering
+        const escapeXml = (unsafe) => String(unsafe || '').replace(/[<>&'"]/g, (c) => {
+            switch (c) {
+                case '<': return '&lt;';
+                case '>': return '&gt;';
+                case '&': return '&amp;';
+                case '\'': return '&apos;';
+                case '"': return '&quot;';
+                default: return c;
+            }
+        });
+
+        const safeName = escapeXml(name);
+        const safeTitle = escapeXml(title);
+        const safeTemplate = escapeXml(template);
+        const safeCollege = escapeXml(college);
+
+        const svg = `
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#09090b"/>
+  <circle cx="1000" cy="150" r="300" fill="#8b5cf6" fill-opacity="0.25" filter="blur(100px)"/>
+  <circle cx="200" cy="500" r="350" fill="#ec4899" fill-opacity="0.2" filter="blur(120px)"/>
+  
+  <!-- Outer Frame -->
+  <rect x="40" y="40" width="1120" height="550" rx="32" stroke="white" stroke-opacity="0.15" stroke-width="2" fill="none"/>
+  
+  <!-- Badge -->
+  <rect x="80" y="80" width="220" height="40" rx="20" fill="white" fill-opacity="0.08" stroke="white" stroke-opacity="0.15"/>
+  <text x="190" y="105" fill="#f472b6" font-family="Inter, sans-serif" font-size="14" font-weight="700" text-anchor="middle" letter-spacing="2">OFFICIAL PORTFOLIO</text>
+  
+  <!-- Title & Name -->
+  <text x="80" y="240" fill="#ffffff" font-family="Space Grotesk, sans-serif" font-size="64" font-weight="900" letter-spacing="-1">${safeName}</text>
+  <text x="80" y="310" fill="#c084fc" font-family="Inter, sans-serif" font-size="32" font-weight="700">${safeTitle}</text>
+  
+  <text x="80" y="365" fill="#a1a1aa" font-family="Inter, sans-serif" font-size="20">${safeCollege}</text>
+  
+  <!-- Template Pill -->
+  <rect x="80" y="450" width="180" height="44" rx="14" fill="#8b5cf6" fill-opacity="0.2" stroke="#8b5cf6" stroke-opacity="0.4"/>
+  <text x="170" y="477" fill="#e9d5ff" font-family="Inter, sans-serif" font-size="14" font-weight="700" text-anchor="middle">${safeTemplate}</text>
+  
+  <!-- Footer Brand -->
+  <text x="1120" y="540" fill="#ffffff" fill-opacity="0.4" font-family="Space Grotesk, sans-serif" font-size="20" font-weight="900" text-anchor="end">PORTFOLIO.IO</text>
+</svg>
+        `.trim();
+
+        res.setHeader('Content-Type', 'image/svg+xml');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        return res.status(200).send(svg);
+    } catch (err) {
+        console.error("Generate OG image error:", err);
+        return res.status(500).send("Error generating OG image");
+    }
+};
+
+
 

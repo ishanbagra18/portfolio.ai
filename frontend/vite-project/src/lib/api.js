@@ -1,15 +1,52 @@
 import { getToken } from './auth'
 
 const rawApiUrl = import.meta.env.VITE_API_URL;
-export const API_BASE = rawApiUrl ? rawApiUrl.replace(/\/$/, '') : (import.meta.env.MODE === 'production' ? 'https://portfolio-ai-gzyo.onrender.com' : 'http://127.0.0.1:5000');
-const API_BASE_URL = API_BASE;
+
+export const getApiBaseUrl = () => {
+  if (rawApiUrl) return rawApiUrl.replace(/\/$/, '');
+  if (import.meta.env.MODE === 'production') return 'https://portfolio-ai-gzyo.onrender.com';
+  if (typeof window !== 'undefined' && window.location && window.location.hostname) {
+    return `http://${window.location.hostname}:5000`;
+  }
+  return 'http://127.0.0.1:5000';
+};
+
+export const API_BASE = getApiBaseUrl();
+
+export async function fetchWithFallback(urlPath, options = {}) {
+  const primaryBase = API_BASE;
+  const targetPath = urlPath.startsWith('/') ? urlPath : `/${urlPath}`;
+  
+  try {
+    return await fetch(`${primaryBase}${targetPath}`, options);
+  } catch (err) {
+    if (err.name === 'TypeError' && (err.message === 'Failed to fetch' || err.message.includes('fetch'))) {
+      // Try alternate local hostname if localhost vs 127.0.0.1 mismatch occurred
+      let altBase = null;
+      if (primaryBase.includes('127.0.0.1')) {
+        altBase = primaryBase.replace('127.0.0.1', 'localhost');
+      } else if (primaryBase.includes('localhost')) {
+        altBase = primaryBase.replace('localhost', '127.0.0.1');
+      }
+      
+      if (altBase) {
+        try {
+          return await fetch(`${altBase}${targetPath}`, options);
+        } catch (retryErr) {
+          // Both failed, rethrow original error
+        }
+      }
+    }
+    throw err;
+  }
+}
 
 async function request(path, options = {}, retries = 1) {
   const token = getToken()
 
   let response
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    response = await fetchWithFallback(path, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
@@ -19,10 +56,10 @@ async function request(path, options = {}, retries = 1) {
     })
   } catch (err) {
     if (retries > 0) {
-      await new Promise(res => setTimeout(res, 2500))
+      await new Promise(res => setTimeout(res, 1500))
       return request(path, options, retries - 1)
     }
-    throw new Error(`Unable to connect to backend server at ${API_BASE_URL}. If the server was sleeping (Render cold start), please try again in a few seconds.`)
+    throw new Error(`Unable to connect to backend server at ${API_BASE}. If the server was sleeping (Render cold start), please try again in a few seconds.`)
   }
 
   const data = await response.json().catch(() => ({}))
@@ -54,6 +91,14 @@ export function verifyOTP(payload) {
     body: JSON.stringify(payload),
   })
 }
+
+export function oauthSession(payload) {
+  return request('/api/auth/oauth/session', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
 
 
 export function getProfile() {

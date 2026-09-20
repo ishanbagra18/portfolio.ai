@@ -1,14 +1,16 @@
 import { PlateLabel, Watermark, Hairline } from './Editorial';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const Certifications = ({ data }) => {
+const Certifications = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '06');
   if (!data || data.length === 0) return null;
 
   return (
     <section className="relative w-full overflow-hidden bg-[#F7F4EE] px-6 sm:px-10 lg:px-16 py-28">
-      <Watermark text="06" />
+      <Watermark text={sectionNumber} />
 
       <div className="relative z-10 mx-auto max-w-5xl">
-        <PlateLabel number="06" title="Certifications" />
+        <PlateLabel number={sectionNumber} title="Certifications" />
 
         <div>
           {data.map((cert, index) => (

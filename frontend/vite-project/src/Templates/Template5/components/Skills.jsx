@@ -1,6 +1,8 @@
 import { Dots, Tag, accents } from './Brutal';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const Skills = ({ data }) => {
+const Skills = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '03');
   if (!data || data.length === 0) return null;
 
   const rotations = ['-rotate-2', 'rotate-1', 'rotate-2', '-rotate-1'];
@@ -11,7 +13,7 @@ const Skills = ({ data }) => {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <Tag bg="#FF4D9D" rotate="-rotate-1">
-          03 · Tech Stack
+          {sectionNumber} · Tech Stack
         </Tag>
 
         <h3 className="mt-6 max-w-2xl font-['Archivo_Black'] text-3xl sm:text-4xl lg:text-5xl leading-tight text-[#12110F]">

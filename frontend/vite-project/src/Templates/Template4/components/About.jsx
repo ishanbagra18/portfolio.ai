@@ -1,14 +1,15 @@
 
 import {GridBackground, SheetLabel, CornerFrame } from './Schematic';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-
-const About = ({ data }) => {
+const About = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '02');
   return (
     <section className="relative w-full overflow-hidden bg-[#0B1D33] px-4 sm:px-6 lg:px-10 py-24">
       <GridBackground />
 
       <div className="relative z-10 mx-auto max-w-7xl">
-        <SheetLabel index="02" title="About / Specification" />
+        <SheetLabel index={sectionNumber} title="About / Specification" />
 
         <CornerFrame className="p-8 sm:p-10 lg:p-12 bg-[#081526]/60 border border-[#7EC8E3]/10">
           <div className="grid gap-10 lg:grid-cols-5">

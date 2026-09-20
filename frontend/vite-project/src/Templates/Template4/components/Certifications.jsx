@@ -1,6 +1,8 @@
 import { GridBackground, SheetLabel, CornerFrame } from './Schematic';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const Certifications = ({ data }) => {
+const Certifications = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '06');
   if (!data || data.length === 0) return null;
 
   return (
@@ -8,7 +10,7 @@ const Certifications = ({ data }) => {
       <GridBackground />
 
       <div className="relative z-10 mx-auto max-w-7xl">
-        <SheetLabel index="06" title="Certifications / Verified" />
+        <SheetLabel index={sectionNumber} title="Certifications / Verified" />
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           {data.map((cert, index) => (

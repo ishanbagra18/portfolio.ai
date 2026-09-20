@@ -5,6 +5,7 @@ import { setToken } from '../lib/auth'
 import { motion } from 'framer-motion'
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
+import OAuthButtons from '../components/OAuthButtons'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -103,11 +104,13 @@ export default function Register() {
           disabled={loading}
           type="submit"
           variant="primary"
-className="w-full mt-2 bg-gradient-to-r from-pink-500 via-purple-600 to-violet-600 hover:from-pink-600 hover:via-purple-700 hover:to-violet-700 transition-all duration-300"        >
+          className="w-full mt-2 bg-gradient-to-r from-pink-500 via-purple-600 to-violet-600 hover:from-pink-600 hover:via-purple-700 hover:to-violet-700 transition-all duration-300"
+        >
           {loading ? 'Creating Account...' : 'Sign Up'}
         </Button>
       </form>  
 
+      <OAuthButtons onError={setError} />
 
       <p className="mt-6 text-center text-sm text-[var(--neo-text)]/60">
         Already have an account?{' '}
@@ -118,3 +121,4 @@ className="w-full mt-2 bg-gradient-to-r from-pink-500 via-purple-600 to-violet-6
     </motion.div>
   )
 }
+

@@ -1,3 +1,4 @@
+import SectionRenderer from '../../components/SectionRenderer';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import DynamicSection from './components/DynamicSection';
@@ -125,12 +126,37 @@ const Template14 = ({ publicData, isPublicView }) => {
     );
   }
 
-  const data = portfolioData || defaultData;
+  const data = publicData || portfolioData || defaultData;
   const pInfo = data.personalInfo || {};
   const tStacks = data.techStacks || [];
   const projs = data.projects || [];
   const exps = data.experiences || [];
   const certs = data.certifications || [];
+
+  const sectionOrder = data?.personalInfo?.section_order || [];
+  const sectionVisibility = data?.personalInfo?.section_visibility || {};
+
+  const sectionMap = {
+    about: null,
+    tech_stacks: null,
+    projects: null,
+    experiences: null,
+    certifications: null,
+    ...Object.fromEntries(
+      Object.entries(SECTION_SCHEMAS).map(([key, schema]) => [
+        key,
+        data?.personalInfo?.[key]?.length ? (
+          <DynamicSection
+            key={key}
+            title={schema.title}
+            schema={schema}
+            data={data.personalInfo[key]}
+          />
+        ) : null
+      ])
+    )
+  };
+
 
   return (
     <div className="min-h-screen bg-[#060B14] text-[#8696B2] font-['Roboto_Mono'] text-xs p-4 sm:p-8 relative selection:bg-cyan-500/30 selection:text-white">
@@ -358,7 +384,11 @@ const Template14 = ({ publicData, isPublicView }) => {
       {!isPublicView && portfolioId && pInfo.full_name && (
         <ChatbotWidget portfolioId={portfolioId} name={pInfo.full_name} />
       )}
-    </div>
+    
+      {/* Render Sections via SectionRenderer */}
+      <SectionRenderer sectionOrder={sectionOrder} sectionVisibility={sectionVisibility} sectionMap={sectionMap} />
+
+</div>
   );
 };
 

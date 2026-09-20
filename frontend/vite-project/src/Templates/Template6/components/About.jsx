@@ -1,15 +1,17 @@
 import { PlateLabel, Watermark, Hairline } from './Editorial';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const About = ({ data }) => {
+const About = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '02');
   const firstLetter = data.about_paragraph?.charAt(0) || '';
   const rest = data.about_paragraph?.slice(1) || '';
 
   return (
     <section className="relative w-full overflow-hidden bg-[#F7F4EE] px-6 sm:px-10 lg:px-16 py-28">
-      <Watermark text="02" />
+      <Watermark text={sectionNumber} />
 
       <div className="relative z-10 mx-auto max-w-7xl">
-        <PlateLabel number="02" title="About the Author" />
+        <PlateLabel number={sectionNumber} title="About the Author" />
 
         <div className="grid gap-16 lg:grid-cols-12">
           <div className="lg:col-span-7">

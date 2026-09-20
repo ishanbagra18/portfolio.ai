@@ -8,7 +8,12 @@ import {
     getPublicPortfolio,
     togglePublicStatus,
     checkSlugAvailability,
-    updateCustomSlug
+    updateCustomSlug,
+    verifyPublicPasscode,
+    savePortfolioVersion,
+    getPortfolioVersions,
+    restorePortfolioVersion,
+    generateOgImage
 } from '../controllers/portfolioController.js'
 import { requireAuth } from '../middleware/auth.js'
 
@@ -30,9 +35,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-// Public route — NO auth required (must be before /:id to avoid conflict)
+// Public routes — NO auth required (must be before /:id to avoid conflict)
 router.get('/public/:slug', getPublicPortfolio)
+router.post('/public/:slug/verify-passcode', verifyPublicPasscode)
 router.get('/check-slug/:slug', checkSlugAvailability)
+router.get('/og/:identifier', generateOgImage)
+
 
 // Authenticated routes
 router.post('/create', requireAuth, createPortfolio)
@@ -41,6 +49,12 @@ router.put('/:id/custom-slug', requireAuth, updateCustomSlug)
 router.put('/:id', requireAuth, updatePortfolio)
 router.delete('/:id', requireAuth, deletePortfolio)
 router.post('/:id/toggle-public', requireAuth, togglePublicStatus)
+
+// Version history endpoints
+router.post('/:id/versions', requireAuth, savePortfolioVersion)
+router.get('/:id/versions', requireAuth, getPortfolioVersions)
+router.post('/:id/versions/:versionId/restore', requireAuth, restorePortfolioVersion)
+
 router.post('/upload-media', requireAuth, upload.single('media'), (req, res) => {
     try {
         if (!req.file) {

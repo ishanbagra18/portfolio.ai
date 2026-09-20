@@ -6,6 +6,48 @@ import { PDFParse } from 'pdf-parse'; // v2 API: named class export, not a defau
 // Initialize Gemini Client
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+// Clean error formatter
+const formatErrorMessage = (error) => {
+  let msg = error.message || 'An error occurred during resume processing.';
+  try {
+    const parsed = JSON.parse(msg);
+    if (parsed.error && parsed.error.message) {
+      msg = parsed.error.message;
+    }
+  } catch (e) {
+    // Not JSON string
+  }
+
+  if (msg.includes('PERMISSION_DENIED') || msg.includes('403')) {
+    return 'Google Gemini API Key Error: Your API key has been denied access by Google. Please check your GEMINI_API_KEY environment variable.';
+  }
+  if (msg.includes('UNAVAILABLE') || msg.includes('503') || msg.includes('high demand')) {
+    return 'Gemini AI service is currently busy or experiencing high demand. Please try scanning again in a few seconds.';
+  }
+  if (msg.includes('Invalid PDF structure') || msg.includes('InvalidPDFException') || msg.includes('pdf-parse')) {
+    return 'The uploaded PDF file is corrupt or unreadable. Please re-export or upload a valid PDF or DOCX resume.';
+  }
+  return msg;
+};
+
+// Robust helper to try candidate models if 503 / 404 / rate issues occur
+const generateGeminiContent = async (ai, params) => {
+  const modelCandidates = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemma-4-26b-a4b-it', 'gemini-flash-latest', 'gemini-3.6-flash'];
+  let lastErr = null;
+  for (const model of modelCandidates) {
+    try {
+      return await ai.models.generateContent({
+        ...params,
+        model
+      });
+    } catch (err) {
+      lastErr = err;
+      console.warn(`Model ${model} failed, trying fallback model... (${err.message})`);
+    }
+  }
+  throw lastErr;
+};
+
 // Helper to clean up uploaded file safely
 const safeUnlink = (filePath) => {
   if (filePath && fs.existsSync(filePath)) {
@@ -81,8 +123,7 @@ export const parseResume = async (req, res) => {
     Resume Text:
     ${extractedText}`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.6-flash',
+    const response = await generateGeminiContent(ai, {
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -154,10 +195,7 @@ export const parseResume = async (req, res) => {
 
   } catch (error) {
     console.error('Error parsing resume:', error);
-    let userMsg = error.message || 'Failed to process resume';
-    if (userMsg.includes('PERMISSION_DENIED') || userMsg.includes('denied access') || userMsg.includes('403')) {
-      userMsg = 'Google Gemini API Key Error: Your API key or Google Cloud Project has been denied access by Google. Please create a new GEMINI_API_KEY at https://aistudio.google.com and update it in your Render backend environment variables.';
-    }
+    const userMsg = formatErrorMessage(error);
     return res.status(500).json({ error: userMsg });
   } finally {
     safeUnlink(filePath);
@@ -216,8 +254,7 @@ export const checkAtsScore = async (req, res) => {
     Resume Text:
     ${extractedText}`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.6-flash',
+    const response = await generateGeminiContent(ai, {
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -251,10 +288,7 @@ export const checkAtsScore = async (req, res) => {
 
   } catch (error) {
     console.error('Error analyzing ATS score:', error);
-    let userMsg = error.message || 'Failed to analyze resume ATS score';
-    if (userMsg.includes('PERMISSION_DENIED') || userMsg.includes('denied access') || userMsg.includes('403')) {
-      userMsg = 'Google Gemini API Key Error: Your API key or Google Cloud Project has been denied access by Google. Please create a new GEMINI_API_KEY at https://aistudio.google.com and update it in your Render backend environment variables.';
-    }
+    const userMsg = formatErrorMessage(error);
     return res.status(500).json({ error: userMsg });
   } finally {
     safeUnlink(filePath);

@@ -5,6 +5,7 @@ import { setToken } from '../lib/auth'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
+import OAuthButtons from '../components/OAuthButtons'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -160,12 +161,16 @@ className="w-full mt-2 bg-gradient-to-r from-pink-500 via-purple-600 to-violet-6
       </AnimatePresence>
 
       {step === 1 && (
-        <p className="mt-6 text-center text-sm text-[var(--neo-text)]/60">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-violet-400 font-semibold hover:text-pink-300  transition-colors">
-            Sign Up
-          </Link>
-        </p>
+        <>
+          <OAuthButtons onError={setError} />
+
+          <p className="mt-6 text-center text-sm text-[var(--neo-text)]/60">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-violet-400 font-semibold hover:text-pink-300 transition-colors">
+              Sign Up
+            </Link>
+          </p>
+        </>
       )}
     </motion.div>
   )

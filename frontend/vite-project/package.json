@@ -21,16 +21,19 @@
     "@react-three/fiber": "^9.7.0",
     "@supabase/supabase-js": "^2.107.0",
     "axios": "^1.18.1",
+    "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",
     "gsap": "^3.15.0",
     "lenis": "^1.3.26",
     "lucide-react": "^1.23.0",
     "mammoth": "^1.12.0",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-github-calendar": "^5.0.8",
     "react-router-dom": "^7.16.0",
+    "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
     "three": "^0.185.1",
     "tslib": "^2.8.1",
@@ -52,4 +55,3 @@
     "vite": "^6.2.0"
   }
 }
-

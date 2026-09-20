@@ -1,6 +1,8 @@
 import React from 'react';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const Certifications = ({ data }) => {
+const Certifications = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '06');
   if (!data || data.length === 0) return null;
 
   return (
@@ -11,7 +13,7 @@ const Certifications = ({ data }) => {
       <div className="relative z-10 mx-auto w-full max-w-7xl">
         <div className="mb-12 flex items-end justify-between gap-4 border-b border-slate-200 pb-6">
           <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-widest text-slate-800">
-            06. Certifications
+            {sectionNumber}. Certifications
           </h3>
           <p className="hidden sm:block text-sm text-slate-500 font-medium">
             Verified learning and achievements

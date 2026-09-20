@@ -20,10 +20,14 @@ import Template17 from '../Templates/Template17/Template17';
 import Template18 from '../Templates/Template18/Template18';
 import Template19 from '../Templates/Template19/Template19';
 import Template20 from '../Templates/Template20/Template20';
-
 import { API_BASE } from '../lib/api';
+import { Lock, Clock, Key, ArrowRight } from 'lucide-react';
+import PortfolioBadge from '../components/PortfolioBadge';
+import RecruiterChangelog from '../components/RecruiterChangelog';
+import ShareModal from '../components/ShareModal';
 
 const TEMPLATE_MAP = {
+
   template1: Template1,
   template2: Template2,
   template3: Template3,
@@ -51,18 +55,72 @@ const PublicPortfolio = () => {
   const [portfolioData, setPortfolioData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isProtected, setIsProtected] = useState(false);
+  const [isExpired, setIsExpired] = useState(false);
+  const [passcode, setPasscode] = useState('');
+  const [passcodeError, setPasscodeError] = useState(null);
+  const [verifyingPasscode, setVerifyingPasscode] = useState(false);
+
+  // Dynamic SEO & Open Graph Tags Injection
+  const updateMetaTags = (data) => {
+    if (!data?.personalInfo) return;
+    const name = data.personalInfo.full_name || 'Developer';
+    const title = data.personalInfo.main_title || 'Software Engineer';
+    const about = data.personalInfo.about_paragraph || `View ${name}'s official portfolio on Portfolio.AI`;
+
+    // Page Title
+    document.title = `${name} | ${title} - Portfolio.AI`;
+
+    // Helper to update meta tag
+    const setMeta = (attr, attrVal, content) => {
+      let el = document.querySelector(`meta[${attr}="${attrVal}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, attrVal);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    const ogImageUrl = `${API_BASE}/api/portfolio/og/${slug || data.personalInfo.id || 'default'}`;
+
+    setMeta('name', 'description', about);
+    setMeta('property', 'og:title', `${name} - ${title}`);
+    setMeta('property', 'og:description', about);
+    setMeta('property', 'og:type', 'website');
+    setMeta('property', 'og:site_name', 'Portfolio.AI');
+    setMeta('property', 'og:image', ogImageUrl);
+    setMeta('name', 'twitter:card', 'summary_large_image');
+    setMeta('name', 'twitter:title', `${name} - ${title}`);
+    setMeta('name', 'twitter:description', about);
+    setMeta('name', 'twitter:image', ogImageUrl);
+
+  };
 
   useEffect(() => {
     const fetchPublicPortfolio = async () => {
       try {
         setLoading(true);
         setError(null);
+        setIsProtected(false);
+        setIsExpired(false);
 
         const res = await fetch(`${API_BASE}/api/portfolio/public/${slug}`);
         const result = await res.json();
 
+        if (res.status === 410 || result.isExpired) {
+          setIsExpired(true);
+          return;
+        }
+
+        if (result.isProtected) {
+          setIsProtected(true);
+          return;
+        }
+
         if (res.ok && result.success && result.data) {
           setPortfolioData(result.data);
+          updateMetaTags(result.data);
         } else {
           setError(result.message || 'Portfolio not found.');
         }
@@ -79,39 +137,114 @@ const PublicPortfolio = () => {
     }
   }, [slug]);
 
-  // Loading state
+  const handleVerifyPasscode = async (e) => {
+    e.preventDefault();
+    if (!passcode.trim()) return;
+    setVerifyingPasscode(true);
+    setPasscodeError(null);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/portfolio/public/${slug}/verify-passcode`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passcode: passcode.trim() })
+      });
+      const result = await res.json();
+
+      if (res.ok && result.success && result.data) {
+        setPortfolioData(result.data);
+        setIsProtected(false);
+        updateMetaTags(result.data);
+      } else {
+        setPasscodeError(result.message || 'Incorrect passcode.');
+      }
+    } catch (err) {
+      setPasscodeError('Connection error while verifying passcode.');
+    } finally {
+      setVerifyingPasscode(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--neo-bg)] flex flex-col items-center justify-center text-[var(--neo-text)] font-sans">
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-white font-sans">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-violet-500/30 rounded-full" />
-          <div className="absolute inset-0 w-16 h-16 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-16 h-16 border-4 border-pink-500/30 rounded-full" />
+          <div className="absolute inset-0 w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
         </div>
-        <p className="text-slate-400 tracking-wider uppercase text-sm font-semibold mt-6">
+        <p className="text-zinc-400 tracking-wider uppercase text-xs font-semibold mt-6">
           Loading Portfolio...
         </p>
       </div>
     );
   }
 
-  // Error / 404 state
+  // Link Expired Screen
+  if (isExpired) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6 text-white font-sans">
+        <div className="max-w-md w-full bg-zinc-900 border border-amber-500/30 rounded-3xl p-8 text-center shadow-2xl">
+          <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-amber-400">
+            <Clock className="w-8 h-8" />
+          </div>
+          <h1 className="text-2xl font-bold uppercase mb-2">Private Link Expired</h1>
+          <p className="text-zinc-400 text-sm mb-6">
+            This private recruiter link has reached its expiration time and is no longer accessible. Please contact the candidate for an updated link.
+          </p>
+          <a href="/" className="inline-block px-6 py-3 bg-white text-black font-bold rounded-xl text-xs uppercase tracking-wider hover:bg-zinc-200 transition">
+            Go to Portfolio.AI
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // Password Protection Prompt Dialog
+  if (isProtected) {
+    return (
+      <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6 text-white font-sans">
+        <div className="max-w-md w-full bg-zinc-900 border border-white/10 rounded-3xl p-8 text-center shadow-2xl">
+          <div className="w-16 h-16 bg-pink-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-pink-400">
+            <Lock className="w-8 h-8" />
+          </div>
+          <h1 className="text-2xl font-bold uppercase mb-2">Protected Portfolio</h1>
+          <p className="text-zinc-400 text-xs mb-6">
+            This portfolio is passcode protected for specific recruiters. Enter the passcode provided to view this profile.
+          </p>
+          <form onSubmit={handleVerifyPasscode} className="space-y-4">
+            <div className="relative">
+              <Key className="w-4 h-4 text-zinc-500 absolute left-4 top-3.5" />
+              <input
+                type="password"
+                placeholder="Enter Recruiter Passcode"
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                className="w-full bg-black/50 border border-white/10 rounded-2xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:border-pink-500 font-mono"
+              />
+            </div>
+            {passcodeError && <p className="text-red-400 text-xs font-semibold">⚠ {passcodeError}</p>}
+            <button
+              type="submit"
+              disabled={verifyingPasscode || !passcode.trim()}
+              className="w-full py-3 bg-gradient-to-r from-pink-500 to-indigo-600 hover:opacity-90 disabled:opacity-40 text-white font-bold text-xs uppercase tracking-wider rounded-2xl flex items-center justify-center gap-2 shadow-lg transition"
+            >
+              {verifyingPasscode ? 'Verifying...' : 'Unlock Portfolio'} <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   if (error || !portfolioData) {
     return (
-      <div className="min-h-screen bg-[var(--neo-bg)] flex flex-col items-center justify-center text-[var(--neo-text)] px-6 font-sans">
-        <div className="max-w-md w-full bg-[var(--neo-bg)]/80 border border-black/10 dark:border-black/10 dark:border-white/10 rounded-3xl p-10 text-center">
-          <div className="w-20 h-20 bg-[var(--neo-bg)]/80 rounded-2xl flex items-center justify-center mx-auto mb-6 text-4xl">
-            🔒
-          </div>
-          <h1 className="text-3xl font-black text-[var(--neo-text)] mb-3">
-            Portfolio Not Found
-          </h1>
-          <p className="text-slate-400 text-sm leading-relaxed mb-8">
-            {error || 'This portfolio doesn\'t exist or is set to private. Check the link and try again.'}
+      <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-white px-6 font-sans">
+        <div className="max-w-md w-full bg-zinc-900 border border-white/10 rounded-3xl p-10 text-center">
+          <h1 className="text-3xl font-black mb-3">Portfolio Not Found</h1>
+          <p className="text-zinc-400 text-sm mb-8">
+            {error || 'This portfolio doesn\'t exist or is set to private.'}
           </p>
-          <a
-            href="/"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-500 text-[var(--neo-text)] font-bold rounded-xl shadow-lg shadow-violet-600/20 transition-all text-sm uppercase tracking-wider"
-          >
+          <a href="/" className="inline-block px-6 py-3 bg-white text-black font-bold rounded-xl text-xs uppercase tracking-wider">
             Go Home
           </a>
         </div>
@@ -119,19 +252,65 @@ const PublicPortfolio = () => {
     );
   }
 
-  // Determine which template to render
   const templateId = portfolioData.template_id || portfolioData.templateId || 'template1';
   const TemplateComponent = TEMPLATE_MAP[templateId] || Template1;
 
+  // Custom Theme Settings Overrides
+  const theme = portfolioData?.personalInfo?.theme_settings || {};
+  const primaryColor = theme.primaryColor || '#ec4899';
+  const fontFamily = theme.fontFamily || 'sans';
+
+  const fontStyleCss = {
+    sans: "'Inter', sans-serif",
+    display: "'Space Grotesk', sans-serif",
+    serif: "'Playfair Display', serif",
+    mono: "'JetBrains Mono', monospace"
+  }[fontFamily] || "'Inter', sans-serif";
+
+  const customStyle = {
+    '--accent-color': primaryColor,
+    fontFamily: fontStyleCss
+  };
+
   return (
-    <div className="relative">
-      {/* Render the template with public view props */}
-      <TemplateComponent
-        publicData={portfolioData}
-        isPublicView={true}
-      />
+    <div style={customStyle} className="public-portfolio-scope relative min-h-screen">
+      <style>{`
+        .public-portfolio-scope,
+        .public-portfolio-scope *,
+        .public-portfolio-scope h1,
+        .public-portfolio-scope h2,
+        .public-portfolio-scope h3,
+        .public-portfolio-scope h4,
+        .public-portfolio-scope p,
+        .public-portfolio-scope span,
+        .public-portfolio-scope a,
+        .public-portfolio-scope button {
+          font-family: ${fontStyleCss} !important;
+        }
+        .public-portfolio-scope {
+          --accent-color: ${primaryColor} !important;
+          --primary-color: ${primaryColor} !important;
+          --neo-accent: ${primaryColor} !important;
+          --theme-accent: ${primaryColor} !important;
+        }
+      `}</style>
+
+      {/* Floating Top Control Bar for Visitors & Recruiters */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2.5 pointer-events-auto">
+        <ShareModal
+          candidateName={portfolioData?.personalInfo?.full_name || 'Candidate'}
+        />
+        <RecruiterChangelog
+          candidateName={portfolioData?.personalInfo?.full_name || 'Candidate'}
+          editable={false}
+        />
+      </div>
+
+      <TemplateComponent publicData={portfolioData} isPublicView={true} />
+      <PortfolioBadge />
     </div>
   );
+
 };
 
 export default PublicPortfolio;

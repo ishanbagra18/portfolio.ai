@@ -1,3 +1,4 @@
+import SectionRenderer from '../../components/SectionRenderer';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import DynamicSection from './components/DynamicSection';
@@ -113,12 +114,37 @@ const Template20 = ({ publicData, isPublicView }) => {
     );
   }
 
-  const data = portfolioData || defaultData;
+  const data = publicData || portfolioData || defaultData;
   const pInfo = data.personalInfo || {};
   const tStacks = data.techStacks || [];
   const projs = data.projects || [];
   const exps = data.experiences || [];
   const certs = data.certifications || [];
+
+  const sectionOrder = data?.personalInfo?.section_order || [];
+  const sectionVisibility = data?.personalInfo?.section_visibility || {};
+
+  const sectionMap = {
+    about: pInfo.about_paragraph ? <div className="py-6 text-slate-300 font-light">{pInfo.about_paragraph}</div> : null,
+    tech_stacks: null,
+    projects: null,
+    experiences: null,
+    certifications: null,
+    ...Object.fromEntries(
+      Object.entries(SECTION_SCHEMAS).map(([key, schema]) => [
+        key,
+        data?.personalInfo?.[key]?.length ? (
+          <DynamicSection
+            key={key}
+            title={schema.title}
+            schema={schema}
+            data={data.personalInfo[key]}
+          />
+        ) : null
+      ])
+    )
+  };
+
 
   return (
     <div className="min-h-screen bg-[#0A0A0C] text-slate-100 font-serif p-6 sm:p-12 relative overflow-x-hidden selection:bg-[#D4AF37] selection:text-black pb-24">
@@ -291,7 +317,11 @@ const Template20 = ({ publicData, isPublicView }) => {
         />
       ))}
 
-      <footer className="max-w-5xl mx-auto py-10 text-center text-xs font-serif text-[#D4AF37]/60 border-t border-[#D4AF37]/20 mt-20 relative z-10">
+      
+      {/* Render Sections via SectionRenderer */}
+      <SectionRenderer sectionOrder={sectionOrder} sectionVisibility={sectionVisibility} sectionMap={sectionMap} />
+
+<footer className="max-w-5xl mx-auto py-10 text-center text-xs font-serif text-[#D4AF37]/60 border-t border-[#D4AF37]/20 mt-20 relative z-10">
         &copy; {new Date().getFullYear()} {pInfo.full_name}. Luxury Gold Velvet Architecture.
       </footer>
 

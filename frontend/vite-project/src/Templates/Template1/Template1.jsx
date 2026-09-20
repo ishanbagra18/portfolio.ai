@@ -9,6 +9,7 @@ import Certifications from './components/Certifications';
 import Footer from './components/Footer';
 import DynamicSection from './components/DynamicSection';
 import ChatbotWidget from '../../components/ChatbotWidget';
+import SectionRenderer from '../../components/SectionRenderer';
 import { API_BASE } from '../../lib/api';
 import { SECTION_SCHEMAS } from '../../lib/sectionSchemas';
 import GitHubActivity from '../../components/GitHubActivity';
@@ -130,7 +131,30 @@ const Template1 = ({ publicData, isPublicView }) => {
     );
   }
 
-  const data = portfolioData || defaultData;
+  const data = publicData || portfolioData || defaultData;
+  const sectionOrder = data?.personalInfo?.section_order || [];
+  const sectionVisibility = data?.personalInfo?.section_visibility || data?.personalInfo?.optional_sections || {};
+
+  const sectionMap = {
+    about: data?.personalInfo ? <About data={data.personalInfo} /> : null,
+    tech_stacks: data?.techStacks?.length ? <Skills data={data.techStacks} /> : null,
+    projects: data?.projects?.length ? <Projects data={data.projects} /> : null,
+    experiences: data?.experiences?.length ? <Experience data={data.experiences} /> : null,
+    certifications: data?.certifications?.length ? <Certifications data={data.certifications} /> : null,
+    ...Object.fromEntries(
+      Object.entries(SECTION_SCHEMAS).map(([key, schema]) => [
+        key,
+        data?.personalInfo?.[key]?.length ? (
+          <DynamicSection
+            key={key}
+            title={schema.title}
+            schema={schema}
+            data={data.personalInfo[key]}
+          />
+        ) : null
+      ])
+    )
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white font-sans selection:bg-blue-500 selection:text-white">
@@ -141,21 +165,12 @@ const Template1 = ({ publicData, isPublicView }) => {
       )}
 
       {data?.personalInfo && <Hero data={data.personalInfo} />}
-      {data?.personalInfo && <About data={data.personalInfo} />}
-      {data?.techStacks && <Skills data={data.techStacks} />}
-      {data?.projects && <Projects data={data.projects} />}
-      {data?.experiences && <Experience data={data.experiences} />}
-      {data?.certifications && <Certifications data={data.certifications} />}
 
-      {/* Render optional dynamic sections */}
-      {data?.personalInfo && Object.entries(SECTION_SCHEMAS).map(([key, schema]) => (
-        <DynamicSection
-          key={key}
-          title={schema.title}
-          schema={schema}
-          data={data.personalInfo[key]}
-        />
-      ))}
+      <SectionRenderer
+        sectionOrder={sectionOrder}
+        sectionVisibility={sectionVisibility}
+        sectionMap={sectionMap}
+      />
 
       {data?.personalInfo?.github_username && (
         <GitHubActivity githubUsername={data.personalInfo.github_username} />

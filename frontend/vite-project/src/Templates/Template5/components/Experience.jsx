@@ -1,6 +1,8 @@
 import { Dots, Tag, Card, accents } from './Brutal';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const Experience = ({ data }) => {
+const Experience = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '05');
   if (!data || data.length === 0) return null;
 
   return (
@@ -9,7 +11,7 @@ const Experience = ({ data }) => {
 
       <div className="relative z-10 mx-auto max-w-4xl">
         <Tag bg="#B6F24B" rotate="-rotate-1">
-          05 · Experience
+          {sectionNumber} · Experience
         </Tag>
 
         <h3 className="mt-6 max-w-2xl font-['Archivo_Black'] text-3xl sm:text-4xl lg:text-5xl leading-tight text-[#12110F]">

@@ -1,5 +1,6 @@
 import React from 'react';
 import { GlassCard } from './ui/GlassCard';
+import { ParallaxTilt } from './ui/Parallax';
 
 const FeatureGrid = () => {
   const features = [
@@ -44,19 +45,20 @@ const FeatureGrid = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((item, index) => (
-            <GlassCard 
-              key={index}
-              className="p-8 group hover:border-accent-color/50 transition duration-300 relative overflow-hidden"
-            >
-              {/* Add a subtle glow behind the icon */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-accent-color/5 rounded-full blur-2xl group-hover:bg-accent-color/20 transition duration-500 pointer-events-none"></div>
+            <ParallaxTilt key={index} maxDegree={10}>
+              <GlassCard 
+                className="p-8 group hover:border-accent-color/50 transition duration-300 relative overflow-hidden h-full"
+              >
+                {/* Add a subtle glow behind the icon */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-accent-color/5 rounded-full blur-2xl group-hover:bg-accent-color/20 transition duration-500 pointer-events-none"></div>
 
-              <div className="w-12 h-12 rounded-xl bg-accent-color/10 border border-accent-color/20 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 text-accent-color">
-                {item.icon}
-              </div>
-              <h3 className="text-xl font-display font-bold mb-3 tracking-wide group-hover:text-[var(--neo-text)] transition-colors">{item.title}</h3>
-              <p className="opacity-70 text-sm leading-relaxed">{item.description}</p>
-            </GlassCard>
+                <div className="w-12 h-12 rounded-xl bg-accent-color/10 border border-accent-color/20 flex items-center justify-center mb-6 group-hover:scale-110 transition duration-300 text-accent-color">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-display font-bold mb-3 tracking-wide group-hover:text-[var(--neo-text)] transition-colors">{item.title}</h3>
+                <p className="opacity-70 text-sm leading-relaxed">{item.description}</p>
+              </GlassCard>
+            </ParallaxTilt>
           ))}
         </div>
       </div>
@@ -64,4 +66,4 @@ const FeatureGrid = () => {
   );
 };
 
-export default FeatureGrid;
+export default FeatureGrid;

@@ -1,23 +1,25 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Inter', sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
 }
 
 :root {
-  --neo-bg: #f8f9fa;
+  --neo-bg: #f8fafc;
   --neo-shadow-light: #ffffff;
-  --neo-shadow-dark: #d1d5db;
-  --neo-text: #1a1b1e;
+  --neo-shadow-dark: #cbd5e1;
+  --neo-text: #0f172a;
   --accent-color: #ec4899;
 }
 
 .dark {
-  --neo-bg: #1a1b1e;
-  --neo-shadow-light: #2c2d30;
-  --neo-shadow-dark: #080809;
-  --neo-text: #c1c2c5;
+  --neo-bg: #0a0a0f;
+  --neo-shadow-light: #1e1e24;
+  --neo-shadow-dark: #040406;
+  --neo-text: #f8fafc;
   --accent-color: #818cf8;
 }
 
@@ -36,43 +38,36 @@ body {
   background-color: var(--neo-bg);
 }
 
-.noise-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 50;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+html:not(.dark) .bg-aurora {
+  background:
+    radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 30%),
+    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 30%);
+  background-color: #f8fafc;
 }
 
-/* Neomorphism */
-.neo-surface {
-  background-color: var(--neo-bg);
-  box-shadow:
-    8px 8px 16px var(--neo-shadow-dark),
-    -8px -8px 16px var(--neo-shadow-light);
-  border-radius: 1.5rem;
+/* Light Mode Global Adaptive Overrides */
+html:not(.dark) body {
+  background-color: #f8fafc;
+  color: #0f172a;
 }
 
-.neo-pressed {
-  background-color: var(--neo-bg);
-  box-shadow:
-    inset 6px 6px 12px var(--neo-shadow-dark),
-    inset -6px -6px 12px var(--neo-shadow-light);
-  border-radius: 1rem;
+html:not(.dark) .glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
 }
 
-/* Glassmorphism */
-.glass-panel {
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 1.5rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+html:not(.dark) .border-white\/10,
+html:not(.dark) .border-white\/5,
+html:not(.dark) .border-white\/15,
+html:not(.dark) .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+html:not(.dark) input,
+html:not(.dark) textarea,
+html:not(.dark) select {
+  color: #0f172a !important;
 }
 
 @keyframes fadeIn {

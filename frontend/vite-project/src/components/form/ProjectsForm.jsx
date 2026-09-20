@@ -151,32 +151,29 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
   };
 
   return (
-    <section className="py-20 border-b border-gray-900">
+    <section className="py-20 border-b border-zinc-200 dark:border-zinc-800">
 
       {/* Section header */}
       <div className="flex flex-wrap items-end gap-4 mb-6">
-        <span
-          className="text-5xl md:text-7xl font-black tracking-tighter leading-none"
-          style={{ WebkitTextStroke: '1px #374151', color: 'transparent' }}
-        >
-          02
+        <span className="text-5xl md:text-7xl font-black tracking-tighter leading-none text-zinc-300 dark:text-zinc-700">
+          03
         </span>
-        <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none">
+        <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-zinc-900 dark:text-white">
           Projects
         </h3>
       </div>
 
       {/* ── GitHub Import Banner ── */}
-      <div className="mb-14 p-6 border border-gray-800 rounded-lg bg-gray-950/40">
+      <div className="mb-14 p-6 border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-white/80 dark:bg-zinc-900/40 shadow-xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
+            <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">
               Quick Import
             </p>
-            <p className="text-[var(--neo-text)] font-semibold text-sm">
+            <p className="text-zinc-900 dark:text-white font-semibold text-sm">
               Fetch your top repositories directly from GitHub
             </p>
-            <p className="text-gray-500 text-xs mt-0.5">
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-0.5">
               Pulls repo name, language, description & URL — top 6 non-fork repos
             </p>
           </div>
@@ -185,7 +182,7 @@ const ProjectsForm = ({ data, onChange, onAdd, onGitHubImport, githubUsername })
             <button
               type="button"
               onClick={() => setShowInput(true)}
-              className="flex items-center gap-2 px-5 py-3 bg-white text-black font-bold uppercase tracking-widest text-xs hover:bg-gray-200 transition-all whitespace-nowrap rounded"
+              className="flex items-center gap-2 px-5 py-3 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-bold uppercase tracking-widest text-xs transition-all whitespace-nowrap rounded-xl shadow-md cursor-pointer"
             >
               <GitHubIcon />
               Import from GitHub

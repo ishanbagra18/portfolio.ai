@@ -5,17 +5,17 @@ import Navbar from '../components/Navbar';
 
 const CareerTools = () => {
   const navigate = useNavigate();
-  
+
   // States
   const [activeTab, setActiveTab] = useState('match'); // 'match', 'cover-letter', 'interview-prep'
   const [jobDescription, setJobDescription] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
-  
+
   // Results
   const [report, setReport] = useState(null);
   const [coverLetter, setCoverLetter] = useState(null);
   const [interviewPrep, setInterviewPrep] = useState(null);
-  
+
   // Loaders & Errors
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -60,7 +60,7 @@ const CareerTools = () => {
       });
 
       const result = await res.json();
-      
+
       if (res.ok && result.success) {
         if (activeTab === 'match' && result.report) setReport(result.report);
         else if (activeTab === 'cover-letter' && result.coverLetter) setCoverLetter(result.coverLetter);
@@ -138,7 +138,7 @@ const CareerTools = () => {
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                
+
                 {/* File Upload */}
                 <div className="flex flex-col">
                   <label className="text-xs font-bold opacity-80 text-[var(--neo-text)] uppercase tracking-wider mb-2">
@@ -199,30 +199,27 @@ const CareerTools = () => {
 
           {/* Right Column: AI Analysis Report & Tabs */}
           <div className="lg:col-span-8 space-y-8">
-            
+
             {/* Tabs */}
             <div className="flex flex-wrap sm:flex-nowrap p-1 bg-white/10 border border-black/10 dark:border-white/10 rounded-xl w-full sm:w-fit mb-8 gap-1 sm:gap-0">
               <button
                 onClick={() => setActiveTab('match')}
-                className={`flex-1 sm:flex-none text-center px-4 sm:px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
-                  activeTab === 'match' ? 'bg-white/20 text-[var(--neo-text)] shadow-sm' : 'opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] hover:bg-white/20/50'
-                }`}
+                className={`flex-1 sm:flex-none text-center px-4 sm:px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${activeTab === 'match' ? 'bg-white/20 text-[var(--neo-text)] shadow-sm' : 'opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] hover:bg-white/20/50'
+                  }`}
               >
                 Match Score
               </button>
               <button
                 onClick={() => setActiveTab('cover-letter')}
-                className={`flex-1 sm:flex-none text-center px-4 sm:px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
-                  activeTab === 'cover-letter' ? 'bg-white/20 text-[var(--neo-text)] shadow-sm' : 'opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] hover:bg-white/20/50'
-                }`}
+                className={`flex-1 sm:flex-none text-center px-4 sm:px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${activeTab === 'cover-letter' ? 'bg-white/20 text-[var(--neo-text)] shadow-sm' : 'opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] hover:bg-white/20/50'
+                  }`}
               >
                 Cover Letter
               </button>
               <button
                 onClick={() => setActiveTab('interview-prep')}
-                className={`flex-1 sm:flex-none text-center px-4 sm:px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${
-                  activeTab === 'interview-prep' ? 'bg-white/20 text-[var(--neo-text)] shadow-sm' : 'opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] hover:bg-white/20/50'
-                }`}
+                className={`flex-1 sm:flex-none text-center px-4 sm:px-6 py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${activeTab === 'interview-prep' ? 'bg-white/20 text-[var(--neo-text)] shadow-sm' : 'opacity-60 text-[var(--neo-text)] hover:text-[var(--neo-text)] hover:bg-white/20/50'
+                  }`}
               >
                 Interview Prep
               </button>
@@ -275,8 +272,8 @@ const CareerTools = () => {
                       {report.matchPercentage >= 75
                         ? "Excellent alignment! Your profile demonstrates strong keyword matching with this job specification."
                         : report.matchPercentage >= 45
-                        ? "Moderate alignment. You have matching credentials, but adding missing skills would significantly improve compatibility."
-                        : "Low alignment. Highlight more matching skills, tools, or relevant projects to grab recruiters' attention."}
+                          ? "Moderate alignment. You have matching credentials, but adding missing skills would significantly improve compatibility."
+                          : "Low alignment. Highlight more matching skills, tools, or relevant projects to grab recruiters' attention."}
                     </p>
                   </div>
                 </div>
@@ -344,7 +341,7 @@ const CareerTools = () => {
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-5 duration-300">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="text-xl font-bold text-[var(--neo-text)]">Generated Cover Letter</h3>
-                  <button 
+                  <button
                     onClick={copyToClipboard}
                     className="px-4 py-2 bg-white/20 hover:bg-white/30 text-[var(--neo-text)] rounded-lg text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-2"
                   >
@@ -373,20 +370,19 @@ const CareerTools = () => {
                   {interviewPrep.questions?.map((q, idx) => (
                     <div key={idx} className="bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-2xl p-6 sm:p-8 hover:border-black/20 dark:border-white/20 transition-colors">
                       <div className="flex items-center gap-3 mb-4">
-                        <span className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest ${
-                          q.type.toLowerCase() === 'technical' 
-                            ? 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20' 
+                        <span className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest ${q.type.toLowerCase() === 'technical'
+                            ? 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20'
                             : 'bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20'
-                        }`}>
+                          }`}>
                           {q.type}
                         </span>
                         <span className="opacity-60 text-[var(--neo-text)] text-xs font-semibold">Q{idx + 1}</span>
                       </div>
-                      
+
                       <h4 className="text-lg md:text-xl font-bold text-[var(--neo-text)] mb-3 leading-snug">
                         "{q.question}"
                       </h4>
-                      
+
                       <div className="bg-[var(--neo-bg)]/20 border border-black/10 dark:border-white/10/80 rounded-xl p-5 mt-5 space-y-4">
                         <div>
                           <h5 className="text-[10px] font-bold opacity-60 text-[var(--neo-text)] uppercase tracking-widest mb-1.5">Why they ask this:</h5>

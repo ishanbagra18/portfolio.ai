@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from 'framer-motion';
 
 /**
@@ -14,9 +14,9 @@ export function ParallaxScroll({ children, speed = 0.2, direction = 'vertical', 
     offset: ['start end', 'end start']
   });
 
-  const range = speed * 200;
+  const range = speed * 250;
   const rawTransform = useTransform(scrollYProgress, [0, 1], [-range, range]);
-  const springTransform = useSpring(rawTransform, { stiffness: 100, damping: 20 });
+  const springTransform = useSpring(rawTransform, { stiffness: 90, damping: 22 });
 
   return (
     <motion.div
@@ -35,15 +35,15 @@ export function ParallaxScroll({ children, speed = 0.2, direction = 'vertical', 
 /**
  * ParallaxTilt: 3D interactive cursor-tracking tilt container with glare effect.
  */
-export function ParallaxTilt({ children, className = '', maxDegree = 12, maxTranslateZ = 20, ...props }) {
+export function ParallaxTilt({ children, className = '', maxDegree = 12, maxTranslateZ = 30, ...props }) {
   const containerRef = useRef(null);
   const [glare, setGlare] = useState({ opacity: 0, x: 50, y: 50 });
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [maxDegree, -maxDegree]), { stiffness: 300, damping: 25 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-maxDegree, maxDegree]), { stiffness: 300, damping: 25 });
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [maxDegree, -maxDegree]), { stiffness: 280, damping: 22 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-maxDegree, maxDegree]), { stiffness: 280, damping: 22 });
 
   const handleMouseMove = (e) => {
     if (!containerRef.current) return;
@@ -61,7 +61,7 @@ export function ParallaxTilt({ children, className = '', maxDegree = 12, maxTran
     y.set(yPct);
 
     setGlare({
-      opacity: 0.25,
+      opacity: 0.3,
       x: (mouseX / width) * 100,
       y: (mouseY / height) * 100,
     });
@@ -93,7 +93,7 @@ export function ParallaxTilt({ children, className = '', maxDegree = 12, maxTran
         className="pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-300 z-20"
         style={{
           opacity: glare.opacity,
-          background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%)`,
+          background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 65%)`,
         }}
       />
     </motion.div>
@@ -101,34 +101,72 @@ export function ParallaxTilt({ children, className = '', maxDegree = 12, maxTran
 }
 
 /**
- * ParallaxBackground: Multi-layered background floating glowing spheres that react to scroll.
+ * ParallaxMouseItem: Moves subtly relative to cursor position on screen.
+ */
+export function ParallaxMouseItem({ children, factor = 20, className = '', ...props }) {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 80, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 80, damping: 20 });
+
+  useEffect(() => {
+    const handleMove = (e) => {
+      const { innerWidth, innerHeight } = window;
+      const xOffset = ((e.clientX / innerWidth) - 0.5) * factor;
+      const yOffset = ((e.clientY / innerHeight) - 0.5) * factor;
+      mouseX.set(xOffset);
+      mouseY.set(yOffset);
+    };
+
+    window.addEventListener('mousemove', handleMove);
+    return () => window.removeEventListener('mousemove', handleMove);
+  }, [factor, mouseX, mouseY]);
+
+  return (
+    <motion.div style={{ x: springX, y: springY }} className={className} {...props}>
+      {children}
+    </motion.div>
+  );
+}
+
+/**
+ * ParallaxBackground: Multi-layered background floating glowing spheres that react to scroll & mouse.
  */
 export function ParallaxBackground() {
   const { scrollY } = useScroll();
 
-  const orb1Y = useSpring(useTransform(scrollY, [0, 1000], [0, -180]), { stiffness: 50, damping: 15 });
-  const orb2Y = useSpring(useTransform(scrollY, [0, 1000], [0, 220]), { stiffness: 50, damping: 15 });
-  const orb3Y = useSpring(useTransform(scrollY, [0, 1000], [0, -120]), { stiffness: 50, damping: 15 });
+  const orb1Y = useSpring(useTransform(scrollY, [0, 1200], [0, -220]), { stiffness: 45, damping: 18 });
+  const orb2Y = useSpring(useTransform(scrollY, [0, 1200], [0, 260]), { stiffness: 45, damping: 18 });
+  const orb3Y = useSpring(useTransform(scrollY, [0, 1200], [0, -160]), { stiffness: 45, damping: 18 });
+  const orb4Y = useSpring(useTransform(scrollY, [0, 1200], [0, 180]), { stiffness: 45, damping: 18 });
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
       {/* Orb 1: Top Left Violet Glow */}
       <motion.div
         style={{ y: orb1Y }}
-        className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-violet-600/15 blur-[120px] mix-blend-screen animate-pulse"
+        className="absolute -top-32 -left-32 w-[550px] h-[550px] rounded-full bg-violet-600/20 blur-[130px] mix-blend-screen animate-pulse"
       />
 
-      {/* Orb 2: Top Right Pink/Magenta Glow */}
+      {/* Orb 2: Top Right Pink Glow */}
       <motion.div
         style={{ y: orb2Y }}
-        className="absolute top-1/4 -right-32 w-[600px] h-[600px] rounded-full bg-pink-500/15 blur-[140px] mix-blend-screen"
+        className="absolute top-1/4 -right-32 w-[650px] h-[650px] rounded-full bg-pink-500/20 blur-[150px] mix-blend-screen"
       />
 
-      {/* Orb 3: Bottom Left Cyan/Accent Glow */}
+      {/* Orb 3: Mid Left Indigo Glow */}
       <motion.div
         style={{ y: orb3Y }}
-        className="absolute top-2/3 left-1/4 w-[450px] h-[450px] rounded-full bg-indigo-500/15 blur-[110px] mix-blend-screen"
+        className="absolute top-2/3 left-1/4 w-[500px] h-[500px] rounded-full bg-indigo-500/18 blur-[120px] mix-blend-screen"
+      />
+
+      {/* Orb 4: Bottom Right Cyan Accent */}
+      <motion.div
+        style={{ y: orb4Y }}
+        className="absolute bottom-10 right-1/3 w-[450px] h-[450px] rounded-full bg-cyan-500/15 blur-[120px] mix-blend-screen"
       />
     </div>
   );
 }
+

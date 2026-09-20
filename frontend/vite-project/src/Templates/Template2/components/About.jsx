@@ -1,6 +1,8 @@
-// import React from 'react';
+import React from 'react';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const About = ({ data }) => {
+const About = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '01');
   return (
     <section className="relative w-full overflow-hidden bg-[#050505] px-4 sm:px-6 lg:px-8 py-20 text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent_28%),radial-gradient(circle_at_right,_rgba(168,85,247,0.10),_transparent_24%),radial-gradient(circle_at_left,_rgba(59,130,246,0.08),_transparent_22%)]" />
@@ -9,7 +11,7 @@ const About = ({ data }) => {
       <div className="relative z-10 mx-auto max-w-7xl">
         <div className="mb-10 flex items-end justify-between gap-4 border-b border-white/10 pb-6">
           <h3 className="text-2xl sm:text-3xl font-bold uppercase tracking-[0.3em] text-white">
-            01. About
+            {sectionNumber}. About
           </h3>
           <p className="hidden sm:block text-sm text-white/35">
             A short introduction and background

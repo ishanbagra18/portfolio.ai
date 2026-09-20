@@ -43,14 +43,25 @@ CREATE TABLE portfolios (
     education_data JSONB DEFAULT '[]'::jsonb,
     awards_data JSONB DEFAULT '[]'::jsonb,
     testimonials_data JSONB DEFAULT '[]'::jsonb,
-    currently_learning JSONB DEFAULT '[]'::jsonb,
-    interests JSONB DEFAULT '[]'::jsonb,
+    -- Dynamic Sections & Customization
+    section_order JSONB DEFAULT '["about", "projects", "experiences", "tech_stacks", "certifications", "blog_posts", "case_studies", "testimonials_data"]'::jsonb,
+    section_visibility JSONB DEFAULT '{}'::jsonb,
+    theme_settings JSONB DEFAULT '{}'::jsonb,
+    blog_posts JSONB DEFAULT '[]'::jsonb,
+    case_studies JSONB DEFAULT '[]'::jsonb,
+    
+    -- Custom Domains & Private Access Control
+    custom_domain TEXT UNIQUE,
+    is_password_protected BOOLEAN DEFAULT false,
+    access_passcode TEXT,
+    link_expires_at TIMESTAMP WITH TIME ZONE,
     
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Index for fast slug lookups
 CREATE INDEX IF NOT EXISTS idx_portfolios_public_slug ON portfolios(public_slug);
+CREATE INDEX IF NOT EXISTS idx_portfolios_custom_domain ON portfolios(custom_domain);
 
 -- 2. TECH STACK TABLE (Languages & Tools)
 CREATE TABLE tech_stacks (
@@ -83,23 +94,27 @@ CREATE TABLE certifications (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 5. PORTFOLIO VERSIONS TABLE (Snapshot history & Undo/Restore)
+CREATE TABLE portfolio_versions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    portfolio_id UUID REFERENCES portfolios(id) ON DELETE CASCADE,
+    version_name TEXT NOT NULL,
+    snapshot_data JSONB NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- ========================================================
 -- MIGRATION: Run this if the tables already exist
 -- ========================================================
 -- ALTER TABLE portfolios
---   ADD COLUMN IF NOT EXISTS public_slug TEXT UNIQUE,
---   ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false,
---   ADD COLUMN IF NOT EXISTS view_count INTEGER DEFAULT 0,
---   ADD COLUMN IF NOT EXISTS achievements_data JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS publications_data JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS hackathons_data JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS open_source_data JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS volunteering_data JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS research_data JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS education_data JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS awards_data JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS testimonials_data JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS currently_learning JSONB DEFAULT '[]'::jsonb,
---   ADD COLUMN IF NOT EXISTS interests JSONB DEFAULT '[]'::jsonb;
+--   ADD COLUMN IF NOT EXISTS section_order JSONB DEFAULT '["about", "projects", "experiences", "tech_stacks", "certifications", "blog_posts", "case_studies", "testimonials_data"]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS section_visibility JSONB DEFAULT '{}'::jsonb,
+--   ADD COLUMN IF NOT EXISTS theme_settings JSONB DEFAULT '{}'::jsonb,
+--   ADD COLUMN IF NOT EXISTS blog_posts JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS case_studies JSONB DEFAULT '[]'::jsonb,
+--   ADD COLUMN IF NOT EXISTS custom_domain TEXT UNIQUE,
+--   ADD COLUMN IF NOT EXISTS is_password_protected BOOLEAN DEFAULT false,
+--   ADD COLUMN IF NOT EXISTS access_passcode TEXT,
+--   ADD COLUMN IF NOT EXISTS link_expires_at TIMESTAMP WITH TIME ZONE;
 --
--- CREATE INDEX IF NOT EXISTS idx_portfolios_public_slug ON portfolios(public_slug);
+-- CREATE INDEX IF NOT EXISTS idx_portfolios_custom_domain ON portfolios(custom_domain);

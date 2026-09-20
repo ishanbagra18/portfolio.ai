@@ -388,4 +388,64 @@ export async function getPublicPortfolio(req, res) {
   }
 }
 
+export async function oauthSession(req, res) {
+  try {
+    const { access_token, user: clientUser } = req.body
+
+    let user = null
+
+    // Verify token with Supabase if provided
+    if (access_token) {
+      const { data, error } = await supabase.auth.getUser(access_token)
+      if (!error && data?.user) {
+        user = data.user
+      }
+    }
+
+    // Fallback: If clientUser object provided
+    if (!user && clientUser?.id && clientUser?.email) {
+      try {
+        const { data: adminData } = await supabase.auth.admin.getUserById(clientUser.id)
+        if (adminData?.user) {
+          user = adminData.user
+        } else {
+          user = clientUser
+        }
+      } catch (err) {
+        user = clientUser
+      }
+    }
+
+    if (!user || !user.id || !user.email) {
+      return res.status(400).json({ message: 'Invalid OAuth session payload' })
+    }
+
+    const normalizedEmail = String(user.email).trim().toLowerCase()
+
+    const token = jwt.sign(
+      { sub: user.id, email: normalizedEmail },
+      jwtSecret,
+      { expiresIn: jwtExpiresIn },
+    )
+
+    const displayName = user.user_metadata?.full_name || user.user_metadata?.name || user.user_metadata?.preferred_username || user.email.split('@')[0]
+
+    return res.status(200).json({
+      message: 'OAuth authentication successful',
+      token,
+      user: {
+        id: user.id,
+        email: normalizedEmail,
+        name: displayName,
+        created_at: user.created_at || new Date().toISOString(),
+        user_metadata: user.user_metadata || {},
+      },
+    })
+  } catch (err) {
+    console.error('OAuth session error:', err)
+    return res.status(500).json({ message: 'Failed to process OAuth session' })
+  }
+}
+
+
 

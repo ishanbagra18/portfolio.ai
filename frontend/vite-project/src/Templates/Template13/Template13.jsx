@@ -1,3 +1,4 @@
+import SectionRenderer from '../../components/SectionRenderer';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import DynamicSection from './components/DynamicSection';
@@ -124,12 +125,37 @@ const Template13 = ({ publicData, isPublicView }) => {
     );
   }
 
-  const data = portfolioData || defaultData;
+  const data = publicData || portfolioData || defaultData;
   const pInfo = data.personalInfo || {};
   const tStacks = data.techStacks || [];
   const projs = data.projects || [];
   const exps = data.experiences || [];
   const certs = data.certifications || [];
+
+  const sectionOrder = data?.personalInfo?.section_order || [];
+  const sectionVisibility = data?.personalInfo?.section_visibility || {};
+
+  const sectionMap = {
+    about: pInfo.about_paragraph ? <div className="py-6 text-slate-300 font-light">{pInfo.about_paragraph}</div> : null,
+    tech_stacks: null,
+    projects: null,
+    experiences: null,
+    certifications: null,
+    ...Object.fromEntries(
+      Object.entries(SECTION_SCHEMAS).map(([key, schema]) => [
+        key,
+        data?.personalInfo?.[key]?.length ? (
+          <DynamicSection
+            key={key}
+            title={schema.title}
+            schema={schema}
+            data={data.personalInfo[key]}
+          />
+        ) : null
+      ])
+    )
+  };
+
 
   return (
     <div className="min-h-screen bg-[#110221] text-[#E0D8EE] font-['Press_Start_2P'] p-4 sm:p-8 text-[10px] leading-relaxed relative selection:bg-[#FFFF00] selection:text-black">
@@ -354,7 +380,11 @@ const Template13 = ({ publicData, isPublicView }) => {
       {!isPublicView && portfolioId && pInfo.full_name && (
         <ChatbotWidget portfolioId={portfolioId} name={pInfo.full_name} />
       )}
-    </div>
+    
+      {/* Render Sections via SectionRenderer */}
+      <SectionRenderer sectionOrder={sectionOrder} sectionVisibility={sectionVisibility} sectionMap={sectionMap} />
+
+</div>
   );
 };
 

@@ -113,5 +113,31 @@ export const SECTION_SCHEMAS = {
     fields: [
       { name: 'name', label: 'Interest', type: 'text', placeholder: 'e.g. Reading, Hiking, AI' }
     ]
+  },
+  blog_posts: {
+    title: 'Blog & Articles',
+    itemLabel: 'Article',
+    emptyState: { title: '', excerpt: '', date: '', read_time: '', link: '', tags: '' },
+    fields: [
+      { name: 'title', label: 'Post Title', type: 'text', placeholder: 'e.g. Building Scalable Microservices with Go' },
+      { name: 'excerpt', label: 'Short Excerpt / Summary', type: 'textarea', placeholder: 'Brief summary of your article...' },
+      { name: 'date', label: 'Publish Date', type: 'text', placeholder: 'e.g. Sep 2024' },
+      { name: 'read_time', label: 'Read Time', type: 'text', placeholder: 'e.g. 5 min read' },
+      { name: 'link', label: 'Article URL (Medium, Hashnode, Dev.to, etc.)', type: 'url', placeholder: 'https://dev.to/username/...' },
+      { name: 'tags', label: 'Tags (comma separated)', type: 'text', placeholder: 'e.g. Go, Backend, System Design' }
+    ]
+  },
+  case_studies: {
+    title: 'In-Depth Case Studies',
+    itemLabel: 'Case Study',
+    emptyState: { title: '', problem: '', solution: '', impact: '', metrics: '', link: '' },
+    fields: [
+      { name: 'title', label: 'Case Study Title', type: 'text', placeholder: 'e.g. Reducing Payment Gateway Latency by 40%' },
+      { name: 'problem', label: 'Problem Statement', type: 'textarea', placeholder: 'What challenge needed solving?' },
+      { name: 'solution', label: 'Architecture & Solution', type: 'textarea', placeholder: 'How did you design and implement the fix?' },
+      { name: 'impact', label: 'Business Impact & Results', type: 'textarea', placeholder: 'Key outcomes achieved...' },
+      { name: 'metrics', label: 'Key Metrics / Stats', type: 'text', placeholder: 'e.g. 40% latency drop, 10M daily ops' },
+      { name: 'link', label: 'Detailed Link / Slides', type: 'url', placeholder: 'https://...' }
+    ]
   }
 };

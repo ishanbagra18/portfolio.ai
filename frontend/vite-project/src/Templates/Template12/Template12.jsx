@@ -1,3 +1,4 @@
+import SectionRenderer from '../../components/SectionRenderer';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import DynamicSection from './components/DynamicSection';
@@ -125,12 +126,37 @@ const Template12 = ({ publicData, isPublicView }) => {
     );
   }
 
-  const data = portfolioData || defaultData;
+  const data = publicData || portfolioData || defaultData;
   const pInfo = data.personalInfo || {};
   const tStacks = data.techStacks || [];
   const projs = data.projects || [];
   const exps = data.experiences || [];
   const certs = data.certifications || [];
+
+  const sectionOrder = data?.personalInfo?.section_order || [];
+  const sectionVisibility = data?.personalInfo?.section_visibility || {};
+
+  const sectionMap = {
+    about: null,
+    tech_stacks: null,
+    projects: null,
+    experiences: null,
+    certifications: null,
+    ...Object.fromEntries(
+      Object.entries(SECTION_SCHEMAS).map(([key, schema]) => [
+        key,
+        data?.personalInfo?.[key]?.length ? (
+          <DynamicSection
+            key={key}
+            title={schema.title}
+            schema={schema}
+            data={data.personalInfo[key]}
+          />
+        ) : null
+      ])
+    )
+  };
+
 
   return (
     <div className="min-h-screen bg-[#F0EFF0] text-black font-['Montserrat'] relative overflow-x-hidden selection:bg-[#E63946] selection:text-white pb-20">
@@ -372,7 +398,11 @@ const Template12 = ({ publicData, isPublicView }) => {
         />
       ))}
 
-      {/* Footer */}
+      
+      {/* Render Sections via SectionRenderer */}
+      <SectionRenderer sectionOrder={sectionOrder} sectionVisibility={sectionVisibility} sectionMap={sectionMap} />
+
+{/* Footer */}
       <footer className="max-w-7xl mx-auto px-6 md:px-24 py-12 border-t-4 border-black mt-20 relative z-10">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-6 text-xs font-black uppercase tracking-wider">
           <p>&copy; {new Date().getFullYear()} {pInfo.full_name}</p>

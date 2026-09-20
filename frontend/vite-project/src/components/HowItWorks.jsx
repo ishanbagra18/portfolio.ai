@@ -41,7 +41,7 @@ const HowItWorks = () => {
 
           {steps.map((step, index) => (
             <GlassCard key={index} className="relative z-10 p-8 group hover:-translate-y-2 transition-transform duration-300 text-center md:text-left">
-              <span 
+              <span
                 className="text-6xl font-display font-black tracking-tighter block mb-6 opacity-20 group-hover:opacity-100 group-hover:text-accent-color transition-all duration-300"
                 style={{ WebkitTextStroke: '1px rgba(255,255,255,0.5)', color: 'transparent' }}
               >

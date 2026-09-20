@@ -1,6 +1,8 @@
 import { GridBackground, SheetLabel, CornerFrame } from './Schematic';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const Skills = ({ data }) => {
+const Skills = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '03');
   if (!data || data.length === 0) return null;
 
   return (
@@ -8,7 +10,7 @@ const Skills = ({ data }) => {
       <GridBackground />
 
       <div className="relative z-10 mx-auto max-w-7xl">
-        <SheetLabel index="03" title="Tech Stack / Parts List" />
+        <SheetLabel index={sectionNumber} title="Tech Stack / Parts List" />
 
         <CornerFrame className="bg-[#081526]/60 border border-[#7EC8E3]/10 p-2 sm:p-3">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">

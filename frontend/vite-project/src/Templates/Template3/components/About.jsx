@@ -1,6 +1,8 @@
 import React from 'react';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const About = ({ data }) => {
+const About = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '02');
   return (
     <section className="relative w-full overflow-hidden bg-slate-50 px-4 sm:px-6 lg:px-8 py-20 text-slate-900">
       {/* Subtle grid background matching the Hero component */}
@@ -9,7 +11,7 @@ const About = ({ data }) => {
       <div className="relative z-10 mx-auto w-full max-w-7xl">
         <div className="mb-12 flex items-end justify-between gap-4 border-b border-slate-200 pb-6">
           <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-widest text-slate-800">
-            02. About
+            {sectionNumber}. About
           </h3>
           <p className="hidden sm:block text-sm text-slate-500 font-medium">
             Background, education, and stats

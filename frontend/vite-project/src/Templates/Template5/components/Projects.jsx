@@ -1,6 +1,8 @@
 import { Dots, Tag, Card, accents } from './Brutal';
+import { useSectionNumber } from '../../../components/SectionRenderer';
 
-const Projects = ({ data }) => {
+const Projects = ({ data, sectionNumber: propSectionNumber }) => {
+  const sectionNumber = useSectionNumber(propSectionNumber || '04');
   if (!data || data.length === 0) return null;
 
   const rotations = ['-rotate-1', 'rotate-1', '-rotate-2'];
@@ -11,7 +13,7 @@ const Projects = ({ data }) => {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <Tag bg="#3B5BFF" rotate="rotate-1">
-          <span className="text-white">04 · Projects</span>
+          <span className="text-white">{sectionNumber} · Projects</span>
         </Tag>
 
         <h3 className="mt-6 max-w-2xl font-['Archivo_Black'] text-3xl sm:text-4xl lg:text-5xl leading-tight text-[#12110F]">

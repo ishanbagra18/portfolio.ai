@@ -10,6 +10,7 @@ import '@fontsource/space-grotesk/700.css';
 import './index.css'
 import App from './App.jsx'
 import { ThemeProvider } from './contexts/ThemeContext.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import axios from 'axios'
 import { API_BASE } from './lib/api'
 
@@ -17,10 +18,13 @@ axios.defaults.baseURL = API_BASE;
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider>
-      <BrowserRouter>
-      <App />
-    </BrowserRouter>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
+    </ErrorBoundary>
   </StrictMode>,
 )
+
