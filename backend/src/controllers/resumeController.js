@@ -37,7 +37,7 @@ const formatErrorMessage = (error) => {
 };
 
 // Robust helper to try candidate models if 503 / 404 / rate issues occur
-const generateGeminiContent = async (aiIgnored, params) => {
+const generateGeminiContent = async (params) => {
   const ai = getAiClient();
   const modelCandidates = ['gemini-3.6-flash', 'gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.1-flash-lite'];
   let lastErr = null;
@@ -133,7 +133,7 @@ export const parseResume = async (req, res) => {
     Resume Text:
     ${extractedText}`;
 
-    const response = await generateGeminiContent(ai, {
+    const response = await generateGeminiContent({
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
@@ -264,7 +264,7 @@ export const checkAtsScore = async (req, res) => {
     Resume Text:
     ${extractedText}`;
 
-    const response = await generateGeminiContent(ai, {
+    const response = await generateGeminiContent({
       contents: prompt,
       config: {
         responseMimeType: 'application/json',
