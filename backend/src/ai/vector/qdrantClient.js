@@ -37,7 +37,7 @@ export const initCollection = async () => {
       console.log(`[Qdrant Client] Collection '${COLLECTION_NAME}' not found. Creating it...`);
       await client.createCollection(COLLECTION_NAME, {
         vectors: {
-          size: 3072, // Google gemini-embedding-2 output dimension
+          size: 768, // Google text-embedding-004 output dimension
           distance: 'Cosine',
         },
       });

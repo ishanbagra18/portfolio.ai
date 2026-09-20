@@ -13,7 +13,7 @@ export const getEmbedding = async (text) => {
   }
   try {
     const response = await ai.models.embedContent({
-      model: 'gemini-embedding-2',
+      model: 'text-embedding-004',
       contents: text.trim(),
     });
     
@@ -43,7 +43,7 @@ export const getEmbeddings = async (texts) => {
   if (cleanTexts.length === 0) return [];
   
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-2:batchEmbedContents?key=${process.env.GEMINI_API_KEY || ''}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:batchEmbedContents?key=${process.env.GEMINI_API_KEY || ''}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -51,7 +51,7 @@ export const getEmbeddings = async (texts) => {
       },
       body: JSON.stringify({
         requests: cleanTexts.map(text => ({
-          model: 'models/gemini-embedding-2',
+          model: 'models/text-embedding-004',
           content: { parts: [{ text }] }
         }))
       })

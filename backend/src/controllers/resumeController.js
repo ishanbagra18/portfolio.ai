@@ -32,7 +32,7 @@ const formatErrorMessage = (error) => {
 
 // Robust helper to try candidate models if 503 / 404 / rate issues occur
 const generateGeminiContent = async (ai, params) => {
-  const modelCandidates = ['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemma-4-26b-a4b-it', 'gemini-flash-latest', 'gemini-3.6-flash'];
+  const modelCandidates = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro'];
   let lastErr = null;
   for (const model of modelCandidates) {
     try {

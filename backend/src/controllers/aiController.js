@@ -48,7 +48,7 @@ Text to polish:
         }
 
         const response = await ai.models.generateContent({
-            model: 'gemini-3.5-flash-lite',
+            model: 'gemini-1.5-flash',
             contents: prompt,
         });
 
@@ -160,7 +160,7 @@ Rules:
         chatContents.push({ role: 'user', parts: [{ text: message }] });
 
         const response = await ai.models.generateContent({
-            model: 'gemini-3.5-flash-lite',
+            model: 'gemini-1.5-flash',
             contents: chatContents,
         });
 
@@ -242,7 +242,7 @@ Job Description:
 "${jobDescription}"`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-3.5-flash-lite',
+            model: 'gemini-1.5-flash',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -317,7 +317,7 @@ Target Job Description:
         }
 
         const response = await ai.models.generateContent({
-            model: 'gemini-3.5-flash-lite',
+            model: 'gemini-1.5-flash',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -472,7 +472,7 @@ ${JSON.stringify(context, null, 2)}
 Provide feedback structured in JSON format.`;
 
         const response = await ai.models.generateContent({
-            model: 'gemini-3.5-flash-lite',
+            model: 'gemini-1.5-flash',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
@@ -559,7 +559,7 @@ Output ONLY the text of the cover letter. Do not include introductory notes or m
 
         const aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const response = await aiClient.models.generateContent({
-            model: 'gemini-3.5-flash-lite',
+            model: 'gemini-1.5-flash',
             contents: prompt,
         });
 
@@ -606,7 +606,7 @@ Output the result strictly in JSON format matching the following schema.`;
 
         const aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
         const response = await aiClient.models.generateContent({
-            model: 'gemini-3.5-flash-lite',
+            model: 'gemini-1.5-flash',
             contents: prompt,
             config: {
                 responseMimeType: "application/json",
