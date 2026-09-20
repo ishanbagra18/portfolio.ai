@@ -20,28 +20,26 @@ export async function fetchWithFallback(urlPath, options = {}) {
   try {
     return await fetch(`${primaryBase}${targetPath}`, options);
   } catch (err) {
-    if (err.name === 'TypeError' && (err.message === 'Failed to fetch' || err.message.includes('fetch'))) {
-      // Try alternate local hostname if localhost vs 127.0.0.1 mismatch occurred
-      let altBase = null;
-      if (primaryBase.includes('127.0.0.1')) {
-        altBase = primaryBase.replace('127.0.0.1', 'localhost');
-      } else if (primaryBase.includes('localhost')) {
-        altBase = primaryBase.replace('localhost', '127.0.0.1');
-      }
-      
-      if (altBase) {
-        try {
-          return await fetch(`${altBase}${targetPath}`, options);
-        } catch (retryErr) {
-          // Both failed, rethrow original error
-        }
+    // Retry with alternate local hostname if localhost vs 127.0.0.1 mismatch occurred
+    let altBase = null;
+    if (primaryBase.includes('127.0.0.1')) {
+      altBase = primaryBase.replace('127.0.0.1', 'localhost');
+    } else if (primaryBase.includes('localhost')) {
+      altBase = primaryBase.replace('localhost', '127.0.0.1');
+    }
+    
+    if (altBase) {
+      try {
+        return await fetch(`${altBase}${targetPath}`, options);
+      } catch (retryErr) {
+        // Both failed
       }
     }
     throw err;
   }
 }
 
-async function request(path, options = {}, retries = 1) {
+async function request(path, options = {}, retries = 2) {
   const token = getToken()
 
   let response
@@ -56,16 +54,16 @@ async function request(path, options = {}, retries = 1) {
     })
   } catch (err) {
     if (retries > 0) {
-      await new Promise(res => setTimeout(res, 1500))
+      await new Promise(res => setTimeout(res, 1000))
       return request(path, options, retries - 1)
     }
-    throw new Error(`Unable to connect to backend server at ${API_BASE}. If the server was sleeping (Render cold start), please try again in a few seconds.`)
+    throw new Error(`Unable to connect to backend server at ${API_BASE}. Please ensure your backend server is running on port 5000. (${err.message})`)
   }
 
   const data = await response.json().catch(() => ({}))
 
   if (!response.ok) {
-    throw new Error(data.message || 'Request failed')
+    throw new Error(data.message || data.error || 'Request failed')
   }
 
   return data
