@@ -1,221 +1,264 @@
-# Portfolio.io
+# 🚀 Portfolio.io — Next-Gen AI Portfolio Builder & Career Suite
 
-**An AI-powered portfolio builder for creating, optimizing, and sharing professional portfolio websites in minutes.**
+[![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Express.js](https://img.shields.io/badge/Node.js-Express--5.x-000000?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Database%20%26%20Auth-3ECF8E?logo=supabase&logoColor=white)](https://supabase.com/)
+[![Qdrant](https://img.shields.io/badge/Qdrant-Vector%20DB-DC2626?logo=qdrant&logoColor=white)](https://qdrant.tech/)
+[![Google Gemini](https://img.shields.io/badge/Google%20Gemini-AI%20Engine-8E44AD?logo=google-gemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS%20v4-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 
-Portfolio.io helps users go from resume to live, shareable portfolio — with AI-assisted content generation, a recruiter-facing chatbot, job-match scoring, and automated outreach tooling built in.
+**Transform raw resume files and GitHub repositories into high-converting, ATS-optimized interactive portfolio websites in under 3 minutes.**
 
-[![License](https://img.shields.io/badge/license-Educational%20%2F%20Personal-blue)]()
-[![Node](https://img.shields.io/badge/node-%3E%3D18-green)]()
-[![React](https://img.shields.io/badge/react-18-61DAFB)]()
-
-[Live Demo](#) · [Features](#features) · [Tech Stack](#tech-stack) · [Getting Started](#getting-started) · [Routes](#application-routes) · [License](#license)
+Portfolio.io is an end-to-end web platform and AI career companion designed for developers, designers, and tech talent. It goes far beyond static site generators by pairing 20 production-grade reactive templates with real-time visual customizers, RAG-powered recruiter chatbots, interactive AI mock interviewers, ATS resume scoring, and live application tracking.
 
 ---
 
-## Table of Contents
+## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Features](#features)
-  - [Authentication & Security](#authentication--security)
-  - [Portfolio Builder & Templates](#portfolio-builder--templates-20-designs)
-  - [Interactive Motion & Parallax](#interactive-motion--parallax)
-  - [AI-Powered Tools](#ai-powered-tools)
-  - [Public Sharing](#public-sharing--custom-url-slugs)
-  - [Resume & Career Tools](#resume--career-tools)
-- [Tech Stack](#tech-stack)
-- [Application Routes](#application-routes)
-- [Getting Started](#getting-started)
+- [Key Features](#-key-features)
+  - [1. AI-Powered Setup & Parser](#1-ai-powered-setup--parser)
+  - [2. Universal Template Engine (20 Designs)](#2-universal-template-engine-20-designs)
+  - [3. Portfolio Copilot & Recruiter RAG Bot](#3-portfolio-copilot--recruiter-rag-bot)
+  - [4. Real-time Theme & Layout Customizer](#4-real-time-theme--layout-customizer)
+  - [5. AI Career Suite & Job Application Tools](#5-ai-career-suite--job-application-tools)
+  - [6. Analytics, Pro Entitlements & Sharing](#6-analytics-pro-entitlements--sharing)
+- [Architecture & Data Flow](#-architecture--data-flow)
+- [Tech Stack](#-tech-stack)
+- [Application Routes](#-application-routes)
+- [Getting Started](#-getting-started)
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Roadmap](#roadmap)
-- [License](#license)
+  - [Environment Configuration](#environment-configuration)
+  - [Local Installation](#local-installation)
+- [API Documentation](#-api-documentation)
+- [License](#-license)
 
 ---
 
-## Overview
+## ✨ Key Features
 
-Portfolio.io is a full-stack platform for job seekers who want a polished web presence without the design or engineering overhead. Users can enter their details manually or upload a resume for AI-powered auto-fill, choose from a library of production-ready templates, and publish a live portfolio behind a custom URL — complete with an embedded AI chatbot that can answer recruiter questions on their behalf.
+### 1. AI-Powered Setup & Parser
+- **PDF & DOCX Resume Parsing**: Multi-stage text extraction using `pdf-parse` and `mammoth`. Automatically categorizes personal info, work experience, projects, skills, education, and certifications into structured JSON schemas.
+- **STAR Method AI Enhancer**: Rewrites work bullet points into impactful action statements using the Situation, Task, Action, Result framework via Google Gemini 1.5.
 
-Beyond the builder itself, the platform includes a suite of career tools: an ATS resume scanner, a job-match analyzer, and AI-driven content tailoring — positioning it as an end-to-end job search companion rather than a static site generator.
+### 2. Universal Template Engine (20 Designs)
 
-## Features
+A curated collection of 20 fully responsive, reactive templates engineered with Tailwind CSS, Framer Motion, and GSAP:
 
-### Authentication & Security
-
-- Email/password signup, login, and logout
-- JWT-based authentication
-- Supabase Auth integration
-- Two-factor authentication via email OTP
-- Protected routes and client-side route guards
-- Profile management (name, password updates)
-- Ownership-scoped access control for portfolios
-
-### Portfolio Builder & Templates (20 Designs)
-
-A library of 20 handcrafted themes spanning a wide range of visual styles — from minimal and editorial to cyberpunk and retro-arcade:
-
-| Template | Style Summary |
-|---|---|
-| Neon Dark | Dark theme with vibrant gradient text and clean card layouts |
-| Bold Minimal | High-contrast black theme with large display typography |
-| White Elegance | Light theme with clean lines and generous whitespace |
-| Blueprint Technical | Navy schematic theme with grid paper and monospace annotations |
-| Neo Brutalist | Scrapbook-inspired theme with thick borders and hard shadows |
-| Editorial Gallery | Ivory catalogue theme with display serif type |
-| Aurora Glass | Glassmorphism design with ambient glow effects |
-| Cyberpunk Hacker | Terminal-inspired theme with neon highlights |
-| Retro CRT Console | Green-on-black terminal layout with scanline effects |
-| Sage Botanical | Organic layout with sage green and cream tones |
-| Newspaper Chronicles | Broadsheet-style theme with columns and drop caps |
-| Constructivist Swiss | Asymmetrical layout with primary red and geometric blocks |
-| 8-Bit Arcade | Pixel-art theme with retro game-inspired UI elements |
-| Tactical HUD | Sci-fi blueprint design with sensor grids and telemetry charts |
-| Soft Claymorphism | 3D clay-style theme with pastel tones and soft shadows |
-| Vaporwave Synth | 80s retrowave aesthetic with dual-tone glow gradients |
-| Minimalist Monolith | Titanium slate layout with glassmorphic panels |
-| Nordic Minimalist Light | Scandinavian-inspired theme with warm neutrals |
-| Terminal Matrix Green | Hacker terminal theme with matrix-style code effects |
-| Luxury Gold Velvet | Obsidian theme with champagne gold accents |
-
-### Interactive Motion & Parallax
-
-- **Mouse Parallax Tilt** — cursor-tracking rotation with real-time light glare on hero elements
-- **Scroll Parallax** — multi-speed, scroll-driven transforms built with Framer Motion (`useScroll`, `useTransform`, `useSpring`)
-- **Ambient Background Layers** — floating gradient elements with variable drift speed on scroll
-
-### AI-Powered Tools
-
-Built on Google Gemini, with retrieval-augmented generation for context-aware responses.
-
-- **Resume Auto-Fill** — upload a PDF or DOCX resume and automatically extract personal details, education, projects, work experience, certifications, and skills
-- **Content Enhancement** — refines summaries, project descriptions, and experience bullets using the STAR methodology
-- **AI Recruiter Assistant** — an embedded chatbot per portfolio, powered by RAG over a Qdrant vector store, that answers recruiter questions about a candidate's background in real time
-- **Smart Job Matcher** — compares a portfolio against a target job description and returns a match score, strengths, missing keywords, and improvement recommendations
-- **AI Job Tailoring** — adapts portfolio content to align with a specific job description
-
-
-### Public Sharing & Custom URL Slugs
-
-- Custom shareable portfolio URLs (e.g. `/p/john-doe-fullstack`)
-- Public portfolio view, accessible without authentication
-- Template popularity tracking via a like/view counter
-
-### Resume & Career Tools
-
-- ATS resume scanner with formatting and keyword analysis
-- GitHub activity heatmap for showcasing contribution history
-- Print-ready PDF export for one-click downloads
+| # | Template Name | Visual Style & Theme Focus |
+|---|---|---|
+| **01** | Modern Minimalist | Clean white space, subtle cards, bento grid layout |
+| **02** | Bold Display | High-contrast dark typography with large hero focus |
+| **03** | Glassmorphism Aurora | Ambient dark blur effects, vibrant neon glows |
+| **04** | Neon Cyberpunk | Dark terminal aesthetic, cyan/fuchsia neon lines |
+| **05** | Retro Arcade 8-Bit | Pixel-art badges, CRT scanlines, 90s gaming vibe |
+| **06** | Editorial Magazine | Serif typography, broadsheet grid, clean beige borders |
+| **07** | Blueprint Technical | Navy grid paper, technical metrics, monospaced details |
+| **08** | Clean Executive | Corporate slate, executive summary focus, metric pills |
+| **09** | Neo Brutalism | High-contrast borders, solid drop shadows, raw aesthetic |
+| **10** | Terminal Matrix | Hacker console, green Matrix code animations, dark CLI |
+| **11** | Soft Claymorphism | Soft 3D pastel cards, tactile pill buttons |
+| **12** | AI Cyberpunk | Futuristic dark mode, glowing AI status badges |
+| **13** | Sage Botanical | Organic sage green palette, warm cream cards |
+| **14** | Newspaper Broadsheet | Classic black & white print layout with drop caps |
+| **15** | Constructivist Swiss | Bold red & black geometric blocks, grid typography |
+| **16** | Tactical HUD | Sci-fi telemetry layout with sensor grids & charts |
+| **17** | Vaporwave Retrowave | 80s synthwave pink/purple dual-tone gradients |
+| **18** | Titanium Monolith | Sleek dark slate glass panels, metallic typography |
+| **19** | Nordic Light | Scandinavian minimalist cream, ultra-clean layout |
+| **20** | Obsidian Gold | Luxury dark layout with champagne gold accents |
 
 ---
 
-## Tech Stack
+### 3. Portfolio Copilot & Recruiter RAG Bot
+- **Portfolio Copilot (`Cmd+K`)**: Floating spotlight command bar and slide-out chat drawer. Understands natural language requests (e.g., *"Add TypeScript to my skills"*, *"Make my summary sound more executive"*), presents confirmation previews, and updates portfolio state directly.
+- **Recruiter RAG Assistant**: Every live portfolio hosts an AI assistant trained on the candidate's exact background. Backed by **Qdrant Vector Database** embeddings, allowing recruiters to ask questions like *"Has John worked with microservices?"* or *"What is Sarah's experience with PyTorch?"*.
+
+---
+
+### 4. Real-time Theme & Layout Customizer
+- **Drag-and-Drop Section Reordering**: Instantly reorder sections (Hero, About, Experience, Projects, Skills, Certifications) across all 20 templates with live drag-and-drop.
+- **Live Theme Customizer**: Adjust primary colors, accent gradients, typography fonts (Inter, Roboto, Fira Code, Outfit, Playfair), and border radii with real-time reactive previews.
+- **Dark / Light Mode Support**: Seamless toggle with custom CSS variable mapping.
+
+---
+
+### 5. AI Career Suite & Job Application Tools
+- **ATS Resume Checker**: Analyzes resumes against ATS formatting rules, density keywords, and role expectations. Returns a overall ATS match score and action points.
+- **Smart Job Matcher**: Input any job description to evaluate direct match percentage, identify missing skills, and receive tailored suggestions.
+- **AI Cover Letter Generator**: Generates customized cover letters tailored to specific job titles and company profiles.
+- **AI Mock Interviewer**: Interactive simulated interview room with role-specific technical/behavioral questions and instant AI feedback on answers.
+- **Kanban Job Application Tracker**: Organize application stages (Saved, Applied, Interviewing, Offer, Rejected) with drag-and-drop workflow management.
+
+---
+
+### 6. Analytics, Pro Entitlements & Sharing
+- **Portfolio Visitor Analytics**: Track total page views, recruiter engagement, template popularity, and unique visitor trends.
+- **Custom Slugs & Watermarking**: Unique shareable URLs (e.g. `/p/alex-fullstack`). Free portfolios feature a subtle *"Built with Portfolio.io"* badge with lead capture drawers.
+- **Pro Gating & Tier Management**: Entitlement middleware enforcing plan limits (Free vs Pro) for analytics, unlimited custom domains, and advanced AI copilot uses.
+
+---
+
+## 🏗 Architecture & Data Flow
+
+```mermaid
+flowchart TD
+    A[User / Recruiter] -->|HTTPS| B[Vite React Frontend]
+    
+    subgraph Frontend Layer
+        B --> C[Portfolio Builder Engine]
+        B --> D[Portfolio Copilot Cmd+K]
+        B --> E[Universal Template Renderer]
+        B --> F[Career Suite & ATS Checker]
+    end
+    
+    B -->|REST / JSON| G[Node.js Express Backend API]
+    
+    subgraph Backend Layer
+        G --> H[Auth Controller & Middleware]
+        G --> I[Resume Extraction Pipeline]
+        G --> J[Portfolio & Customizer API]
+        G --> K[AI & Copilot Service]
+        G --> L[Analytics & Lead Tracker]
+    end
+
+    H -->|OAuth & JWT| M[(Supabase Postgres & Auth)]
+    I -->|Document Parsing| N[pdf-parse / mammoth]
+    K -->|Retrieval / Embeddings| O[(Qdrant Vector DB)]
+    K -->|Prompt & Inference| P[Google Gemini 1.5 API]
+```
+
+## 🛠 Tech Stack
 
 **Frontend**
-- React (Vite)
-- React Router v7
-- Framer Motion & GSAP for animation and parallax
-- Tailwind CSS
-- Lucide Icons, Fontsource
+- **Framework:** React 19 (Vite)
+- **Routing:** React Router v7
+- **Styling:** Tailwind CSS v4, Vanilla CSS Design Tokens
+- **Animations:** Framer Motion, GSAP (GreenSock Animation Platform)
+- **Icons & Fonts:** Lucide React, Fontsource (Inter, Outfit, Fira Code, Playfair Display)
+- **Drag & Drop:** `@hello-pangea/dnd`
 
 **Backend**
-- Node.js
-- Express.js (ES Modules)
+- **Runtime:** Node.js (ES Modules)
+- **Framework:** Express.js 5.x
+- **Authentication:** Supabase Auth (Google & GitHub OAuth 2.0) + Custom JWT (jsonwebtoken)
+- **Document Processing:** `pdf-parse`, `mammoth`
 
-**Database & Vector Storage**
-- Supabase (PostgreSQL)
-- Qdrant (vector database for RAG embeddings)
-
-**Authentication**
-- Supabase Auth
-- Custom JWT (`jsonwebtoken`)
-- Email OTP-based 2FA
-
-**AI & Document Processing**
-- Google Gemini (via `@google/genai` and LangChain)
-- `pdf-parse` for PDF text extraction
-- Mammoth for DOCX text extraction
+**Databases & AI**
+- **Database:** Supabase (PostgreSQL)
+- **Vector Search Engine:** Qdrant Database (RAG Vector Store)
+- **LLM Engine:** Google Gemini 1.5 / Flash via `@google/genai` & LangChain
 
 ---
 
-## Application Routes
+## 🗺 Application Routes
 
-| Route | Purpose | Access |
+| Path | Description | Access Level |
 |---|---|---|
-| `/` | Root redirect | Auto |
-| `/login` | User login | Public |
+| `/` | Landing page redirect | Public |
+| `/login` | User login (Password & OAuth) | Public |
 | `/register` | Create account | Public |
-| `/home` | Dashboard & landing | Protected |
-| `/profile` | View profile | Protected |
-| `/profile/edit` | Edit profile | Protected |
+| `/auth/callback` | OAuth redirect handler | Public |
+| `/home` | Hero dashboard & live demo switcher | Protected |
 | `/viewtemplates` | Template gallery (20 templates) | Protected |
-| `/my-portfolios` | Portfolio dashboard | Protected |
-| `/provide-data/:templateId` | Portfolio creation form | Protected |
-| `/edit-portfolio/:portfolioId` | Edit existing portfolio | Protected |
-| `/ats-checker` | Resume ATS scanner | Protected |
-| `/career-tools` | Career tools & resume upload | Protected |
-| `/portfolio-matcher/:id` | Smart job matcher | Protected |
-| `/p/:slug` | Public live portfolio view | Public |
-| `/portfolio/template1/:id?` – `/portfolio/template20/:id?` | Live & preview portfolio renderers | Protected |
+| `/my-portfolios` | Portfolio management dashboard | Protected |
+| `/provide-data/:templateId` | AI Resume Upload & Form | Protected |
+| `/edit-portfolio/:portfolioId` | Portfolio Editor & Customizer | Protected |
+| `/ats-checker` | ATS Resume Scanner & Optimizer | Protected |
+| `/career-tools` | Career Suite hub | Protected |
+| `/cover-letter` | AI Cover Letter Generator | Protected |
+| `/mock-interview` | AI Mock Interview Simulator | Protected |
+| `/job-tracker` | Application Kanban Tracker | Protected |
+| `/analytics` | Visitor & Lead Analytics | Protected (Pro) |
+| `/pricing` | Plan comparisons & upgrades | Public / Protected |
+| `/p/:slug` | Live Published Portfolio | Public |
+| `/portfolio/template:id/:portfolioId` | Template Renderers (1-20) | Public / Protected |
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
+- **Node.js**: v18.x or higher
+- **npm**: v9.x or higher
+- **Docker**: Optional (for running Qdrant Vector DB locally)
+- **API Keys**: Google Gemini API key, Supabase project credentials
 
-- Node.js 18+
-- Docker (for running Qdrant locally)
-- A Supabase project (PostgreSQL + Auth)
-- A Google Gemini API key
+### Environment Configuration
 
-### Installation
+**1. Backend .env (`backend/.env`)**
+```env
+PORT=5000
+NODE_ENV=development
+# JWT Secret
+JWT_SECRET=your_jwt_secret_key_here
+# Supabase Credentials
+SUPABASE_URL=[https://your-supabase-project.supabase.co](https://your-supabase-project.supabase.co)
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+# Google Gemini AI Key
+GEMINI_API_KEY=your_google_gemini_api_key
+# Qdrant Vector DB
+QDRANT_URL=http://localhost:6333
+QDRANT_API_KEY=optional_qdrant_api_key
+```
 
-**1. Start the Qdrant vector database**
+**2. Frontend .env (`frontend/vite-project/.env`)**
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_SUPABASE_URL=[https://your-supabase-project.supabase.co](https://your-supabase-project.supabase.co)
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
+### Local Installation
+
+**1. Clone the repository**
+```bash
+git clone [https://github.com/ishanbagra18/portfolio.ai.git](https://github.com/ishanbagra18/portfolio.ai.git)
+cd portfolio
+```
+
+**2. Start Qdrant Vector DB (Docker)**
 ```bash
 docker run -d -p 6333:6333 -p 6334:6334 -v qdrant_storage:/qdrant/storage qdrant/qdrant
 ```
 
-**2. Start the backend server**
-
+**3. Setup & Start Backend Server**
 ```bash
 cd backend
 npm install
 node src/server.js
 ```
+*The backend server will run on `http://localhost:5000`.*
 
-The backend runs at `http://localhost:5000`.
-
-**3. Index portfolios to Qdrant (RAG setup)**
-
+**4. Setup & Start Frontend App**
 ```bash
-cd backend
-node src/index_all.js
-```
-
-**4. Start the frontend**
-
-```bash
-cd frontend/vite-project
+cd ../frontend/vite-project
 npm install
 npm run dev
 ```
-
-The frontend runs at `http://localhost:5173`.
-
-> ℹ️ Both the backend and frontend expect environment variables for Supabase, Qdrant, Gemini, and SMTP credentials. Copy `.env.example` to `.env` in each directory and populate the required keys before starting the app.
+*The React client will run on `http://localhost:5173`.*
 
 ---
 
-## Roadmap
+## 📑 API Documentation Summary
 
-- [ ] Automated test coverage (unit + integration)
-- [ ] CI pipeline for linting and tests
-- [ ] Dockerized local development (single `docker-compose up`)
-- [ ] Rate limiting on AI and email-dispatch endpoints
+### Endpoints Overview
+- `POST /api/auth/register` — User signup with email/password.
+- `POST /api/auth/login` — User authentication returning JWT token.
+- `POST /api/auth/oauth` — Sync OAuth profile data from Supabase.
+- `POST /api/resume/parse` — Extract structured JSON from PDF/DOCX file.
+- `POST /api/portfolio/create` — Store portfolio configuration & template metadata.
+- `PUT /api/portfolio/update/:id` — Update portfolio details & customized theme settings.
+- `GET /api/portfolio/public/:slug` — Fetch public portfolio payload by slug.
+- `POST /api/ai/copilot` — Context-aware AI Copilot command processing.
+- `POST /api/ai/rag-chat` — Recruiter vector-search QA stream.
+- `POST /api/ai/ats-scan` — ATS compliance & keyword match scoring.
 
 ---
 
-## License
+## 📜 License
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
-Educational and personal use.
+*Crafted with ❤️ by Ishan Bagra & The Portfolio.io Team*
