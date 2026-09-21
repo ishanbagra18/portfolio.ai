@@ -4,6 +4,8 @@ import nodemailer from 'nodemailer'
 
 // In-memory store for 2FA (In a real app, use Redis or a DB table)
 const pendingLogins = new Map();
+const pendingPasswordResets = new Map();
+
 
 // Helper to get a nodemailer test account and transport
 let testAccount = null;
@@ -446,6 +448,146 @@ export async function oauthSession(req, res) {
     return res.status(500).json({ message: 'Failed to process OAuth session' })
   }
 }
+
+export async function forgotPassword(req, res) {
+  try {
+    const { email } = req.body
+
+    if (!email) {
+      return res.status(400).json({ message: 'Email address is required' })
+    }
+
+    const normalizedEmail = String(email).trim().toLowerCase()
+
+    // Find user in Supabase
+    const { data: { users }, error } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 })
+
+    if (error) {
+      console.error('Error fetching users from Supabase:', error)
+      return res.status(500).json({ message: 'Failed to query user records' })
+    }
+
+    const user = users?.find(u => u.email?.toLowerCase() === normalizedEmail)
+
+    if (!user) {
+      return res.json({
+        message: 'If an account exists with this email, a password reset code has been sent.',
+        email: normalizedEmail
+      })
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+
+    pendingPasswordResets.set(normalizedEmail, {
+      otp,
+      userId: user.id,
+      expiresAt: Date.now() + 10 * 60 * 1000 // 10 minutes
+    })
+
+    try {
+      const mailer = await getMailTransporter()
+      const emailHtml = `
+        <div style="font-family: 'Inter', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px; background-color: #111113; color: #ffffff; border-radius: 16px; border: 1px solid #27272a;">
+          <div style="text-align: center; margin-bottom: 32px;">
+            <h1 style="margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -1px; color: #ec4899;">Portfolio.io</h1>
+          </div>
+          <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 16px; color: #ffffff;">Reset Your Password</h2>
+          <p style="font-size: 16px; line-height: 1.5; color: #a1a1aa; margin-bottom: 32px;">We received a request to reset the password for your account. Use the 6-digit verification code below to set a new password. This code will expire in 10 minutes.</p>
+          <div style="background-color: #18181b; padding: 24px; border-radius: 12px; text-align: center; border: 1px solid #27272a; margin-bottom: 32px;">
+            <span style="font-family: monospace; font-size: 42px; font-weight: 700; letter-spacing: 8px; color: #ec4899;">${otp}</span>
+          </div>
+          <p style="font-size: 14px; color: #71717a; text-align: center;">If you didn't request a password reset, you can safely ignore this message.</p>
+          <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #27272a; text-align: center; font-size: 12px; color: #52525b;">
+            &copy; ${new Date().getFullYear()} Portfolio.io. All rights reserved.
+          </div>
+        </div>
+      `
+
+      const info = await mailer.sendMail({
+        from: '"Portfolio.io Security" <security@portfolio.io>',
+        to: normalizedEmail,
+        subject: "Your Password Reset Code",
+        text: `Your password reset code is: ${otp}`,
+        html: emailHtml
+      })
+
+      if (!process.env.SMTP_EMAIL) {
+        console.log("------------------------------------------")
+        console.log("Password Reset Email sent! Preview URL: %s", nodemailer.getTestMessageUrl(info))
+        console.log("------------------------------------------")
+      }
+    } catch (mailErr) {
+      console.error("Failed to send Password Reset email:", mailErr.message)
+      console.log("\n==========================================")
+      console.log("⚠️ EMAIL FAILED - DEVELOPMENT FALLBACK ⚠️")
+      console.log(`Your 6-digit Reset OTP code is: ${otp}`)
+      console.log("==========================================\n")
+    }
+
+    return res.json({
+      message: 'If an account exists with this email, a password reset code has been sent.',
+      email: normalizedEmail
+    })
+  } catch (err) {
+    console.error('Forgot password error:', err)
+    return res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
+export async function resetPassword(req, res) {
+  try {
+    const { email, otp, newPassword, confirmPassword } = req.body
+
+    if (!email || !otp || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: 'All fields (email, code, new password, confirm password) are required' })
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' })
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' })
+    }
+
+    const normalizedEmail = String(email).trim().toLowerCase()
+    const pending = pendingPasswordResets.get(normalizedEmail)
+
+    if (!pending) {
+      return res.status(400).json({ message: 'No active password reset request found. Please request a new reset code.' })
+    }
+
+    if (Date.now() > pending.expiresAt) {
+      pendingPasswordResets.delete(normalizedEmail)
+      return res.status(400).json({ message: 'Reset code has expired. Please request a new reset code.' })
+    }
+
+    if (pending.otp !== String(otp).trim()) {
+      return res.status(401).json({ message: 'Invalid reset code' })
+    }
+
+    // Update user password in Supabase via Admin API
+    const { error: updateError } = await supabase.auth.admin.updateUserById(pending.userId, {
+      password: newPassword
+    })
+
+    if (updateError) {
+      console.error('Supabase password update error:', updateError)
+      return res.status(400).json({ message: updateError.message || 'Failed to update password' })
+    }
+
+    // Success! Clear pending reset request
+    pendingPasswordResets.delete(normalizedEmail)
+
+    return res.json({
+      message: 'Password reset successfully! You can now log in with your new password.'
+    })
+  } catch (err) {
+    console.error('Reset password error:', err)
+    return res.status(500).json({ message: 'Internal server error' })
+  }
+}
+
 
 
 

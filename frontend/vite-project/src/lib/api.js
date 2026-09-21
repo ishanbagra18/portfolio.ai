@@ -90,6 +90,20 @@ export function verifyOTP(payload) {
   })
 }
 
+export function forgotPassword(payload) {
+  return request('/api/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function resetPassword(payload) {
+  return request('/api/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
 export function oauthSession(payload) {
   return request('/api/auth/oauth/session', {
     method: 'POST',

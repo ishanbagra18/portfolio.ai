@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { useState } from "react";
 import PortfolioCopilot from "./components/copilot/PortfolioCopilot";
 import SpotlightOverlay from "./components/copilot/SpotlightOverlay";
+import portfolioIllustration from "./assets/portfolio_3d_illustration.png";
 import "./index.css";
 
 const Login = lazy(() => import("./pages/Login"));
@@ -95,19 +96,19 @@ function AuthLayout({ children }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 120, damping: 14 }}
-        className="relative w-full max-w-md glass-panel p-8"
+        className="relative w-full max-w-5xl glass-panel p-6 sm:p-8 md:p-12 my-8"
       >
         <nav className="mb-8 flex justify-between items-center border-b border-white/10 pb-4">
-          <span className="text-xl font-display font-black bg-gradient-to-r from-violet-400 to-pink-400 bg-clip-text text-transparent tracking-tight">
-            SecureAuth
+          <span className="text-xl font-display font-black bg-gradient-to-r from-violet-400 via-pink-400 to-cyan-300 bg-clip-text text-transparent tracking-tight">
+            Portfolio<span className="text-pink-400">.io</span>
           </span>
 
           <div className="flex bg-black/20 p-1.5 rounded-2xl border border-white/5 text-xs font-semibold backdrop-blur-md">
             <Link
               to="/login"
               className={`px-4 py-2 rounded-xl transition-all duration-300 ${location.pathname === "/login"
-                  ? "bg-white/10 text-[var(--neo-text)] shadow-lg neo-pressed"
-                  : "text-[var(--neo-text)]/60 hover:text-[var(--neo-text)] hover:bg-white/5"
+                ? "bg-white/10 text-[var(--neo-text)] shadow-lg neo-pressed"
+                : "text-[var(--neo-text)]/60 hover:text-[var(--neo-text)] hover:bg-white/5"
                 }`}
             >
               Login
@@ -116,8 +117,8 @@ function AuthLayout({ children }) {
             <Link
               to="/register"
               className={`px-4 py-2 rounded-xl transition-all duration-300 ${location.pathname === "/register"
-                  ? "bg-white/10 text-[var(--neo-text)] shadow-lg neo-pressed"
-                  : "text-[var(--neo-text)]/60 hover:text-[var(--neo-text)] hover:bg-white/5"
+                ? "bg-white/10 text-[var(--neo-text)] shadow-lg neo-pressed"
+                : "text-[var(--neo-text)]/60 hover:text-[var(--neo-text)] hover:bg-white/5"
                 }`}
             >
               Register
@@ -125,9 +126,28 @@ function AuthLayout({ children }) {
           </div>
         </nav>
 
-        {/* Page Content wrapped in AnimatePresence for tab switching */}
-        <div className="relative">
-          {children}
+        {/* 2-Column Split: 3D Illustration on Left, Auth Form on Right */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 lg:gap-20 items-center">
+          {/* Left Column: Floating 3D Portfolio Illustration */}
+          <div className="hidden md:flex flex-col items-center justify-center p-6 relative group">
+            <div className="absolute inset-0 bg-gradient-to-tr from-violet-500/20 via-pink-500/10 to-transparent rounded-3xl blur-2xl pointer-events-none" />
+            <motion.div
+              animate={{ y: [-8, 8, -8] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="relative w-full flex items-center justify-center"
+            >
+              <img
+                src={portfolioIllustration}
+                alt="3D Portfolio Illustration"
+                className="w-full h-auto max-h-[380px] object-contain drop-shadow-[0_20px_35px_rgba(236,72,153,0.35)] transition-transform duration-500 group-hover:scale-105 rounded-2xl"
+              />
+            </motion.div>
+          </div>
+
+          {/* Right Column: Exact Form Fields & Layout */}
+          <div className="relative w-full md:pl-4">
+            {children}
+          </div>
         </div>
       </motion.div>
     </div>
@@ -144,433 +164,433 @@ export default function App() {
   return (
     <>
       <AnimatePresence mode="wait">
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes key={location.pathname} location={location}>
-          {/* Root Landing Page */}
-          <Route path="/" element={<Home />} />
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes key={location.pathname} location={location}>
+            {/* Root Landing Page */}
+            <Route path="/" element={<Home />} />
 
 
-          {/* Login */}
-          <Route
-            path="/login"
-            element={
-              <PublicOnlyRoute>
-                <AuthLayout>
-                  <Login />
-                </AuthLayout>
-              </PublicOnlyRoute>
-            }
-          />
+            {/* Login */}
+            <Route
+              path="/login"
+              element={
+                <PublicOnlyRoute>
+                  <AuthLayout>
+                    <Login />
+                  </AuthLayout>
+                </PublicOnlyRoute>
+              }
+            />
 
-          {/* Register */}
-          <Route
-            path="/register"
-            element={
-              <PublicOnlyRoute>
-                <AuthLayout>
-                  <Register />
-                </AuthLayout>
-              </PublicOnlyRoute>
-            }
-          />
+            {/* Register */}
+            <Route
+              path="/register"
+              element={
+                <PublicOnlyRoute>
+                  <AuthLayout>
+                    <Register />
+                  </AuthLayout>
+                </PublicOnlyRoute>
+              }
+            />
 
-          {/* OAuth Callback */}
-          <Route
-            path="/auth/callback"
-            element={<AuthCallback />}
-          />
+            {/* OAuth Callback */}
+            <Route
+              path="/auth/callback"
+              element={<AuthCallback />}
+            />
 
-          {/* Home */}
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
+            {/* Home */}
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* My Profile */}
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+            {/* My Profile */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Change / Update Profile */}
-          <Route
-            path="/profile/edit"
-            element={
-              <ProtectedRoute>
-                <UpdateProfile />
-              </ProtectedRoute>
-            }
-          />
+            {/* Change / Update Profile */}
+            <Route
+              path="/profile/edit"
+              element={
+                <ProtectedRoute>
+                  <UpdateProfile />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* View Templates (Template Selection Page) */}
-          <Route
-            path="/viewtemplates"
-            element={
-              <ProtectedRoute>
-                <ViewTemplates />
-              </ProtectedRoute>
-            }
-          />
+            {/* View Templates (Template Selection Page) */}
+            <Route
+              path="/viewtemplates"
+              element={
+                <ProtectedRoute>
+                  <ViewTemplates />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* My Portfolios (Dashboard to view all user created portfolios) */}
-          <Route
-            path="/my-portfolios"
-            element={
-              <ProtectedRoute>
-                <MyPortfolios />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-portfolio"
-            element={
-              <ProtectedRoute>
-                <MyPortfolios />
-              </ProtectedRoute>
-            }
-          />
+            {/* My Portfolios (Dashboard to view all user created portfolios) */}
+            <Route
+              path="/my-portfolios"
+              element={
+                <ProtectedRoute>
+                  <MyPortfolios />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-portfolio"
+              element={
+                <ProtectedRoute>
+                  <MyPortfolios />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Provide Data */}
-          <Route
-            path="/provide-data/:templateId"
-            element={
-              <ProtectedRoute>
-                <Providedata />
-              </ProtectedRoute>
-            }
-          />
+            {/* Provide Data */}
+            <Route
+              path="/provide-data/:templateId"
+              element={
+                <ProtectedRoute>
+                  <Providedata />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Edit Portfolio */}
-          <Route
-            path="/edit-portfolio/:portfolioId"
-            element={
-              <ProtectedRoute>
-                <EditPortfolio />
-              </ProtectedRoute>
-            }
-          />
+            {/* Edit Portfolio */}
+            <Route
+              path="/edit-portfolio/:portfolioId"
+              element={
+                <ProtectedRoute>
+                  <EditPortfolio />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ATS Checker */}
-          <Route
-            path="/ats-checker"
-            element={
-              <ProtectedRoute>
-                <AtsChecker />
-              </ProtectedRoute>
-            }
-          />
+            {/* ATS Checker */}
+            <Route
+              path="/ats-checker"
+              element={
+                <ProtectedRoute>
+                  <AtsChecker />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Career Tools (Resume Upload) */}
-          <Route
-            path="/career-tools"
-            element={
-              <ProtectedRoute>
-                <CareerTools />
-              </ProtectedRoute>
-            }
-          />
+            {/* Career Tools (Resume Upload) */}
+            <Route
+              path="/career-tools"
+              element={
+                <ProtectedRoute>
+                  <CareerTools />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Smart Portfolio Matcher */}
-          <Route
-            path="/portfolio-matcher/:id"
-            element={
-              <ProtectedRoute>
-                <PortfolioMatcher />
-              </ProtectedRoute>
-            }
-          />
-          {/* Pricing Page */}
-          <Route path="/pricing" element={<PricingPage />} />
+            {/* Smart Portfolio Matcher */}
+            <Route
+              path="/portfolio-matcher/:id"
+              element={
+                <ProtectedRoute>
+                  <PortfolioMatcher />
+                </ProtectedRoute>
+              }
+            />
+            {/* Pricing Page */}
+            <Route path="/pricing" element={<PricingPage />} />
 
-          {/* Onboarding Wizard */}
-          <Route
-            path="/onboarding"
-            element={
-              <ProtectedRoute>
-                <Onboarding />
-              </ProtectedRoute>
-            }
-          />
+            {/* Onboarding Wizard */}
+            <Route
+              path="/onboarding"
+              element={
+                <ProtectedRoute>
+                  <Onboarding />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Portfolio Analytics */}
-          <Route
-            path="/analytics/:id"
-            element={
-              <ProtectedRoute>
-                <AnalyticsDashboard />
-              </ProtectedRoute>
-            }
-          />
+            {/* Portfolio Analytics */}
+            <Route
+              path="/analytics/:id"
+              element={
+                <ProtectedRoute>
+                  <AnalyticsDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Recruiter Leads */}
-          <Route
-            path="/leads"
-            element={
-              <ProtectedRoute>
-                <RecruiterLeads />
-              </ProtectedRoute>
-            }
-          />
+            {/* Recruiter Leads */}
+            <Route
+              path="/leads"
+              element={
+                <ProtectedRoute>
+                  <RecruiterLeads />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Job Tracker */}
-          <Route
-            path="/applications"
-            element={
-              <ProtectedRoute>
-                <JobTracker />
-              </ProtectedRoute>
-            }
-          />
+            {/* Job Tracker */}
+            <Route
+              path="/applications"
+              element={
+                <ProtectedRoute>
+                  <JobTracker />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* AI Cover Letter Generator */}
-          <Route
-            path="/career-tools/cover-letter"
-            element={
-              <ProtectedRoute>
-                <CoverLetterGenerator />
-              </ProtectedRoute>
-            }
-          />
+            {/* AI Cover Letter Generator */}
+            <Route
+              path="/career-tools/cover-letter"
+              element={
+                <ProtectedRoute>
+                  <CoverLetterGenerator />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* AI Mock Interview Simulator */}
-          <Route
-            path="/career-tools/interview/:id"
-            element={
-              <ProtectedRoute>
-                <MockInterview />
-              </ProtectedRoute>
-            }
-          />
+            {/* AI Mock Interview Simulator */}
+            <Route
+              path="/career-tools/interview/:id"
+              element={
+                <ProtectedRoute>
+                  <MockInterview />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Billing & Subscription Settings */}
-          <Route
-            path="/settings/billing"
-            element={
-              <ProtectedRoute>
-                <BillingSettings />
-              </ProtectedRoute>
-            }
-          />
+            {/* Billing & Subscription Settings */}
+            <Route
+              path="/settings/billing"
+              element={
+                <ProtectedRoute>
+                  <BillingSettings />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Upgrade Success */}
-          <Route
-            path="/upgrade/success"
-            element={
-              <ProtectedRoute>
-                <UpgradeSuccess />
-              </ProtectedRoute>
-            }
-          />
-
-
+            {/* Upgrade Success */}
+            <Route
+              path="/upgrade/success"
+              element={
+                <ProtectedRoute>
+                  <UpgradeSuccess />
+                </ProtectedRoute>
+              }
+            />
 
 
-          {/* Public Portfolio View */}
-          <Route
-            path="/portfolio/template1/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template1 />
-              </ProtectedRoute>
-            }
-          />
 
-          <Route
-            path="/portfolio/template2/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template2 />
-              </ProtectedRoute>
-            }
-          />
 
-          <Route
-            path="/portfolio/template3/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template3 />
-              </ProtectedRoute>
-            }
-          />
+            {/* Public Portfolio View */}
+            <Route
+              path="/portfolio/template1/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template1 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template4/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template4 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template2/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template2 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template5/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template5 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template3/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template3 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template6/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template6 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template4/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template4 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template7/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template7 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template5/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template5 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template8/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template8 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template6/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template6 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template9/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template9 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template7/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template7 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template10/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template10 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template8/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template8 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template11/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template11 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template9/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template9 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template12/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template12 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template10/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template10 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template13/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template13 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template11/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template11 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template14/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template14 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template12/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template12 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template15/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template15 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template13/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template13 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template16/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template16 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template14/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template14 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template17/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template17 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template15/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template15 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template18/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template18 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template16/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template16 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template19/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template19 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template17/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template17 />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/portfolio/template20/:portfolioId?"
-            element={
-              <ProtectedRoute>
-                <Template20 />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/portfolio/template18/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template18 />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Public Portfolio (No auth — accessible by anyone with slug) */}
-          <Route path="/p/:slug" element={<PublicPortfolio />} />
+            <Route
+              path="/portfolio/template19/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template19 />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* Unknown Route (Branded 404) */}
-          <Route path="*" element={<NotFoundPage />} />
+            <Route
+              path="/portfolio/template20/:portfolioId?"
+              element={
+                <ProtectedRoute>
+                  <Template20 />
+                </ProtectedRoute>
+              }
+            />
 
-        </Routes>
-      </Suspense>
-    </AnimatePresence>
+            {/* Public Portfolio (No auth — accessible by anyone with slug) */}
+            <Route path="/p/:slug" element={<PublicPortfolio />} />
 
-    {loggedIn && (
-      <>
-        <PortfolioCopilot onSpotlight={setSpotlightId} />
-        <SpotlightOverlay spotlightId={spotlightId} onClose={() => setSpotlightId(null)} />
-      </>
-    )}
-    <Toaster richColors position="top-right" theme="dark" closeButton />
-  </>
+            {/* Unknown Route (Branded 404) */}
+            <Route path="*" element={<NotFoundPage />} />
+
+          </Routes>
+        </Suspense>
+      </AnimatePresence>
+
+      {loggedIn && (
+        <>
+          <PortfolioCopilot onSpotlight={setSpotlightId} />
+          <SpotlightOverlay spotlightId={spotlightId} onClose={() => setSpotlightId(null)} />
+        </>
+      )}
+      <Toaster richColors position="top-right" theme="dark" closeButton />
+    </>
   );
 }
