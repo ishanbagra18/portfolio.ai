@@ -46,10 +46,22 @@ const INITIAL_CHANGELOG = [
   }
 ];
 
-export default function RecruiterChangelog({ candidateName = 'Developer', editable = true }) {
+export default function RecruiterChangelog({
+  candidateName = 'Developer',
+  editable = true,
+  isOpen = undefined,
+  onClose = undefined
+}) {
   const [logs, setLogs] = useState(INITIAL_CHANGELOG);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
+
+  const isControlled = isOpen !== undefined;
+  const showModal = isControlled ? isOpen : internalOpen;
+  const handleClose = () => {
+    if (isControlled && onClose) onClose();
+    else setInternalOpen(false);
+  };
 
   // Form state for adding new changelog item
   const [title, setTitle] = useState('');
@@ -78,36 +90,45 @@ export default function RecruiterChangelog({ candidateName = 'Developer', editab
 
   return (
     <div className="font-sans">
-      {/* Trigger Button */}
-      <button
-        onClick={() => setModalOpen(true)}
-        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-indigo-500/20 hover:from-pink-500/30 hover:to-indigo-500/30 border border-pink-500/40 text-xs font-mono font-bold text-white shadow-xl backdrop-blur-md transition-all active:scale-95 cursor-pointer"
-      >
-        <History className="w-4 h-4 text-pink-400" />
-        <span>⚡ Recruiter Changelog</span>
-        <span className="w-5 h-5 rounded-full bg-pink-500/30 text-pink-300 flex items-center justify-center text-[10px] font-mono">
-          {logs.length}
-        </span>
-      </button>
+      {/* Trigger Button (only if not controlled externally) */}
+      {!isControlled && (
+        <button
+          type="button"
+          onClick={() => setInternalOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-white/10 hover:border-pink-500/40 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition shadow-sm"
+          title="Candidate Activity & Recruiter Changelog"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+          <span className="hidden sm:inline">Changelog</span>
+          <span className="w-4 h-4 rounded-full bg-pink-500/20 text-pink-300 flex items-center justify-center text-[10px] font-mono border border-pink-500/30">
+            {logs.length}
+          </span>
+        </button>
+      )}
 
       {/* Recruiter Changelog Drawer Modal */}
       <AnimatePresence>
-        {modalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        {showModal && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) handleClose();
+            }}
+          >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              className="w-full max-w-2xl rounded-3xl border border-white/15 bg-gradient-to-b from-slate-900 via-black to-slate-950 p-6 sm:p-8 shadow-2xl relative max-h-[88vh] overflow-y-auto"
+              className="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl border border-white/15 bg-gradient-to-b from-slate-900 via-zinc-950 to-slate-950 p-6 sm:p-8 shadow-2xl relative text-white font-sans overflow-hidden"
             >
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-5 mb-6">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-5 shrink-0">
                 <div>
-                  <div className="text-xs font-mono font-bold text-pink-400 uppercase tracking-widest mb-1 flex items-center gap-2">
-                    <Sparkles className="w-4 h-4" /> Recruiter Insights &amp; Updates
+                  <div className="text-[11px] font-mono font-bold text-pink-400 uppercase tracking-widest mb-1 flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5" /> Recruiter Insights &amp; Updates
                   </div>
-                  <h2 className="text-2xl font-bold text-white">{candidateName}'s Activity Feed</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold text-white">{candidateName}'s Activity Feed</h2>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -120,7 +141,7 @@ export default function RecruiterChangelog({ candidateName = 'Developer', editab
                     </button>
                   )}
                   <button
-                    onClick={() => setModalOpen(false)}
+                    onClick={handleClose}
                     className="p-2 rounded-xl bg-white/5 hover:bg-white/15 text-white/70 hover:text-white transition"
                   >
                     <X className="w-4 h-4" />
@@ -128,55 +149,56 @@ export default function RecruiterChangelog({ candidateName = 'Developer', editab
                 </div>
               </div>
 
-              {/* Glowing Timeline */}
-              <div className="relative border-l-2 border-gradient-to-b border-pink-500/40 ml-4 space-y-6 pl-6">
-                {logs.map((log) => {
-                  const catObj = CATEGORIES.find(c => c.id === log.category) || CATEGORIES[0];
-                  const IconComp = catObj.icon;
+              {/* Glowing Timeline Content */}
+              <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-6">
+                <div className="relative border-l-2 border-pink-500/40 ml-3 space-y-6 pl-5">
+                  {logs.map((log) => {
+                    const catObj = CATEGORIES.find(c => c.id === log.category) || CATEGORIES[0];
+                    const IconComp = catObj.icon;
 
-                  return (
-                    <div key={log.id} className="relative group">
-                      {/* Timeline Dot Indicator */}
-                      <div className={`absolute -left-[31px] top-1 w-4 h-4 rounded-full bg-gradient-to-r ${catObj.color} border-2 border-black shadow-lg shadow-pink-500/30 flex items-center justify-center`}>
-                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                      </div>
-
-                      {/* Log Card */}
-                      <div className="bg-white/5 border border-white/10 hover:border-pink-500/30 rounded-2xl p-5 backdrop-blur-xl transition-all">
-                        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                          <span className={`px-2.5 py-1 rounded-lg text-[10px] font-mono font-extrabold uppercase border flex items-center gap-1.5 ${catObj.bg} ${catObj.text}`}>
-                            <IconComp className="w-3 h-3" />
-                            {catObj.label}
-                          </span>
-                          <span className="text-xs font-mono text-white/50 flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5" /> {log.date}
-                          </span>
+                    return (
+                      <div key={log.id} className="relative group">
+                        {/* Timeline Dot Indicator */}
+                        <div className={`absolute -left-[27px] top-1 w-3.5 h-3.5 rounded-full bg-gradient-to-r ${catObj.color} border-2 border-black shadow-lg shadow-pink-500/30 flex items-center justify-center`}>
+                          <div className="w-1 h-1 rounded-full bg-white animate-ping" />
                         </div>
 
-                        <h3 className="text-base font-bold text-white mb-2 group-hover:text-pink-300 transition-colors">
-                          {log.title}
-                        </h3>
-
-                        <p className="text-xs text-white/70 leading-relaxed mb-4">
-                          {log.description}
-                        </p>
-
-                        {/* Tech Tags */}
-                        {log.tags && log.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
-                            {log.tags.map((tag, idx) => (
-                              <span key={idx} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-mono font-medium text-white/80">
-                                #{tag}
-                              </span>
-                            ))}
+                        {/* Log Card */}
+                        <div className="bg-white/5 border border-white/10 hover:border-pink-500/30 rounded-2xl p-4.5 backdrop-blur-xl transition-all">
+                          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                            <span className={`px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-extrabold uppercase border flex items-center gap-1.5 ${catObj.bg} ${catObj.text}`}>
+                              <IconComp className="w-3 h-3" />
+                              {catObj.label}
+                            </span>
+                            <span className="text-xs font-mono text-white/50 flex items-center gap-1">
+                              <Calendar className="w-3.5 h-3.5" /> {log.date}
+                            </span>
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
 
+                          <h3 className="text-sm sm:text-base font-bold text-white mb-1.5 group-hover:text-pink-300 transition-colors">
+                            {log.title}
+                          </h3>
+
+                          <p className="text-xs text-white/70 leading-relaxed mb-3">
+                            {log.description}
+                          </p>
+
+                          {/* Tech Tags */}
+                          {log.tags && log.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
+                              {log.tags.map((tag, idx) => (
+                                <span key={idx} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] font-mono font-medium text-white/80">
+                                  #{tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </motion.div>
           </div>
         )}

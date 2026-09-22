@@ -20,10 +20,19 @@ import { toast } from 'sonner';
 export default function ShareModal({
   url = null,
   title = 'Candidate Portfolio',
-  candidateName = 'Developer'
+  candidateName = 'Developer',
+  isOpen = undefined,
+  onClose = undefined
 }) {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const isControlled = isOpen !== undefined;
+  const showModal = isControlled ? isOpen : internalOpen;
+  const handleClose = () => {
+    if (isControlled && onClose) onClose();
+    else setInternalOpen(false);
+  };
 
   // Fallback to current browser URL if url is not passed
   const shareUrl = url || (typeof window !== 'undefined' ? window.location.href : 'https://portfolio.ai');
@@ -67,26 +76,34 @@ export default function ShareModal({
 
   return (
     <>
-      {/* Trigger Share Button */}
-      <button
-        onClick={() => setModalOpen(true)}
-        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-mono font-bold backdrop-blur-md transition-all active:scale-95 cursor-pointer shadow-lg"
-        title="Share Portfolio Link & QR Code"
-      >
-        <Share2 className="w-3.5 h-3.5 text-pink-400" />
-        <span>Share</span>
-      </button>
+      {/* Trigger Share Button (only if not controlled externally) */}
+      {!isControlled && (
+        <button
+          type="button"
+          onClick={() => setInternalOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-white/10 hover:border-pink-500/40 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition shadow-sm"
+          title="Share Portfolio Link & QR Code"
+        >
+          <Share2 className="w-3.5 h-3.5 text-pink-400" />
+          <span className="hidden sm:inline">Share</span>
+        </button>
+      )}
 
       {/* Share Drawer Modal */}
       <AnimatePresence>
-        {modalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        {showModal && (
+          <div
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) handleClose();
+            }}
+          >
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              className="w-full max-w-md rounded-3xl border border-white/15 bg-gradient-to-b from-zinc-900 via-slate-950 to-zinc-950 p-6 sm:p-8 shadow-2xl relative text-white font-sans"
+              className="w-full max-w-md rounded-3xl border border-white/15 bg-gradient-to-b from-zinc-900 via-slate-950 to-zinc-950 p-6 sm:p-8 shadow-2xl relative text-white font-sans overflow-hidden"
             >
               {/* Header */}
               <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
@@ -101,7 +118,7 @@ export default function ShareModal({
                 </div>
 
                 <button
-                  onClick={() => setModalOpen(false)}
+                  onClick={handleClose}
                   className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition"
                 >
                   <X className="w-5 h-5" />

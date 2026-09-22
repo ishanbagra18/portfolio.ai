@@ -49,7 +49,8 @@ const VALID_PORTFOLIO_COLUMNS = new Set([
     'theme_mode', 'section_order', 'optional_sections', 'achievements_data',
     'publications_data', 'hackathons_data', 'open_source_data', 'volunteering_data',
     'research_data', 'education_data', 'awards_data', 'testimonials_data',
-    'currently_learning', 'interests'
+    'currently_learning', 'interests',
+    'is_password_protected', 'access_passcode', 'link_expires_at', 'custom_domain'
 ]);
 
 // Helper to filter and map personalInfo payload to ONLY existing Supabase DB columns
@@ -96,7 +97,11 @@ const buildSafePortfolioObject = (personalInfo = {}, finalTemplateId, userId) =>
         awards_data:                personalInfo.awards_data                ?? null,
         testimonials_data:          personalInfo.testimonials_data          ?? null,
         currently_learning:         personalInfo.currently_learning         ?? null,
-        interests:                  personalInfo.interests                  ?? null
+        interests:                  personalInfo.interests                  ?? null,
+        is_password_protected:     personalInfo.is_password_protected     ?? false,
+        access_passcode:           personalInfo.access_passcode           ?? null,
+        link_expires_at:           personalInfo.link_expires_at           ?? null,
+        custom_domain:             personalInfo.custom_domain             ?? null
     };
 
     const sanitized = {};
@@ -448,12 +453,36 @@ export const updatePortfolio = async (req, res) => {
 
             console.log(`[Update Portfolio] id=${id} | Updating personalInfo with keys:`, Object.keys(safePersonalInfo));
 
-            // FIX 1: added .select('id') so we can detect "0 rows updated" (RLS / wrong key)
-            const { data: updatedRows, error: updateError } = await supabase
+            let updatedRows = null;
+            let updateError = null;
+
+            const resFirst = await supabase
                 .from('portfolios')
                 .update(safePersonalInfo)
                 .eq('id', id)
                 .select('id');
+
+            updatedRows = resFirst.data;
+            updateError = resFirst.error;
+
+            // Defensive Fallback: If DB table is missing new privacy columns, retry without them
+            if (updateError && (updateError.message?.includes('column') || updateError.message?.includes('does not exist'))) {
+                console.warn('[Update Portfolio] Retrying personalInfo update without missing schema columns:', updateError.message);
+                const fallbackObj = { ...safePersonalInfo };
+                delete fallbackObj.is_password_protected;
+                delete fallbackObj.access_passcode;
+                delete fallbackObj.link_expires_at;
+                delete fallbackObj.custom_domain;
+
+                const resFallback = await supabase
+                    .from('portfolios')
+                    .update(fallbackObj)
+                    .eq('id', id)
+                    .select('id');
+
+                updatedRows = resFallback.data;
+                updateError = resFallback.error;
+            }
 
             if (updateError) {
                 console.error('[Update Portfolio] personalInfo update failed:', updateError);
@@ -463,7 +492,6 @@ export const updatePortfolio = async (req, res) => {
                 });
             }
 
-            // FIX 1: Supabase reports a write blocked by RLS as success with no rows
             if (!updatedRows || updatedRows.length === 0) {
                 console.error('[Update Portfolio] personalInfo update affected 0 rows (RLS policy / anon key?)');
                 return res.status(500).json({
@@ -474,10 +502,19 @@ export const updatePortfolio = async (req, res) => {
             console.log('[Update Portfolio] personalInfo updated successfully.');
         }
 
-        // 4. Related tables: delete all old records first, then insert fresh
-        const { error: delError } = await supabase.rpc === undefined
-            ? { error: null } : { error: null }; // placeholder — actual deletes below
+        // Check if sub-tables were explicitly provided in request body
+        const hasSubTableData = techStacks !== undefined || projects !== undefined || experiences !== undefined || certifications !== undefined;
 
+        if (!hasSubTableData) {
+            console.log('[Update Portfolio] No sub-table data provided; skipping sub-table deletion/re-insertion.');
+            return res.status(200).json({
+                success: true,
+                message: "Portfolio personal info updated successfully!",
+                portfolioId: id
+            });
+        }
+
+        // 4. Related tables: delete all old records first, then insert fresh
         const deleteResults = await Promise.allSettled([
             supabase.from('tech_stacks').delete().eq('portfolio_id', id),
             supabase.from('projects').delete().eq('portfolio_id', id),
@@ -490,7 +527,6 @@ export const updatePortfolio = async (req, res) => {
             }
         });
 
-        // FIX 2: if any delete failed, stop here instead of inserting on top of the old rows
         if (deleteResults.some(r => r.status === 'rejected' || r.value?.error)) {
             return res.status(500).json({
                 success: false,
@@ -1146,12 +1182,20 @@ export const savePortfolioVersion = async (req, res) => {
             snapshot_data: snapshotData
         }]).select().single();
 
-        if (error) throw error;
+        if (error) {
+            if (error.code === 'PGRST204' || error.message?.includes('schema cache') || error.message?.includes('portfolio_versions')) {
+                return res.status(400).json({
+                    success: false,
+                    message: "The 'portfolio_versions' table is missing in Supabase. Please run the migration query from backend/supabase-schema.sql in your Supabase SQL editor."
+                });
+            }
+            throw error;
+        }
 
         return res.status(201).json({ success: true, message: "Version snapshot saved.", data: ver });
     } catch (err) {
         console.error("Save version error:", err);
-        return res.status(500).json({ success: false, message: err.message });
+        return res.status(500).json({ success: false, message: err.message || "Failed to save version snapshot." });
     }
 };
 
@@ -1171,12 +1215,21 @@ export const getPortfolioVersions = async (req, res) => {
             .eq('portfolio_id', id)
             .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+            if (error.code === 'PGRST204' || error.message?.includes('schema cache') || error.message?.includes('portfolio_versions')) {
+                return res.status(200).json({
+                    success: true,
+                    data: [],
+                    notice: "The 'portfolio_versions' table is missing in Supabase. Run backend/supabase-schema.sql to enable versions."
+                });
+            }
+            throw error;
+        }
 
         return res.status(200).json({ success: true, data: versions || [] });
     } catch (err) {
         console.error("Get versions error:", err);
-        return res.status(500).json({ success: false, message: err.message });
+        return res.status(200).json({ success: true, data: [], message: err.message });
     }
 };
 

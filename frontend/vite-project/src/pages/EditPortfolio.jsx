@@ -18,7 +18,7 @@ import RecruiterChangelog from '../components/RecruiterChangelog';
 import ShareModal from '../components/ShareModal';
 import { toast } from 'sonner';
 import { SECTION_SCHEMAS } from '../lib/sectionSchemas';
-import { Undo2, Redo2, Columns, Eye, Edit3, Palette, Layers, History, ShieldCheck, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Undo2, Redo2, Columns, Eye, Edit3, Palette, Layers, History, ShieldCheck, LayoutGrid, Share2, Sparkles } from 'lucide-react';
 
 const ALL_TEMPLATES = [
   { id: 'template1', name: 'Neon Dark' },
@@ -94,6 +94,8 @@ const EditPortfolio = () => {
   const [activeTab, setActiveTab] = useState('content'); // 'content' | 'reorder' | 'theme'
   const [showVersionModal, setShowVersionModal] = useState(false);
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showChangelogModal, setShowChangelogModal] = useState(false);
 
   // Client-Side Undo / Redo History Stack
   const [history, setHistory] = useState([EMPTY]);
@@ -358,97 +360,122 @@ const EditPortfolio = () => {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white font-sans flex flex-col overflow-x-hidden">
-      {/* Top Floating Control Bar */}
-      <div className="sticky top-0 z-40 bg-zinc-900/90 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
-        {/* Template Switcher Bar */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <LayoutGrid className="w-4 h-4 text-pink-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400 hidden sm:inline">Template:</span>
+      {/* Top Studio Header Control Bar */}
+      <header className="sticky top-0 z-40 bg-zinc-950/95 backdrop-blur-2xl border-b border-white/10 pl-4 sm:pl-8 lg:pl-10 pr-6 sm:pr-10 lg:pr-14 py-3 flex items-center justify-between gap-3 overflow-x-auto scrollbar-none shadow-2xl">
+        {/* Left Cluster: Template Selector */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-2 bg-zinc-900/90 border border-white/10 rounded-xl px-2.5 py-1.5 shadow-inner">
+            <LayoutGrid className="w-4 h-4 text-pink-400 shrink-0" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 hidden xl:inline">Template:</span>
+            <select
+              value={templateId}
+              onChange={(e) => setTemplateId(e.target.value)}
+              className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer max-w-[150px] sm:max-w-[190px] truncate"
+            >
+              {ALL_TEMPLATES.map(t => (
+                <option key={t.id} value={t.id} className="bg-zinc-900 text-white">
+                  {t.name} ({t.id})
+                </option>
+              ))}
+            </select>
           </div>
-          <select
-            value={templateId}
-            onChange={(e) => setTemplateId(e.target.value)}
-            className="bg-zinc-800 border border-white/10 rounded-xl px-3 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-pink-500 cursor-pointer"
-          >
-            {ALL_TEMPLATES.map(t => (
-              <option key={t.id} value={t.id}>
-                {t.name} ({t.id})
-              </option>
-            ))}
-          </select>
         </div>
 
-        {/* Action Controls & View Switcher */}
-        <div className="flex items-center gap-2">
+        {/* Center Cluster: Action Tools & Modals */}
+        <div className="flex items-center gap-2 shrink-0">
           {/* Undo / Redo */}
-          <div className="flex items-center bg-zinc-800/70 border border-white/10 rounded-xl p-1">
+          <div className="flex items-center bg-zinc-900 border border-white/10 rounded-xl p-0.5">
             <button
               type="button"
               onClick={handleUndo}
               disabled={historyIndex <= 0}
-              className="p-1.5 rounded-lg text-zinc-300 hover:bg-white/10 disabled:opacity-30 transition"
+              className="p-1.5 rounded-lg text-zinc-300 hover:bg-white/10 hover:text-white disabled:opacity-25 transition"
               title="Undo (Ctrl+Z)"
             >
-              <Undo2 className="w-4 h-4" />
+              <Undo2 className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
               onClick={handleRedo}
               disabled={historyIndex >= history.length - 1}
-              className="p-1.5 rounded-lg text-zinc-300 hover:bg-white/10 disabled:opacity-30 transition"
+              className="p-1.5 rounded-lg text-zinc-300 hover:bg-white/10 hover:text-white disabled:opacity-25 transition"
               title="Redo (Ctrl+Y)"
             >
-              <Redo2 className="w-4 h-4" />
+              <Redo2 className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Feature Modals Trigger */}
+          <div className="h-4 w-px bg-white/10 hidden lg:block" />
+
+          {/* Versions */}
           <button
             type="button"
             onClick={() => setShowVersionModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-white/10 rounded-xl text-xs font-bold transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-white/10 hover:border-pink-500/40 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition shadow-sm"
             title="Version History & Snapshots"
           >
             <History className="w-3.5 h-3.5 text-pink-400" />
             <span className="hidden sm:inline">Versions</span>
           </button>
 
+          {/* Privacy Link */}
           <button
             type="button"
             onClick={() => setShowPrivacyModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-white/10 rounded-xl text-xs font-bold transition"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-white/10 hover:border-indigo-500/40 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition shadow-sm"
             title="Recruiter Privacy & Passcode"
           >
             <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
             <span className="hidden sm:inline">Privacy Link</span>
           </button>
 
-          <ShareModal candidateName={formData?.personalInfo?.full_name || 'Developer'} />
-          <RecruiterChangelog candidateName={formData.personalInfo?.full_name || 'Developer'} editable={true} />
+          {/* Share */}
+          <button
+            type="button"
+            onClick={() => setShowShareModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-white/10 hover:border-pink-500/40 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition shadow-sm"
+            title="Share Portfolio Link & QR Code"
+          >
+            <Share2 className="w-3.5 h-3.5 text-pink-400" />
+            <span className="hidden sm:inline">Share</span>
+          </button>
 
+          {/* Recruiter Changelog */}
+          <button
+            type="button"
+            onClick={() => setShowChangelogModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-white/10 hover:border-pink-500/40 rounded-xl text-xs font-semibold text-zinc-200 hover:text-white transition shadow-sm"
+            title="Recruiter Activity & Changelog"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-pink-400" />
+            <span className="hidden sm:inline">Changelog</span>
+          </button>
+        </div>
+
+        {/* Right Cluster: View Mode & CTA */}
+        <div className="flex items-center gap-2.5 shrink-0 mr-2 sm:mr-4">
           {/* View Mode Segmented Controls */}
-          <div className="flex bg-zinc-800/80 border border-white/10 p-1 rounded-xl text-xs font-bold">
+          <div className="flex bg-zinc-900 border border-white/10 p-0.5 rounded-xl text-xs font-semibold">
             <button
               type="button"
               onClick={() => setViewMode('form')}
-              className={`px-3 py-1 rounded-lg flex items-center gap-1.5 transition ${viewMode === 'form' ? 'bg-pink-500 text-white shadow-md' : 'text-zinc-400 hover:text-white'}`}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition ${viewMode === 'form' ? 'bg-pink-500 text-white shadow-md font-bold' : 'text-zinc-400 hover:text-white'}`}
             >
-              <Edit3 className="w-3.5 h-3.5" /> Form
+              <Edit3 className="w-3.5 h-3.5" /> <span className="hidden md:inline">Form</span>
             </button>
             <button
               type="button"
               onClick={() => setViewMode('split')}
-              className={`px-3 py-1 rounded-lg flex items-center gap-1.5 transition ${viewMode === 'split' ? 'bg-pink-500 text-white shadow-md' : 'text-zinc-400 hover:text-white'}`}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition ${viewMode === 'split' ? 'bg-pink-500 text-white shadow-md font-bold' : 'text-zinc-400 hover:text-white'}`}
             >
-              <Columns className="w-3.5 h-3.5" /> Split
+              <Columns className="w-3.5 h-3.5" /> <span className="hidden md:inline">Split</span>
             </button>
             <button
               type="button"
               onClick={() => setViewMode('preview')}
-              className={`px-3 py-1 rounded-lg flex items-center gap-1.5 transition ${viewMode === 'preview' ? 'bg-pink-500 text-white shadow-md' : 'text-zinc-400 hover:text-white'}`}
+              className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 transition ${viewMode === 'preview' ? 'bg-pink-500 text-white shadow-md font-bold' : 'text-zinc-400 hover:text-white'}`}
             >
-              <Eye className="w-3.5 h-3.5" /> Preview
+              <Eye className="w-3.5 h-3.5" /> <span className="hidden md:inline">Preview</span>
             </button>
           </div>
 
@@ -456,12 +483,19 @@ const EditPortfolio = () => {
             type="button"
             onClick={handleSubmit}
             disabled={submitting}
-            className="ml-2 px-5 py-2 bg-gradient-to-r from-pink-500 to-indigo-600 hover:opacity-90 font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg transition"
+            className="px-4 sm:px-5 py-2 bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:opacity-95 font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-pink-500/20 transition hover:scale-[1.02] active:scale-95 text-white flex items-center gap-1.5 mr-2"
           >
-            {submitting ? 'Saving...' : 'Save & Publish →'}
+            {submitting ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : (
+              <span>Save &amp; Publish →</span>
+            )}
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Main Studio Body (Form / Split / Preview View Modes) */}
       <div className="flex-1 w-full flex overflow-hidden relative">
@@ -607,6 +641,19 @@ const EditPortfolio = () => {
         isOpen={showPrivacyModal}
         onClose={() => setShowPrivacyModal(false)}
         onUpdate={(updatedInfo) => updateFormData(prev => ({ ...prev, personalInfo: updatedInfo }))}
+      />
+
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        candidateName={formData?.personalInfo?.full_name || 'Developer'}
+      />
+
+      <RecruiterChangelog
+        isOpen={showChangelogModal}
+        onClose={() => setShowChangelogModal(false)}
+        candidateName={formData?.personalInfo?.full_name || 'Developer'}
+        editable={true}
       />
     </div>
   );
